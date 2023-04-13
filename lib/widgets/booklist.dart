@@ -1,0 +1,50 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../models/book.dart';
+import '../models/collection.dart';
+import '../notifiers/library_db.dart';
+import 'booktile.dart';
+
+class BookList extends StatefulWidget {
+  final Collection collection;
+  const BookList({Key? key, required this.collection}) : super(key: key);
+
+  @override
+  _BookList createState() => _BookList();
+}
+
+class _BookList extends State<BookList> {
+  late LibraryDB _library;
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<LibraryDB>(builder: (context, model, child) {
+      _library = model;
+      _library.getCollection(widget.collection);
+
+      return Scaffold(
+          appBar: AppBar(title: const Text('Books')),
+          body:
+            Padding(
+              padding: EdgeInsets.only(top: 6, bottom: 6, right: 10),
+              child: ListView.builder(
+                    itemCount: _library.collection[widget.collection.getType()]?.length ?? 0,
+                    itemBuilder: (context, index) {
+                      return _library.collection[widget.collection.getType()] != null
+                          ? Column(children: [
+                              SizedBox(height: MediaQuery.of(context).size.height / 8, child: BookTile(book: _library.collection[widget.collection.getType()]![index] as Book)),
+                              const Divider(color: Colors.black, thickness: 1),
+                          ])
+                          : const Text(
+                              "The library elves simply can't find any books in this collection!",
+                              textAlign: TextAlign.center,
+                            );
+                    },
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true
+                  ),
+                ));
+    });
+  }
+}

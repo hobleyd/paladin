@@ -1,0 +1,57 @@
+import 'package:json_annotation/json_annotation.dart';
+import 'package:sqflite_common/sqlite_api.dart';
+
+import 'collection.dart';
+
+part 'author.g.dart';
+
+@JsonSerializable()
+class Author extends Collection {
+  int? id;
+  String name;
+
+  Author({
+    this.id,
+    required this.name,
+  }) : super(type: CollectionType.AUTHOR);
+
+  @override
+  String getType() {
+    return name;
+  }
+
+  @override
+  Collection? getBookCollection() {
+    return Collection(type: CollectionType.BOOK, query: 'select * from books where uuid in (select bookId from book_authors where authorId = ?)', queryArgs: [id!], key: name);
+  }
+
+  factory Author.fromJson(Map<String, dynamic> json) => _$AuthorFromJson(json);
+  Map<String, dynamic> toJson() => _$AuthorToJson(this);
+
+  static Future<List<Author>> getAuthors(Database db, String uuid) async {
+    final List<Map<String, dynamic>> maps = await db.rawQuery('select authors.id, authors.name from book_authors, authors where book_authors.authorId = authors.id and book_authors.bookId = ?;', [uuid]);
+    return List.generate(maps.length, (i) {
+      return fromMap(maps[i]);
+    });
+  }
+
+  static Author fromMap(Map<String, dynamic> author) {
+    Author result =  Author(
+      id: author['id'],
+      name: author['name'],
+    );
+
+    if (author.containsKey('count')) {
+      result.count = author['count'];
+    }
+
+    return result;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+    };
+  }
+}

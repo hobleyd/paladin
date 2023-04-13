@@ -1,0 +1,61 @@
+name: paladin
+description: eLibrary management for Tablets and eInk devices.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.19.4 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  auto_size_text: ^3.0.0
+  dartlin: ^0.6.3
+  dio: ^5.0.3
+  flutter_widget_from_html_core: ^0.10.0
+  json_annotation: ^4.8.0
+  intl: ^0.18.0
+  mockito: ^5.3.2
+  path_provider: ^2.0.11
+  provider: ^6.0.5
+  flutter_rating_bar: ^4.0.1
+  retrofit: ^4.0.1
+  sqflite_common_ffi: ^2.2.2
+  synchronized: ^3.0.1
+  url_launcher: ^6.1.10
+  epubx:
+    path: ../epubx
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  build_runner: ^2.3.3
+  flutter_launcher_icons: ^0.12.0
+  flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
+  json_serializable: ^6.6.0
+  retrofit_generator: ^6.0.0+1
+
+# The following section is specific to Flutter packages.
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/generic_book_cover.png
+    - assets/launcher.png
+    - assets/sharpblue.png
+
+flutter_icons:
+  image_path: 'assets/launcher.png'
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  macos:
+    generate: true
+  web:
+    generate: true
+  windows:
+    generate: true
