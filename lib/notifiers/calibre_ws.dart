@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:http_status_code/http_status_code.dart';
 import 'package:provider/provider.dart';
 
 import '../models/book.dart';
@@ -14,6 +15,7 @@ class CalibreWS extends ChangeNotifier {
   int last_modified = 1672577852;
   List<JSONBook> returnedBooks = [];
   double progress = 0.0;
+  String httpStatus = "";
 
   CalibreWS() {
     final dio = Dio();
@@ -28,15 +30,23 @@ class CalibreWS extends ChangeNotifier {
   Future getBooks(BuildContext context) async {
     final LibraryDB library = Provider.of<LibraryDB>(context, listen: false);
 
-    returnedBooks = await _calibre.getBooks(last_modified);
+    try {
+      returnedBooks = await _calibre.getBooks(last_modified);
+      httpStatus = "";
 
-    int index = 1;
-    int total = returnedBooks.length;
-    for (var element in returnedBooks) {
-      Book book = await Book.fromJSON(element);
-      await _downloadBook(book);
-      await library.insertBook(book);
-      progress = index++ / total;
+      int index = 1;
+      int total = returnedBooks.length;
+      for (var element in returnedBooks) {
+        Book book = await Book.fromJSON(element);
+        await _downloadBook(book);
+        await library.insertBook(book);
+        progress = index++ / total;
+      }
+    } catch (e) {
+      if (e is DioError) {
+        httpStatus = getStatusMessage(e.response!.statusCode!);
+      }
+    } finally {
       notifyListeners();
     }
   }

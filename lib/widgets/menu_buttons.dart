@@ -21,7 +21,6 @@ class _MenuButtons extends State<MenuButtons> {
       _library = model;
 
       return Ink(
-          color: Colors.white,
           child: IntrinsicHeight(
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
             _getButton(

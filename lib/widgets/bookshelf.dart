@@ -56,13 +56,11 @@ class _BookShelf extends State<BookShelf> {
         ? Image.file(book.cachedCover!, fit: BoxFit.cover)
         : Image.asset('assets/generic_book_cover.png', fit: BoxFit.cover);
 
-    // TODO: Fix the const width in the SizedBox
     return InkWell(
         onTap: () => _openBook(context, book),
         child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
-            color: Colors.yellow,
             child: Column(children: [
               Expanded(child: cover),
               const SizedBox(height: 3),

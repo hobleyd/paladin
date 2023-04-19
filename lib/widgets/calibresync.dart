@@ -21,18 +21,30 @@ class _CalibreSync extends State<CalibreSync> {
       return Scaffold(
           appBar: AppBar(title: const Text('Calibre Sync')),
           body: Column(children: [
-            ListView.builder(
-              itemCount: _calibre.returnedBooks.length,
-              itemBuilder: (context, index) {
-                return ListTile(subtitle: Text(_calibre.returnedBooks[index].Author), title: Text(_calibre.returnedBooks[index].Title));
-              },
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-            ),
+            _calibre.httpStatus.isEmpty
+                ? _getBookList()
+                : Padding(
+                    padding: const EdgeInsets.only(top: 50, bottom: 50),
+                    child: Text('Error syncing: ${_calibre.httpStatus}', style: const TextStyle(fontWeight: FontWeight.bold))),
             _getProgressBar(),
             _getSyncButton(),
           ]));
     });
+  }
+
+  Widget _getBookList() {
+    return _calibre.returnedBooks.length > 0
+        ? ListView.builder(
+            itemCount: _calibre.returnedBooks.length,
+            itemBuilder: (context, index) {
+              return ListTile(subtitle: Text(_calibre.returnedBooks[index].Author), title: Text(_calibre.returnedBooks[index].Title));
+            },
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+          )
+        : const Padding(
+            padding: EdgeInsets.only(top: 50, bottom: 50),
+            child: Text('Click the Sync button to download your books!', style: TextStyle(fontWeight: FontWeight.bold)));
   }
 
   Widget _getProgressBar() {
@@ -46,15 +58,16 @@ class _CalibreSync extends State<CalibreSync> {
     }
     return const Divider(thickness: 1, height: 3, color: Colors.black);
   }
+
   Widget _getSyncButton() {
-    return Center(child: Row(children: [
-      Flexible(child: ElevatedButton(
+    return IntrinsicWidth(child: Row(children: [
+      ElevatedButton(
         onPressed: () => _syncWithCalibre(context),
         style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
         child: const Text('Sync', textAlign: TextAlign.center),
-      )),
+      ),
       const SizedBox(),
-      Flexible(child: CheckboxListTile(
+      Flexible(fit: FlexFit.loose, child: CheckboxListTile(
               controlAffinity: ListTileControlAffinity.leading,
               title: const Text('From Epoch?'),
               onChanged: (bool? value) {

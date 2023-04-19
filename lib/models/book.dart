@@ -4,6 +4,7 @@ import 'package:epubx/epubx.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as images;
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite_common/sqlite_api.dart';
@@ -96,7 +97,11 @@ class Book extends Collection {
   Future readBook(BuildContext context) async {
     final LibraryDB library = Provider.of<LibraryDB>(context, listen: false);
     library.updateBook(this);
-    launchUrl(Uri.file(path!));
+    if (Platform.isAndroid || Platform.isIOS) {
+      OpenFilex.open(path!, type: mimeType);
+    } else {
+      launchUrl(Uri.file(path!));
+    }
   }
 
   Future setRating(BuildContext context, int newRating) async {
