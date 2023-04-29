@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intersperse/intersperse.dart';
+import 'package:paladin/widgets/settings.dart';
 import 'package:provider/provider.dart';
 
+import '../models/author.dart';
 import '../models/collection.dart';
+import '../models/series.dart';
+import '../models/tag.dart';
 import '../notifiers/library_db.dart';
 import 'booklist.dart';
 import 'collectionlist.dart';
@@ -22,60 +27,41 @@ class _MenuButtons extends State<MenuButtons> {
 
       return Ink(
           child: IntrinsicHeight(
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-            _getButton(
-              context,
-              'Books\n(${_library.tableCount['books']})',
-              Collection(type: CollectionType.BOOK, query: 'select * from books order by added desc;'),
-            ),
-            const VerticalDivider(color: Colors.black, thickness: 1),
-            _getButton(
-                context,
-                'Authors\n(${_library.tableCount['authors']})',
-                Collection(
-                    type: CollectionType.AUTHOR,
-                    query:
-                        'select authors.id, authors.name, count(book_authors.bookId) as count from authors left join book_authors on authors.id = book_authors.authorId group by authors.id order by authors.name')),
-            const VerticalDivider(color: Colors.black, thickness: 1),
-            _getButton(
-                context,
-                'Series\n(${_library.tableCount['series']})',
-                Collection(
-                    type: CollectionType.SERIES,
-                    query:
-                        'select series.id, series.series, count(books.uuid) as count from series left join books on books.series = series.id group by series.id order by series.series;')),
-            const VerticalDivider(color: Colors.black, thickness: 1),
-            _getButton(
-                context,
-                'Tags\n(${_library.tableCount['tags']})',
-                Collection(
-                    type: CollectionType.TAG,
-                    query:
-                        'select tags.id, tags.tag, count(book_tags.tagId) as count from tags left join book_tags on tags.id = book_tags.tagId group by tags.id order by tags.tag')),
-            const VerticalDivider(color: Colors.black, thickness: 1),
-            _getButton(context, 'Settings\n(${_library.tableCount['settings']})', Collection(type: CollectionType.SETTINGS)),
-          ])));
+              child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: _getButtons())));
     });
   }
 
-  Widget _getButton(BuildContext context, String label, Collection collection) {
-    return Expanded(
-        child: TextButton(
+  Widget _getButton(String label, Collection collection) {
+    return Expanded(child: TextButton(
       onPressed: () => _navigateToCollection(context, collection),
       style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.white), foregroundColor: MaterialStatePropertyAll(Colors.black)),
-      child: Text(
-        label,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
+      child: Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),),
     ));
   }
 
-  Future _navigateToCollection(BuildContext context, Collection collection) async {
-    collection.type == CollectionType.BOOK
-        ? Navigator.push(context, MaterialPageRoute(builder: (context) => BookList(collection: collection)))
-        : Navigator.push(context, MaterialPageRoute(builder: (context) => CollectionList(collection: collection)));
+  List<Widget> _getButtons() {
+    return intersperse(const VerticalDivider(color: Colors.black, thickness: 1), [
+      _getButton('Books\n(${_library.tableCount['books']})', Collection(type: CollectionType.BOOK, query: 'select * from books order by added desc;'),),
+      _getButton('Authors\n(${_library.tableCount['authors']})', Collection(type: CollectionType.AUTHOR, query: Author.authorsQuery, queryArgs: ['%'])),
+      _getButton('Series\n(${_library.tableCount['series']})', Collection(type: CollectionType.SERIES, query: Series.seriesQuery, queryArgs: ['%'])),
+      _getButton('Tags\n(${_library.tableCount['tags']})', Collection(type: CollectionType.TAG, query: Tag.tagsQuery, queryArgs: ['%'])),
+      _getButton('Settings\n(${_library.tableCount['settings']})', Collection(type: CollectionType.SETTINGS)),
+    ]).toList();
+  }
 
-    return null;
+  Future _navigateToCollection(BuildContext context, Collection collection) async {
+    switch (collection.type) {
+      case CollectionType.BOOK:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => BookList(collection: collection)))
+            .then((value) => _library.updateFields(null));
+        return;
+      case CollectionType.SETTINGS:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const Settings())).then((value) => _library.updateFields(null));
+        return;
+      default:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => CollectionList(collection: collection)))
+            .then((value) => _library.updateFields(null));
+        return;
+    }
   }
 }

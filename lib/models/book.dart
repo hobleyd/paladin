@@ -50,12 +50,12 @@ class Book extends Collection {
     this.tags,
     required this.title}) : super(type: CollectionType.BOOK);
 
-  Future getCover() async {
+  Future cacheCover() async {
     if (path != null) {
       File book = File(path!);
 
-      if (book.existsSync()) {
-        cachedCover = await getCoverPath(this);
+      if (book.existsSync() && book.statSync().size > 0) {
+        await getCoverPath();
 
         if (!cachedCover!.existsSync()) {
           EpubBookRef bookRef = await EpubReader.openBook(book.readAsBytes());
@@ -70,18 +70,18 @@ class Book extends Collection {
         }
       }
     }
-
-    return;
   }
 
-  static Future<File> getCoverPath(Book book) async {
-    String coverPath = '';
-    if (!kIsWeb) {
-      Directory documentsDirectory = await getApplicationDocumentsDirectory();
-      coverPath = documentsDirectory.path;
-    }
+  Future<void> getCoverPath() async {
+    if (cachedCover == null) {
+      String coverPath = '';
+      if (!kIsWeb) {
+        Directory documentsDirectory = await getApplicationDocumentsDirectory();
+        coverPath = documentsDirectory.path;
+      }
 
-    return File('$coverPath/covers/${book.authors![0].name[0]}/${book.uuid}.jpg');
+      cachedCover = File('$coverPath/covers/${authors![0].name[0]}/$uuid.jpg');
+    }
   }
 
   Future<String> getBookPath() async {
@@ -127,7 +127,6 @@ class Book extends Collection {
     );
 
     await book.getBookPath();
-    await book.getCover();
     return book;
   }
 
@@ -138,6 +137,7 @@ class Book extends Collection {
       description: bookMap['description'],
       path: bookMap['path'],
       mimeType: bookMap['mimeType'],
+      lastModified: bookMap['lastModified'],
       lastRead: bookMap['lastRead'],
       rating: bookMap['rating'],
       readStatus: bookMap['readStatus'],
@@ -150,8 +150,8 @@ class Book extends Collection {
     }
     book.tags = await Tag.getTags(db, book.uuid);
     book.authors = await Author.getAuthors(db, book.uuid);
+    await book.getCoverPath();
 
-    book.cachedCover = await getCoverPath(book);
     return book;
   }
 
@@ -162,6 +162,7 @@ class Book extends Collection {
       'description': description,
       'path': path,
       'mimeType': mimeType,
+      'lastModified': lastModified,
       'lastRead': lastRead,
       'rating': rating,
       'readStatus': readStatus,

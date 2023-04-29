@@ -19,6 +19,7 @@ class CollectionList extends StatefulWidget {
 
 class _CollectionList extends State<CollectionList> {
   late LibraryDB _library;
+  final TextEditingController searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +30,25 @@ class _CollectionList extends State<CollectionList> {
       _library.getCollection(widget.collection);
 
       return Scaffold(
-          appBar: AppBar(title: Text(widget.collection.getType())),
+          appBar: AppBar(
+              title: Text(widget.collection.getType(), style: Theme.of(context).textTheme.titleLarge),
+              actions: <Widget>[
+                SizedBox(
+                  width: 180,
+                  child: TextField(
+                    controller: searchController,
+                    decoration: const InputDecoration(
+                      hintText: 'search...',
+                      hintStyle: TextStyle(
+                        color: Colors.white,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(icon: const Icon(Icons.search), onPressed: _search),
+                IconButton(icon: const Icon(Icons.menu), onPressed: null),
+              ]),
           body: Padding(
               padding: const EdgeInsets.only(left: 10, top: 6, right: 10, bottom: 6),
               child: Scrollbar(
@@ -131,5 +150,12 @@ class _CollectionList extends State<CollectionList> {
     }
 
     return null;
+  }
+
+  void _search() {
+    String searchTerm = '%${searchController.text.replaceAll(' ', '%')}%';
+    widget.collection.queryArgs = [searchTerm];
+    widget.collection.key = searchTerm;
+    _library.getCollection(widget.collection);
   }
 }

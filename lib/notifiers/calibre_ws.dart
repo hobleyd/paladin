@@ -12,12 +12,19 @@ import 'library_db.dart';
 
 class CalibreWS extends ChangeNotifier {
   late Calibre _calibre;
-  int last_modified = 1672577852;
-  List<JSONBook> returnedBooks = [];
+  late LibraryDB _library;
+  bool syncFromEpoch = false;
+  int syncDate = 0;
+  List<JSONBook> processedBooks = [];
+  List<JSONBook> errors = [];
+  bool processing = false;
   double progress = 0.0;
   String httpStatus = "";
 
-  CalibreWS() {
+  CalibreWS(BuildContext context) {
+    _library = Provider.of<LibraryDB>(context, listen: false);
+    _getLastSyncDate();
+
     final dio = Dio();
     dio.options = BaseOptions(
       baseUrl: "https://calibrews.sharpblue.com.au/",
@@ -28,43 +35,83 @@ class CalibreWS extends ChangeNotifier {
   }
 
   Future getBooks(BuildContext context) async {
-    final LibraryDB library = Provider.of<LibraryDB>(context, listen: false);
+    processing = true;
+    const int size = 100;
+    int count = await _calibre.getCount(syncDate);
 
-    try {
-      returnedBooks = await _calibre.getBooks(last_modified);
-      httpStatus = "";
+    int offset = 0;
+    while (offset < count) {
+      await getBooksWithOffset(_library, offset, size, count);
+      offset += size;
+    }
 
-      int index = 1;
-      int total = returnedBooks.length;
-      for (var element in returnedBooks) {
+    debugPrint('${errors.length} errors: $errors');
+    _library.setLastConnected();
+    processing = false;
+  }
+
+  Future getBooksWithOffset(LibraryDB library, int offset, int size, int total) async {
+    List<JSONBook> books = await _calibre.getBooks(syncDate, offset, size);
+    httpStatus = "";
+
+    int index = offset;
+    for (var element in books) {
+      processedBooks.insert(0, element);
+      try {
         Book book = await Book.fromJSON(element);
-        await _downloadBook(book);
-        await library.insertBook(book);
-        progress = index++ / total;
+
+        // Only download the Book if something has changed since last time!
+        if (book.lastModified == null || book.lastModified! > await library.getLastModified(book)) {
+          await _downloadBook(book);
+          await library.insertBook(book);
+        }
+      } catch (e) {
+        errors.add(element);
+        debugPrint('Got exception: $e');
+        if (e is DioError) {
+          if (e.response != null) {
+            if (e.response!.statusCode != null) {
+              httpStatus = getStatusMessage(e.response!.statusCode!);
+            } else {
+              httpStatus = '$e';
+            }
+          }
+        }
       }
-    } catch (e) {
-      if (e is DioError) {
-        httpStatus = getStatusMessage(e.response!.statusCode!);
-      }
-    } finally {
+
+      progress = index++ / total;
       notifyListeners();
     }
+  }
+
+  Future setSyncFromEpoch(bool? syncFrom) async {
+    if (syncFrom != null) {
+      syncFromEpoch = syncFrom;
+      _getLastSyncDate();
+    }
+
+    return;
   }
 
   Future<void> _downloadBook(Book book) async {
     final file = File(book.path!);
     if (!file.existsSync()) {
       file.createSync(recursive: true);
-
-      final response = _calibre.getBook(book.uuid, 4096);
-      final sink = file.openWrite();
-      await for (final chunk in response) {
-        sink.add(chunk);
-      }
-      await sink.flush();
-      await sink.close();
     }
 
-    await book.getCover();
+    final response = _calibre.getBook(book.uuid, 4096);
+    final sink = file.openWrite();
+    await for (final chunk in response) {
+      sink.add(chunk);
+    }
+    await sink.flush();
+    await sink.close();
+    await book.cacheCover();
+  }
+
+  Future<void> _getLastSyncDate() async {
+    syncDate = syncFromEpoch ? 0 : await _library.getLastConnected();
+
+    notifyListeners();
   }
 }

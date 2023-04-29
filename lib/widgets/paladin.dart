@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intersperse/intersperse.dart';
 import 'package:paladin/models/collection.dart';
 import 'package:provider/provider.dart';
 
 import '../models/book.dart';
-import '../models/series.dart';
+import '../models/shelf.dart';
 import '../notifiers/calibre_ws.dart';
 
 import '../notifiers/library_db.dart';
@@ -48,29 +49,32 @@ class Paladin extends StatelessWidget {
                 const SizedBox(height: 3),
                 const Divider(thickness: 1, height: 3, color: Colors.black),
                 const MenuButtons(),
+                const Divider(thickness: 1, height: 3, color: Colors.black),
                 ..._getShelves(),
               ])));
     });
   }
 
   List<Widget> _getShelves() {
-    return [
-      const Divider(thickness: 1, height: 3, color: Colors.black),
-      Expanded(child: BookShelf(items: Collection(type: CollectionType.CURRENT))),
-      const Divider(thickness: 1, height: 3, color: Colors.black),
-      Expanded(child: BookShelf(items: Collection(type: CollectionType.BOOK, query: 'select * from books where series = (select id from series where series = ?);', queryArgs: ['Jackpot'], key: 'Jackpot'))),
-      const Divider(thickness: 1, height: 3, color: Colors.black),
-      Expanded(child: BookShelf(items: Collection(type: CollectionType.BOOK, query: 'select * from books where uuid in (select bookId from book_tags where tagId = ?)', queryArgs: [3], key: 'Magic'))),
-      const Divider(thickness: 1, height: 3, color: Colors.black),
-      Expanded(child: BookShelf(items: Collection(type: CollectionType.RANDOM))),
-    ];
+    if (_library.shelves.isEmpty) {
+      return [Expanded(child: BookShelf(items: Collection(type: CollectionType.CURRENT)))];
+    }
+    
+    return intersperse(
+        const Divider(thickness: 1, height: 3, color: Colors.black),
+        _library.shelves.map((e) => Expanded(child: BookShelf(
+            items: Collection(
+                type: e.type == CollectionType.CURRENT ? CollectionType.CURRENT : e.type == CollectionType.RANDOM ? CollectionType.RANDOM : CollectionType.BOOK,
+                key: e.name,
+                query: Shelf.shelfQuery[e.type],
+                queryArgs: [e.name]))))).toList();
   }
 
   void _showSyncDialog(BuildContext context) {
     Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ChangeNotifierProvider(
-            create: (context) => CalibreWS(),
+            create: (context) => CalibreWS(context),
             builder: (context, child) => const CalibreSync()))).then((value) => _library.updateFields(null));
   }
 }

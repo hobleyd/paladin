@@ -3,6 +3,8 @@ import 'package:sqflite_common/sqlite_api.dart';
 import 'collection.dart';
 
 class Series extends Collection {
+  static const String seriesQuery = 'select series.id, series.series, count(books.uuid) as count from series left join books on books.series = series.id where series.series like ? group by series.id order by series.series;';
+
   int? id;
   String series;
 
@@ -13,7 +15,7 @@ class Series extends Collection {
 
   @override
   String getType() {
-    return series;
+    return queryArgs?[0] ?? series;
   }
 
   static Future<Series> getSeries(Database db, int seriesId) async {

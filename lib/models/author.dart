@@ -7,6 +7,8 @@ part 'author.g.dart';
 
 @JsonSerializable()
 class Author extends Collection {
+  static const String authorsQuery = 'select authors.id, authors.name, count(book_authors.bookId) as count from authors left join book_authors on authors.id = book_authors.authorId group by authors.id order by authors.name';
+
   int? id;
   String name;
 

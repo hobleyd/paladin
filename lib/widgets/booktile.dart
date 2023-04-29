@@ -37,7 +37,7 @@ class _BookTile extends State<BookTile> {
   }
 
   Widget _getBookCover() {
-    if (widget.book.cachedCover != null) {
+    if (widget.book.cachedCover != null && widget.book.cachedCover!.existsSync()) {
       return Image.file(widget.book.cachedCover!);
     }
     return Image.asset('assets/generic_book_cover.png');

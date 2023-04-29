@@ -10,6 +10,7 @@ import '../models/author.dart';
 import '../models/book.dart';
 import '../models/collection.dart';
 import '../models/series.dart';
+import '../models/shelf.dart';
 import '../models/tag.dart';
 
 class LibraryDB extends ChangeNotifier {
@@ -21,8 +22,8 @@ class LibraryDB extends ChangeNotifier {
   }
 
   late Database _paladin;
-  Map<String, int> tableCount = {'books' : 0, 'authors' : 0, 'tags' : 0, 'apps' : 0, 'settings' : 0};
-  List<Tag> tags = [];
+  Map<String, int> tableCount = {'books': 0, 'authors': 0, 'tags': 0, 'apps': 0, 'settings': 0};
+  List<Shelf> shelves = [];
   Map<String, List<Collection>> collection = {};
 
   static const String _authors = '''
@@ -38,6 +39,7 @@ class LibraryDB extends ChangeNotifier {
           path text not null,
           mimeType text not null,
           added integer not null,
+          lastModified integer,
           lastRead integer,
           rating integer,
           readStatus integer,
@@ -63,32 +65,33 @@ class LibraryDB extends ChangeNotifier {
           ''';
   static const String _calibreserver = '''
         create table calibre_library (
-					uuid text primary key,
-					location text,
-					calibre_version text,
-					prefix text
-					last_library_uuid text,
-					last_connected date);
+					last_connected int);
 					''';
   static const String _series = '''
         create table if not exists series(
           id integer primary key,
           series text not null);
         ''';
-  static const String _tags   = '''
+  static const String _shelves = '''
+        create table if not exists shelves(
+          name text not null,
+          type int not null,
+          size int not null);
+          ''';
+  static const String _tags = '''
         create table tags(
           id integer primary key,
           tag text not null,
           unique(tag) on conflict ignore);
           ''';
-  static const String _indexAuthors     = 'create index authors_idx on authors(name);';
+  static const String _indexAuthors = 'create index authors_idx on authors(name);';
   static const String _indexBookauthors = 'create index book_authors_idx on book_authors(bookId, authorId);';
-  static const String _indexTagname     = 'create index tagname_idx on tags(tag);';
-  static const String _indexBooktags    = 'create index book_tags_idx on book_tags(bookId, tagId);';
-  static const String _indexuuid        = 'create index bookuuid_idx on books(uuid);';
-  static const String _indexSeriesname  = 'create index seriesname_idx on series(series);';
-  static const String _indexLastread    = 'create index lastread_idx on books(lastRead);';
-  static const String _indexAddeddate   = 'create index added_idx on books(added);';
+  static const String _indexTagname = 'create index tagname_idx on tags(tag);';
+  static const String _indexBooktags = 'create index book_tags_idx on book_tags(bookId, tagId);';
+  static const String _indexuuid = 'create index bookuuid_idx on books(uuid);';
+  static const String _indexSeriesname = 'create index seriesname_idx on series(series);';
+  static const String _indexLastread = 'create index lastread_idx on books(lastRead);';
+  static const String _indexAddeddate = 'create index added_idx on books(added);';
 
   LibraryDB._internal() {
     _openDatabase();
@@ -113,6 +116,12 @@ class LibraryDB extends ChangeNotifier {
       await db.execute(_indexSeriesname);
       await db.execute(_indexLastread);
       await db.execute(_indexAddeddate);
+    }
+
+    if (oldVersion < 2) {
+      await db.execute(_shelves);
+      await _insertInitialShelves(db, 'Currently Reading', CollectionType.CURRENT.index, 15);
+      await _insertInitialShelves(db, 'Random Shelf',  CollectionType.RANDOM.index, 30);
     }
 
     return -1;
@@ -141,9 +150,18 @@ class LibraryDB extends ChangeNotifier {
     return database;
   }
 
+  Future _getShelves(Database db) async {
+    final List<Map<String, dynamic>> maps = await db.query('shelves', columns: ['rowid', 'name', 'type', 'size'], orderBy: 'rowid asc');
+    shelves = maps.map((shelf) => Shelf.fromMap(shelf)).toList();
+  }
+
   Future _getTableCount(Database db, String table) async {
     List<Map<String, Object?>> results = await db.rawQuery('select count(*) from $table');
     tableCount[table] = results[0].values.first as int;
+  }
+
+  Future _insertInitialShelves(Database db, String name, int type, int size) async {
+    return db.rawInsert('insert into shelves(name, type, size) values(?, ?, 0)', [name, type, size]);
   }
 
   void _openDatabase() async {
@@ -151,7 +169,7 @@ class LibraryDB extends ChangeNotifier {
 
     _paladin = await databaseFactoryFfi.openDatabase(await _getDatabasePath(),
         options: OpenDatabaseOptions(
-            version: 1,
+            version: 2,
             onConfigure: (db) {
               _paladin = db;
               _enableForeignKeys(db);
@@ -190,6 +208,10 @@ class LibraryDB extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future addShelf() async {
+    await updateShelf(Shelf(name: "", type: CollectionType.SERIES, size: 30));
+  }
+
   Future<List<Author>> getAuthors() async {
     final List<Map<String, dynamic>> maps = await _paladin.query('authors');
     return List.generate(maps.length, (i) {
@@ -202,7 +224,7 @@ class LibraryDB extends ChangeNotifier {
     if (collection.isEmpty) {
       return;
     }
-    debugPrint('getCollection: ${coll.getType()}, ${coll.query}');
+    debugPrint('getCollection: ${coll.getType()}, ${coll.type}, ${coll.query}, ${coll.queryArgs}');
 
     if (!collection.containsKey(coll.getType())) {
       if (coll.type == CollectionType.AUTHOR) {
@@ -220,13 +242,10 @@ class LibraryDB extends ChangeNotifier {
         } else {
           _paladin.query('books', where: 'uuid = ?', whereArgs: [coll.getType()]).then((maps) => _processResults(coll, maps));
         }
-
       } else if (coll.type == CollectionType.CURRENT) {
         _paladin.query('books', where: 'lastRead > 0', orderBy: 'lastRead DESC', limit: 30).then((maps) => _processResults(coll, maps));
-
       } else if (coll.type == CollectionType.RANDOM) {
         _paladin.query('books', orderBy: 'RANDOM()', limit: 30).then((maps) => _processResults(coll, maps));
-
       } else if (coll.type == CollectionType.SERIES) {
         if (coll.query != null) {
           _paladin.rawQuery(coll.query!, coll.queryArgs).then((maps) => _processResults(coll, maps));
@@ -246,6 +265,20 @@ class LibraryDB extends ChangeNotifier {
         }
       }
     }
+  }
+
+  Future<int> getLastConnected() async {
+    final List<Map<String, dynamic>> maps = await _paladin.query('calibre_library', limit: 1);
+    return maps.isNotEmpty ? maps.first['last_connected'] as int : 0;
+  }
+
+  Future<int> getLastModified(Book book) async {
+    final List<Map<String, dynamic>> maps = await _paladin.query('books', columns: [ 'lastModified'], where: 'uuid = ?', whereArgs: [book.uuid]);
+    return maps.isNotEmpty ? maps.first['lastModified'] as int : 0;
+  }
+
+  Future<List<Map<String, dynamic>>> getShelfName(String table, String column, String query, int size) async {
+    return _paladin.query(table, columns: [column], where:  '$column like ?', whereArgs: ['%${query.replaceAll(' ', '%')}%'], limit: size);
   }
 
   Future<void> insertBook(Book book) async {
@@ -268,7 +301,7 @@ class LibraryDB extends ChangeNotifier {
     _paladin.insert('books', book.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
 
     // Insert all the Authors, updating the id for the next foreign key
-    for (var author in book.authors!)  {
+    for (var author in book.authors!) {
       List<Map> result = await _paladin.query('authors', columns: ['id'], where: 'name = ?', whereArgs: [author.name]);
       if (result.isNotEmpty) {
         author.id = result.first['id'] as int;
@@ -278,11 +311,11 @@ class LibraryDB extends ChangeNotifier {
       }
     }
 
-    // Insert the many-many relationship into bookauthors.
+    // Insert the many-many relationship into book_authors.
     for (var author in book.authors!) {
       List<Map> result = await _paladin.query('book_authors', columns: ['authorId'], where: 'authorId = ? and bookId = ?', whereArgs: [author.id, book.uuid]);
       if (result.isEmpty) {
-        _paladin.insert('book_authors', { 'authorId' : author.id, 'bookId' : book.uuid });
+        _paladin.insert('book_authors', { 'authorId': author.id, 'bookId': book.uuid});
       }
     }
 
@@ -298,7 +331,7 @@ class LibraryDB extends ChangeNotifier {
         }
       }
 
-      // Insert the many-many relationship into bookauthors.
+      // Insert the many-many relationship into book_tags.
       for (var tag in book.tags!) {
         List<Map> result = await _paladin.query('book_tags', columns: ['tagId'], where: 'tagId = ? and bookId = ?', whereArgs: [tag.id, book.uuid]);
         if (result.isEmpty) {
@@ -308,11 +341,20 @@ class LibraryDB extends ChangeNotifier {
     }
   }
 
+  Future<int> setLastConnected() async {
+    int lastConnected = (DateTime.now().millisecondsSinceEpoch / 1000).round();
+    await _paladin.insert('calibre_library', { 'rowid': 0, 'last_connected': lastConnected}, conflictAlgorithm: ConflictAlgorithm.replace);
+
+    return lastConnected;
+  }
+
   Future updateBook(Book book) async {
     book.lastRead = (DateTime.now().millisecondsSinceEpoch / 1000).round();
     book.lastModified = book.lastRead;
     await _paladin.update('books', { 'lastRead' : book.lastRead, 'rating' : book.rating }, where: 'uuid = ?', whereArgs: [ book.uuid]);
-    _getCurrentlyReading(_paladin, Collection(type: CollectionType.CURRENT));
+    await _getCurrentlyReading(_paladin, Collection(type: CollectionType.CURRENT));
+
+    notifyListeners();
   }
 
   Future updateFields(Database? db) async {
@@ -322,8 +364,15 @@ class LibraryDB extends ChangeNotifier {
     await _getTableCount(db, 'authors');
     await _getTableCount(db, 'series');
     await _getTableCount(db, 'tags');
+    await _getShelves(db);
     await _getCurrentlyReading(db, Collection(type: CollectionType.CURRENT));
 
+    notifyListeners();
+  }
+
+  Future updateShelf(Shelf shelf) async {
+    await _paladin.insert('shelves', shelf.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    await _getShelves(_paladin);
     notifyListeners();
   }
 }

@@ -7,6 +7,15 @@ class Collection {
   List<dynamic>? queryArgs;
   String? key;
 
+  static Map<CollectionType, String> collectionTypes = {
+    CollectionType.CURRENT : 'Currently Reading',
+    CollectionType.RANDOM  : 'Random Shelf',
+    CollectionType.AUTHOR  : 'Authors',
+    CollectionType.SERIES  : 'Series',
+    CollectionType.BOOK    : 'Books',
+    CollectionType.TAG     : 'Tags'
+  };
+
   Collection({required this.type, this.query, this.queryArgs, this.key});
 
   Collection? getBookCollection() {
@@ -14,20 +23,7 @@ class Collection {
   }
 
   String getType() {
-    switch (type) {
-      case CollectionType.AUTHOR:
-        return key ?? 'Authors';
-      case CollectionType.CURRENT:
-        return 'Currently Reading';
-      case CollectionType.RANDOM:
-        return 'Random Shelf';
-      case CollectionType.SERIES:
-        return key ?? 'Series';
-      case CollectionType.TAG:
-        return key ?? 'Tags';
-      default:
-        return key ?? 'Books';
-    }
+    return key ?? collectionTypes[type]!;
   }
 
   @override

@@ -14,10 +14,13 @@ abstract class Calibre {
   @DioResponseType(ResponseType.bytes)
   Stream<List<int>> getBook(@Path("uuid") String uuid, @Query('chunk_size') int chunkSize);
 
-  @GET("/calibre/books/{last_modified}") // specify the sub url for our base url
-  Future<List<JSONBook>> getBooks(@Path("last_modified") int last_modified);
+  @GET("/calibre/books/{last_modified}")
+  Future<List<JSONBook>> getBooks(@Path("last_modified") int last_modified, @Query('page') int page, @Query('size') int size);
 
-  @GET("/calibre/tags/{uuid}") // specify the sub url for our base url
+  @GET("/calibre/count")
+  Future<int> getCount(@Query('last_modified') int last_modified);
+
+  @GET("/calibre/tags/{uuid}")
   Future<List<Tag>> getTags(@Path("uuid") String uuid);
 
   @PUT("/calibre/update")
