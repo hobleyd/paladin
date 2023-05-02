@@ -22,7 +22,7 @@ class _CalibreSync extends State<CalibreSync> {
       _calibre = model;
 
       return Scaffold(
-          appBar: AppBar(title: const Text('Calibre Sync')),
+          appBar: AppBar(title: const Text('Synchronise Library')),
           body: Column(children: [
             _calibre.httpStatus.isEmpty
                 ? Expanded(child: _getStatusList())
@@ -64,7 +64,7 @@ class _CalibreSync extends State<CalibreSync> {
 
   Widget _getStatus() {
     final DateTime lastSynced = DateTime.fromMillisecondsSinceEpoch(_calibre.syncDate * 1000);
-    final String formattedDate = DateFormat('MMMM d y H:m').format(lastSynced);
+    final String formattedDate = DateFormat('MMMM d, y: H:m').format(lastSynced);
     return Column(children: [
       Text('You last synchronised your library on $formattedDate', style: const TextStyle(fontWeight: FontWeight.bold)),
       const SizedBox(height: 10),

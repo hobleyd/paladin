@@ -281,6 +281,11 @@ class LibraryDB extends ChangeNotifier {
     return _paladin.query(table, columns: [column], where:  '$column like ?', whereArgs: ['%${query.replaceAll(' ', '%')}%'], limit: size);
   }
 
+  Future<Tag?> getTag(String tag) async {
+    final List<Map<String, dynamic>> maps = await _paladin.query('tags', where: 'tag = ?', whereArgs: [tag]);
+    return maps.isNotEmpty ? Tag.fromMap(maps.first) : null;
+  }
+
   Future<void> insertBook(Book book) async {
     // Ensure we update the Added date if we don't already have it.
     book.added ??= (DateTime.now().millisecondsSinceEpoch / 1000).round();

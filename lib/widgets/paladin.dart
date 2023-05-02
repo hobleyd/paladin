@@ -28,20 +28,12 @@ class Paladin extends StatelessWidget {
       }
 
       return Scaffold(
-          appBar: AppBar(
-              leading: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Image.asset('assets/sharpblue.png',),),
-              title: Text("Paladin", style: Theme.of(context).textTheme.titleLarge),
-              actions: <Widget>[
-                IconButton(icon: const Icon(Icons.sync), tooltip: 'Sync', onPressed: () => _showSyncDialog(context)),
-                IconButton(icon: const Icon(Icons.open_with), tooltip: 'Read Book', onPressed: () {}),
-              ]),
+          appBar: null,
           body: Padding(
               padding: const EdgeInsets.only(top: 6, bottom: 6),
               child: Column(crossAxisAlignment: book != null ? CrossAxisAlignment.start : CrossAxisAlignment.center, children: [
                 book != null
-                    ? Expanded(child: BookTile(book: book))
+                    ? Expanded(child: BookTile(book: book, showMenu: true,))
                     : const Expanded(
                         child: Center(
                             child: Text('Congratulations on your new eReader. Pick a book. Enjoy!',

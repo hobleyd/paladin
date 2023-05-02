@@ -27,13 +27,13 @@ class _BookList extends State<BookList> {
           appBar: AppBar(title: const Text('Books')),
           body:
             Padding(
-              padding: EdgeInsets.only(top: 6, bottom: 6, right: 10),
+              padding: const EdgeInsets.only(top: 6, bottom: 6, right: 10),
               child: ListView.builder(
                     itemCount: _library.collection[widget.collection.getType()]?.length ?? 0,
                     itemBuilder: (context, index) {
                       return _library.collection[widget.collection.getType()] != null
                           ? Column(children: [
-                              SizedBox(height: MediaQuery.of(context).size.height / 8, child: BookTile(book: _library.collection[widget.collection.getType()]![index] as Book)),
+                              SizedBox(height: MediaQuery.of(context).size.height / 8, child: BookTile(book: _library.collection[widget.collection.getType()]![index] as Book, showMenu: false,)),
                               const Divider(color: Colors.black, thickness: 1),
                           ])
                           : const Text(

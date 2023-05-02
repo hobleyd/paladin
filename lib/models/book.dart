@@ -55,7 +55,9 @@ class Book extends Collection {
       File book = File(path!);
 
       if (book.existsSync() && book.statSync().size > 0) {
-        await getCoverPath();
+        if (cachedCover == null) {
+          await getCoverPath();
+        }
 
         if (!cachedCover!.existsSync()) {
           EpubBookRef bookRef = await EpubReader.openBook(book.readAsBytes());
