@@ -33,7 +33,7 @@ class Paladin extends StatelessWidget {
           body: Padding(
               padding: const EdgeInsets.only(top: 6, bottom: 6),
               child: Column(crossAxisAlignment: book != null ? CrossAxisAlignment.start : CrossAxisAlignment.center, children: [
-                book != null && false
+                book != null
                     ? Expanded(child: BookTile(book: book, showMenu: true,))
                     : _getInitialInstructions(context),
                 const SizedBox(height: 3),
