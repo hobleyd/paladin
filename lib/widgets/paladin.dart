@@ -12,6 +12,7 @@ import 'bookshelf.dart';
 import 'booktile.dart';
 import 'calibresync.dart';
 import 'menu_buttons.dart';
+import 'paladinmenu.dart';
 
 class Paladin extends StatelessWidget {
   late LibraryDB _library;
@@ -32,12 +33,9 @@ class Paladin extends StatelessWidget {
           body: Padding(
               padding: const EdgeInsets.only(top: 6, bottom: 6),
               child: Column(crossAxisAlignment: book != null ? CrossAxisAlignment.start : CrossAxisAlignment.center, children: [
-                book != null
+                book != null && false
                     ? Expanded(child: BookTile(book: book, showMenu: true,))
-                    : const Expanded(
-                        child: Center(
-                            child: Text('Congratulations on your new eReader. Pick a book. Enjoy!',
-                                textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)))),
+                    : _getInitialInstructions(context),
                 const SizedBox(height: 3),
                 const Divider(thickness: 1, height: 3, color: Colors.black),
                 const MenuButtons(),
@@ -45,6 +43,29 @@ class Paladin extends StatelessWidget {
                 ..._getShelves(),
               ])));
     });
+  }
+
+  Widget _getInitialInstructions(BuildContext context) {
+    return Expanded(child: Stack(children: [
+      Center(child: Padding(
+          padding: const EdgeInsets.only(top: 5.0, bottom: 2.0),
+          child: _library.tableCount['books'] == 0
+              ? TextButton(
+                  onPressed: () => _showSyncDialog(context),
+                  style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.white), foregroundColor: MaterialStatePropertyAll(Colors.black)),
+                  child: const Text(
+                    'Synchronise Library',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                )
+              : const Text('Congratulations on your new eReader. Pick a book. Enjoy!', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)))),
+      Align(
+          alignment: Alignment.topRight,
+          child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+            PaladinMenu(),
+          ])),
+    ]));
   }
 
   List<Widget> _getShelves() {

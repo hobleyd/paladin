@@ -39,20 +39,22 @@ class PaladinMenu extends StatelessWidget {
           _navigateToTag();
           break;
         case 'sync':
-          Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ChangeNotifierProvider(
-                  create: (context) => CalibreWS(context),
-                  builder: (context, child) => const CalibreSync()))).then((value) => library.updateFields(null));
+          _navigateToSync();
           break;
       }
     }
   }
 
+  void _navigateToSync() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ChangeNotifierProvider(
+        create: (context) => CalibreWS(context),
+        builder: (context, child) => const CalibreSync()))).then((value) => library.updateFields(null));
+  }
+
   Future _navigateToTag() async {
     Tag? futureReads = await library.getTag('Future Reads');
     if (context.mounted) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => BookList(collection: futureReads!.getBookCollection()!)));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => BookList(collection: futureReads!.getBookCollection()!))).then((value) => library.updateFields(null));
     }
   }
 }

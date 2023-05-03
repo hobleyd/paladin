@@ -67,7 +67,7 @@ class CalibreWS extends ChangeNotifier {
         }
       } catch (e) {
         errors.add(element);
-        debugPrint('Got exception: $e');
+        debugPrint('Got exception processing "${element.Title}": $e');
         if (e is DioError) {
           if (e.response != null) {
             if (e.response!.statusCode != null) {

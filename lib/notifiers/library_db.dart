@@ -97,34 +97,34 @@ class LibraryDB extends ChangeNotifier {
     _openDatabase();
   }
 
-  Future<int> _createTables(Database db, int oldVersion, int newVersion) async {
+  void _createTables(Database db, int oldVersion, int newVersion) {
     _enableForeignKeys(db);
     if (oldVersion < 1) {
-      await db.execute(_authors);
-      await db.execute(_series);
-      await db.execute(_books);
-      await db.execute(_bookauthors);
-      await db.execute(_tags);
-      await db.execute(_booktags);
-      await db.execute(_calibreserver);
+      db.execute(_authors);
+      db.execute(_series);
+      db.execute(_books);
+      db.execute(_bookauthors);
+      db.execute(_tags);
+      db.execute(_booktags);
+      db.execute(_calibreserver);
 
-      await db.execute(_indexAuthors);
-      await db.execute(_indexBookauthors);
-      await db.execute(_indexTagname);
-      await db.execute(_indexBooktags);
-      await db.execute(_indexuuid);
-      await db.execute(_indexSeriesname);
-      await db.execute(_indexLastread);
-      await db.execute(_indexAddeddate);
+      db.execute(_indexAuthors);
+      db.execute(_indexBookauthors);
+      db.execute(_indexTagname);
+      db.execute(_indexBooktags);
+      db.execute(_indexuuid);
+      db.execute(_indexSeriesname);
+      db.execute(_indexLastread);
+      db.execute(_indexAddeddate);
     }
 
     if (oldVersion < 2) {
-      await db.execute(_shelves);
-      await _insertInitialShelves(db, 'Currently Reading', CollectionType.CURRENT.index, 15);
-      await _insertInitialShelves(db, 'Random Shelf',  CollectionType.RANDOM.index, 30);
+      db.execute(_shelves);
+      _insertInitialShelves(db, 'Currently Reading', CollectionType.CURRENT.index, 15);
+      _insertInitialShelves(db, 'Random Shelf',  CollectionType.RANDOM.index, 30);
     }
 
-    return -1;
+    return;
   }
 
   Future _enableForeignKeys(Database db) async {
@@ -161,7 +161,7 @@ class LibraryDB extends ChangeNotifier {
   }
 
   Future _insertInitialShelves(Database db, String name, int type, int size) async {
-    return db.rawInsert('insert into shelves(name, type, size) values(?, ?, 0)', [name, type, size]);
+    return db.rawInsert('insert into shelves(name, type, size) values(?, ?, ?)', [name, type, size]);
   }
 
   void _openDatabase() async {
@@ -177,8 +177,8 @@ class LibraryDB extends ChangeNotifier {
             onCreate: (db, version) {
               _createTables(db, 0, version);
             },
-            onOpen: (db) async {
-              await updateFields(db);
+            onOpen: (db) {
+              updateFields(db);
             },
             onUpgrade: (db, oldVersion, newVersion) {
               _createTables(db, oldVersion, newVersion);
@@ -364,7 +364,7 @@ class LibraryDB extends ChangeNotifier {
 
   Future updateFields(Database? db) async {
     db ??= _paladin;
-
+    debugPrint('updateFields');
     await _getTableCount(db, 'books');
     await _getTableCount(db, 'authors');
     await _getTableCount(db, 'series');
@@ -372,6 +372,7 @@ class LibraryDB extends ChangeNotifier {
     await _getShelves(db);
     await _getCurrentlyReading(db, Collection(type: CollectionType.CURRENT));
 
+    debugPrint('notifyingListeners');
     notifyListeners();
   }
 
