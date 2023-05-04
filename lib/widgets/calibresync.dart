@@ -80,7 +80,7 @@ class _CalibreSync extends State<CalibreSync> {
   }
 
   Widget _getSyncButton() {
-    if (_calibre.processedBooks.isEmpty || _calibre.errors.isNotEmpty) {
+    if (!_calibre.processing) {
       return IntrinsicWidth(child: Row(children: [
         ElevatedButton(
           onPressed: () => _syncWithCalibre(context),
