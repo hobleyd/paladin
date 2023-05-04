@@ -18,6 +18,7 @@ import 'series.dart';
 import 'tag.dart';
 
 class Book extends Collection {
+  static const String booksQuery = 'select * from books where title like ? order by added desc;';
   String uuid;
   int? added;
   List<Author>? authors; // Only nullable because getting authors from DB is a two step process.

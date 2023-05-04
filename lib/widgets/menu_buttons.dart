@@ -4,6 +4,7 @@ import 'package:paladin/widgets/settings.dart';
 import 'package:provider/provider.dart';
 
 import '../models/author.dart';
+import '../models/book.dart';
 import '../models/collection.dart';
 import '../models/series.dart';
 import '../models/tag.dart';
@@ -41,7 +42,7 @@ class _MenuButtons extends State<MenuButtons> {
 
   List<Widget> _getButtons() {
     return intersperse(const VerticalDivider(color: Colors.black, thickness: 1), [
-      _getButton('Books\n(${_library.tableCount['books']})', Collection(type: CollectionType.BOOK, query: 'select * from books order by added desc;'),),
+      _getButton('Books\n(${_library.tableCount['books']})', Collection(type: CollectionType.BOOK, query: Book.booksQuery, queryArgs: ['%']),),
       _getButton('Authors\n(${_library.tableCount['authors']})', Collection(type: CollectionType.AUTHOR, query: Author.authorsQuery, queryArgs: ['%'])),
       _getButton('Series\n(${_library.tableCount['series']})', Collection(type: CollectionType.SERIES, query: Series.seriesQuery, queryArgs: ['%'])),
       _getButton('Tags\n(${_library.tableCount['tags']})', Collection(type: CollectionType.TAG, query: Tag.tagsQuery, queryArgs: ['%'])),
