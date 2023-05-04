@@ -71,7 +71,7 @@ class _BookTile extends State<BookTile> {
   Widget _getLastRead() {
     if (widget.book.lastRead != null) {
       final DateTime lastRead = DateTime.fromMillisecondsSinceEpoch(widget.book.lastRead! * 1000);
-      final String formattedDate = DateFormat('MMMM d, y: H:m').format(lastRead);
+      final String formattedDate = DateFormat('MMMM d, y: H:mm').format(lastRead);
       return Text('Last read on: $formattedDate', style: _style);
     } else {
       return const Text('Not (yet) read!', style: _style);

@@ -64,7 +64,7 @@ class _CalibreSync extends State<CalibreSync> {
 
   Widget _getStatus() {
     final DateTime lastSynced = DateTime.fromMillisecondsSinceEpoch(_calibre.syncDate * 1000);
-    final String formattedDate = DateFormat('MMMM d, y: H:m').format(lastSynced);
+    final String formattedDate = DateFormat('MMMM d, y: H:mm').format(lastSynced);
     return Column(children: [
       Text('You last synchronised your library on $formattedDate', style: const TextStyle(fontWeight: FontWeight.bold)),
       const SizedBox(height: 10),
