@@ -30,7 +30,7 @@ class Paladin extends StatelessWidget {
 
       return Scaffold(
           appBar: null,
-          body: Padding(
+          body: SafeArea(child: Padding(
               padding: const EdgeInsets.only(top: 6, bottom: 6),
               child: Column(crossAxisAlignment: book != null ? CrossAxisAlignment.start : CrossAxisAlignment.center, children: [
                 book != null
@@ -41,7 +41,7 @@ class Paladin extends StatelessWidget {
                 const MenuButtons(),
                 const Divider(thickness: 1, height: 3, color: Colors.black),
                 ..._getShelves(),
-              ])));
+              ]))));
     });
   }
 
