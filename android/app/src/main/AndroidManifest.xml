@@ -13,9 +13,6 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
 
-            <category android:name="android.intent.category.HOME" />
-            <category android:name="android.intent.category.DEFAULT" />
-
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
@@ -26,6 +23,9 @@
               />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
