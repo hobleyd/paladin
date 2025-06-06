@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../models/book.dart';
 import '../models/collection.dart';
-import '../notifiers/library_db.dart';
+import '../providers/library_db.dart';
 import 'booktile.dart';
 
 class BookList extends StatefulWidget {
@@ -26,7 +26,7 @@ class _BookList extends State<BookList> {
 
       return Scaffold(
           appBar: AppBar(
-              title: const Text('Books'),
+              title: Text('Books', style: Theme.of(context).textTheme.titleLarge),
               actions: <Widget>[
                 SizedBox(
                   width: 180,
@@ -52,7 +52,7 @@ class _BookList extends State<BookList> {
                     itemBuilder: (context, index) {
                       return _library.collection[widget.collection.getType()] != null
                           ? Column(children: [
-                              SizedBox(height: MediaQuery.of(context).size.height / 8, child: BookTile(book: _library.collection[widget.collection.getType()]![index] as Book, showMenu: false,)),
+                              SizedBox(height: MediaQuery.of(context).size.height / 6, child: BookTile(book: _library.collection[widget.collection.getType()]![index] as Book, showMenu: false,)),
                               const Divider(color: Colors.black, thickness: 1),
                           ])
                           : const Text(

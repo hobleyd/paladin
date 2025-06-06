@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../models/collection.dart';
 import '../models/shelf.dart';
-import '../notifiers/library_db.dart';
+import '../providers/library_db.dart';
 
 class ShelfSetting extends StatefulWidget {
   int shelfId;
@@ -55,8 +55,7 @@ class _ShelfSetting extends State<ShelfSetting> {
           suggestionsCallback: (String pattern) async {
             return _library.getShelfName(Shelf.shelfTable[_shelf.type]!, Shelf.shelfTableColumn[_shelf.type]!, pattern, _shelf.size);
           },
-          textFieldConfiguration:
-          TextFieldConfiguration(
+          textFieldConfiguration: TextFieldConfiguration(
               autofocus: false,
               controller: typeAheadController,
               decoration: const InputDecoration(border: OutlineInputBorder()),

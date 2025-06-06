@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/book.dart';
 import '../models/collection.dart';
-import '../notifiers/library_db.dart';
+import '../providers/library_db.dart';
 
 class BookShelf extends StatefulWidget {
   final Collection items;
@@ -32,7 +32,7 @@ class _BookShelf extends State<BookShelf> {
               width: double.infinity,
                 child: Text(
                   '${widget.items.getType()} (${_library.collection[widget.items.getType()]?.length})',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.labelSmall,
                   textAlign: TextAlign.center,
                 ),),
             Expanded(child: ListView.builder(
@@ -60,15 +60,14 @@ class _BookShelf extends State<BookShelf> {
         onTap: () => _openBook(context, book),
         child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Container(
-            child: Column(children: [
+        child: Column(children: [
               Expanded(child: cover),
               const SizedBox(height: 3),
               SizedBox(
                 width: 80,
-                child: AutoSizeText(title, maxLines: 2, textAlign: TextAlign.center,),
+                child: AutoSizeText(title, maxLines: 2, style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
               ),
-            ]))));
+            ])));
   }
 
   Future _openBook(BuildContext context, Book book) async {

@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
-import 'package:sqflite_common/sqlite_api.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -13,7 +14,12 @@ import '../models/series.dart';
 import '../models/shelf.dart';
 import '../models/tag.dart';
 
-class LibraryDB extends ChangeNotifier {
+@Riverpod(keepAlive: true)
+LibraryDB paladinDatabase() {
+  return LibraryDB();
+}
+
+class LibraryDB {
   static final LibraryDB _instance = LibraryDB._internal();
   var lock = Lock();
 
@@ -142,11 +148,18 @@ class LibraryDB extends ChangeNotifier {
   Future<String> _getDatabasePath() async {
     String database = "";
     if (!kIsWeb) {
-      Directory documentsDirectory = await getApplicationDocumentsDirectory();
-      database = documentsDirectory.path;
+      if (Platform.isAndroid) {
+        Directory documentsDirectory = await getApplicationDocumentsDirectory();
+        database = documentsDirectory.path;
+      } else {
+        database = path.join(Platform.environment['HOME']!, '.paladin');
+      }
     }
-    database += '/db/paladin.db';
+    database += '/db/';
 
+    await Directory(database).create(recursive: true);
+
+    database = path.join(database, 'paladin.db');
     return database;
   }
 
@@ -204,8 +217,6 @@ class LibraryDB extends ChangeNotifier {
         }
       }
     });
-
-    notifyListeners();
   }
 
   Future addShelf() async {
@@ -358,8 +369,6 @@ class LibraryDB extends ChangeNotifier {
     book.lastModified = book.lastRead;
     await _paladin.update('books', { 'lastRead' : book.lastRead, 'rating' : book.rating }, where: 'uuid = ?', whereArgs: [ book.uuid]);
     await _getCurrentlyReading(_paladin, Collection(type: CollectionType.CURRENT));
-
-    notifyListeners();
   }
 
   Future updateFields(Database? db) async {
@@ -371,14 +380,10 @@ class LibraryDB extends ChangeNotifier {
     await _getTableCount(db, 'tags');
     await _getShelves(db);
     await _getCurrentlyReading(db, Collection(type: CollectionType.CURRENT));
-
-    debugPrint('notifyingListeners');
-    notifyListeners();
   }
 
   Future updateShelf(Shelf shelf) async {
     await _paladin.insert('shelves', shelf.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
     await _getShelves(_paladin);
-    notifyListeners();
   }
 }

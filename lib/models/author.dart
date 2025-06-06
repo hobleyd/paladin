@@ -17,6 +17,15 @@ class Author extends Collection {
     required this.name,
   }) : super(type: CollectionType.AUTHOR);
 
+  String getAuthorNameNormalised() {
+    if (name.contains(',')) {
+      List<String> parts = name.split(',');
+      return '${parts[1].trim()} ${parts[0].trim()}';
+    }
+
+    return name;
+  }
+
   @override
   String getType() {
     return name;

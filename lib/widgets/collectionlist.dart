@@ -5,7 +5,7 @@ import '../models/author.dart';
 import '../models/collection.dart';
 import '../models/series.dart';
 import '../models/tag.dart';
-import '../notifiers/library_db.dart';
+import '../providers/library_db.dart';
 import 'booklist.dart';
 import 'booktile.dart';
 

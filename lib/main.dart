@@ -1,30 +1,34 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 
-import 'notifiers/library_db.dart';
+import 'misc/provider_logger.dart';
+import 'providers/library_db.dart';
+import 'providers/paladin_theme.dart';
 import 'widgets/paladin.dart';
 
 void main() {
-  runApp(MultiProvider(
-      providers: [
-        ChangeNotifierProvider<LibraryDB>(create: (_) => LibraryDB()),
-      ],
-      child: MaterialApp(
+  WidgetsFlutterBinding.ensureInitialized();
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('google_fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+  });
+
+  runApp(ProviderScope(
+      observers: [ProviderLogger()],
+      child: const PaladinApp()));
+}
+
+class PaladinApp extends ConsumerWidget {
+  const PaladinApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp(
       title: 'Paladin',
-      theme: ThemeData(
-        fontFamily: 'Georgia',
-        inputDecorationTheme: const InputDecorationTheme(
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-            errorBorder:   UnderlineInputBorder(borderSide: BorderSide(color: Colors.red, width: 2)),
-            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.teal, width: 2))),
-        primarySwatch: Colors.teal,
-        splashColor: Colors.blueGrey,
-        textTheme: const TextTheme(
-          displayLarge: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-          titleLarge: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic),
-          bodyMedium: TextStyle(fontSize: 12.0, fontFamily: 'Hind'),
-          bodyLarge : TextStyle(fontSize: 12.0, fontFamily: 'Hind', fontWeight: FontWeight.bold),
-        ),
-      ),
-      home: Paladin())));
+      home: Paladin(),
+      theme: ref.watch(paladinThemeProvider),
+    );
+  }
 }

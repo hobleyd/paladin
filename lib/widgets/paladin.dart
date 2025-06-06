@@ -1,25 +1,30 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intersperse/intersperse.dart';
+import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:paladin/models/collection.dart';
-import 'package:provider/provider.dart';
 
 import '../models/book.dart';
 import '../models/shelf.dart';
-import '../notifiers/calibre_ws.dart';
+import '../repositories/calibre_ws.dart';
+import '../providers/library_db.dart';
 
-import '../notifiers/library_db.dart';
 import 'bookshelf.dart';
 import 'booktile.dart';
 import 'calibresync.dart';
 import 'menu_buttons.dart';
 import 'paladinmenu.dart';
 
-class Paladin extends StatelessWidget {
+class Paladin extends ConsumerWidget {
   late LibraryDB _library;
   Paladin({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    LibraryDB = ref.watch(paladinDatabase());
+
     return Consumer<LibraryDB>(builder: (context, model, child) {
       _library = model;
 
@@ -53,13 +58,13 @@ class Paladin extends StatelessWidget {
               ? TextButton(
                   onPressed: () => _showSyncDialog(context),
                   style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.white), foregroundColor: MaterialStatePropertyAll(Colors.black)),
-                  child: const Text(
+                  child: Text(
                     'Synchronise Library',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.labelSmall,
                   ),
                 )
-              : const Text('Congratulations on your new eReader. Pick a book. Enjoy!', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)))),
+              : Text('Congratulations on your new eReader. Pick a book. Enjoy!', textAlign: TextAlign.center, style: Theme.of(context).textTheme.labelSmall))),
       Align(
           alignment: Alignment.topRight,
           child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
@@ -88,6 +93,11 @@ class Paladin extends StatelessWidget {
         context,
         MaterialPageRoute(builder: (context) => ChangeNotifierProvider(
             create: (context) => CalibreWS(context),
-            builder: (context, child) => const CalibreSync()))).then((value) => _library.updateFields(null));
+            builder: (context, child) => const CalibreSync()))).then((value) {
+              if (Platform.isAndroid || Platform.isIOS) {
+                KeepScreenOn.turnOff();
+              }
+              _library.updateFields(null);
+    });
   }
 }

@@ -13,6 +13,15 @@ class Series extends Collection {
     required this.series,
   }) : super(type: CollectionType.SERIES);
 
+  String getSeriesNameNormalised() {
+    if (series.contains(',')) {
+      List<String> parts = series.split(',');
+      return '${parts[1].trim()} ${parts[0].trim()}';
+    }
+
+    return series;
+  }
+
   @override
   String getType() {
     return queryArgs?[0] ?? series;

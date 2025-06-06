@@ -8,7 +8,7 @@ import '../models/book.dart';
 import '../models/collection.dart';
 import '../models/series.dart';
 import '../models/tag.dart';
-import '../notifiers/library_db.dart';
+import '../providers/library_db.dart';
 import 'booklist.dart';
 import 'collectionlist.dart';
 
@@ -36,7 +36,7 @@ class _MenuButtons extends State<MenuButtons> {
     return Expanded(child: TextButton(
       onPressed: () => _navigateToCollection(context, collection),
       style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.white), foregroundColor: MaterialStatePropertyAll(Colors.black)),
-      child: Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),),
+      child: Text(label, textAlign: TextAlign.center, style: Theme.of(context).textTheme.labelSmall,),
     ));
   }
 

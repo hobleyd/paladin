@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../notifiers/library_db.dart';
+import '../providers/library_db.dart';
 import 'shelfsetting.dart';
 
 class Settings extends StatefulWidget {

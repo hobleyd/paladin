@@ -1,38 +1,45 @@
+import'dart:io';
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import 'package:keep_screen_on/keep_screen_on.dart';
+import 'package:paladin/providers/paladin_theme.dart';
+import 'package:paladin/providers/progress_provider.dart';
+import 'package:paladin/providers/status_provider.dart';
 
 import '../models/json_book.dart';
-import '../notifiers/calibre_ws.dart';
+import '../repositories/calibre_ws.dart';
 
-class CalibreSync extends StatefulWidget {
-  const CalibreSync({Key? key}) : super(key: key);
+class CalibreSync extends ConsumerStatefulWidget {
+  final KeyboardCallback keyHandler;
+  final TagHandler tagHandler;
+  final FileOfInterest? paneEntity;
+
+  const CalibreSync({Key? key, required this.keyHandler, required this.tagHandler, this.paneEntity, }) : super(key: key);
 
   @override
-  _CalibreSync createState() => _CalibreSync();
+  ConsumerState<CalibreSync> createState() => _CalibreSync();
 }
 
-class _CalibreSync extends State<CalibreSync> {
-  late CalibreWS _calibre;
+class _CalibreSync extends ConsumerState<CalibreSync> {
   final ScrollController scrollController = ScrollController();
+  bool _processing = false;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CalibreWS>(builder: (context, model, child) {
-      _calibre = model;
+    if (Platform.isAndroid || Platform.isIOS) {
+      KeepScreenOn.turnOn();
+    }
 
-      return Scaffold(
-          appBar: AppBar(title: const Text('Synchronise Library')),
-          body: Column(children: [
-            _calibre.httpStatus.isEmpty
-                ? Expanded(child: _getStatusList())
-                : Padding(
-                    padding: const EdgeInsets.only(top: 50, bottom: 50),
-                    child: Text('Error syncing: ${_calibre.httpStatus}', style: const TextStyle(fontWeight: FontWeight.bold))),
-            _getProgressBar(),
-            _getSyncButton(),
-          ]));
-    });
+    return Scaffold(
+        appBar: AppBar(title: const Text('Synchronise Library')),
+        body: Column(children: [
+          Expanded(child: _getStatusList()),
+          _getProgressBar(ref),
+          _getSyncButton(),
+        ]));
   }
 
   Widget _getBookList(List<JSONBook> list) {
@@ -50,16 +57,24 @@ class _CalibreSync extends State<CalibreSync> {
                 )));
   }
 
-  Widget _getProgressBar() {
-    if (_calibre.progress > 0) {
-      return Column(
-        children: [
-          const Divider(thickness: 1, height: 3, color: Colors.black),
-          LinearProgressIndicator(value: _calibre.progress, semanticsLabel: 'Books Saved to Database'),
-          const Divider(thickness: 1, height: 3, color: Colors.black),
-        ]);
-    }
-    return const Divider(thickness: 1, height: 3, color: Colors.black);
+  Widget _getProgressBar(WidgetRef ref) {
+    double progress = ref.watch(progressProvider);
+
+    return Column(children: [
+      const Divider(thickness: 1, height: 3, color: Colors.black),
+      if (progress > 0) ...[
+        LinearProgressIndicator(value: progress, semanticsLabel: 'Books Saved to Database'),
+        const Divider(thickness: 1, height: 3, color: Colors.black),
+      ]
+    ]);
+
+    // return progress > 0
+    //     ? Column(children: [
+    //         const Divider(thickness: 1, height: 3, color: Colors.black),
+    //         LinearProgressIndicator(value: progress, semanticsLabel: 'Books Saved to Database'),
+    //         const Divider(thickness: 1, height: 3, color: Colors.black),
+    //       ])
+    //     : const Divider(thickness: 1, height: 3, color: Colors.black);
   }
 
   Widget _getStatus() {
@@ -72,15 +87,15 @@ class _CalibreSync extends State<CalibreSync> {
   }
 
   Widget _getStatusList() {
-    return _calibre.processing
+    return _processing
         ? _getBookList(_calibre.processedBooks)
         : _calibre.errors.isNotEmpty
             ? _getBookList(_calibre.errors)
             : Padding(padding: const EdgeInsets.only(top: 50, bottom: 50), child: _getStatus());
   }
 
-  Widget _getSyncButton() {
-    if (!_calibre.processing) {
+  Widget _getSyncButton(WidgetRef ref) {
+    if (!_processing) {
       return IntrinsicWidth(child: Row(children: [
         ElevatedButton(
           onPressed: () => _syncWithCalibre(context),
@@ -99,10 +114,22 @@ class _CalibreSync extends State<CalibreSync> {
       ]));
     }
 
-    return Text('Syncing ${_calibre.processedBooks[0].Title} from Calibre (${_calibre.progress.toStringAsFixed(2)})', textAlign: TextAlign.center);
+    String status = ref.watch(statusProvider);
+    ThemeData theme = ref.watch(paladinThemeProvider);
+    return Text(status, style: theme.textTheme.titleLarge, textAlign: TextAlign.center);
   }
 
   Future<void> _syncWithCalibre(BuildContext context) async {
-    _calibre.getBooks(context);
+    setState(() {
+      _processing = true;
+    });
+
+    await Isolate.run(() {
+      calibreProvider().getBooks();
+    });
+
+    setState(() {
+      _processing = false;
+    });
   }
 }

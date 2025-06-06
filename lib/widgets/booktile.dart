@@ -17,7 +17,6 @@ class BookTile extends StatefulWidget {
 
 class _BookTile extends State<BookTile> {
   final ScrollController _scrollController = ScrollController();
-  static const TextStyle _style = TextStyle(fontSize: 10);
 
   @override
   Widget build(BuildContext context) {
@@ -53,39 +52,38 @@ class _BookTile extends State<BookTile> {
     String authors = '';
     for (var author in widget.book.authors!) {
       if (authors.isNotEmpty) {
-        authors != ', ';
+        authors += ', ';
       }
-      authors += author.name;
+      authors += author.getAuthorNameNormalised();
     }
 
-    return Text(authors, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+    return Text(authors, textAlign: TextAlign.center, style: Theme.of(context).textTheme.labelSmall);
   }
 
   Widget _getDescription() {
+    const String label = "I know you might expect a back-cover description, but it's a mystery; perhaps you need to read the book to find out what it's about!";
     return widget.book.description != null
         ? Expanded(child:
             Scrollbar(controller: _scrollController, child: SingleChildScrollView(controller: _scrollController, child: HtmlWidget(widget.book.description!))))
-        : const Text("I know you might expect a back-cover description, but it's a mystery; perhaps you need to read the book to find out what it's about!");
+        : Text(label, style: Theme.of(context).textTheme.labelSmall);
   }
 
   Widget _getLastRead() {
     if (widget.book.lastRead != null) {
       final DateTime lastRead = DateTime.fromMillisecondsSinceEpoch(widget.book.lastRead! * 1000);
-      final String formattedDate = DateFormat('MMMM d, y: H:mm').format(lastRead);
-      return Text('Last read on: $formattedDate', style: _style);
+      final String formattedDate = DateFormat('MMMM d, y').format(lastRead);
+      return Text('Last read: $formattedDate', style: Theme.of(context).textTheme.bodySmall);
     } else {
-      return const Text('Not (yet) read!', style: _style);
+      return Text('Not (yet) read!', style: Theme.of(context).textTheme.bodySmall);
     }
   }
 
   Widget _getSeries() {
-    return widget.book.series != null
-        ? Text('${widget.book.series!.series} #${widget.book.seriesIndex}', style: const TextStyle(fontWeight: FontWeight.bold))
-        : const Text('');
+    return Text('${widget.book.series!.getSeriesNameNormalised()} #${widget.book.seriesIndex}', style: Theme.of(context).textTheme.labelSmall);
   }
 
   Widget _getTitle() {
-    return Text(widget.book.title, style: const TextStyle(fontWeight: FontWeight.bold));
+    return Text(widget.book.title, style: Theme.of(context).textTheme.labelSmall);
   }
 
   List<Widget> _getTitleFields() {

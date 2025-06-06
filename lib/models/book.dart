@@ -6,11 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:image/image.dart' as images;
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../notifiers/library_db.dart';
+import '../providers/library_db.dart';
 import 'author.dart';
 import 'collection.dart';
 import 'json_book.dart';

@@ -1,0 +1,37 @@
+name: shackleton-macos-ci
+
+on: [push, workflow_dispatch]
+      
+jobs:
+ build:
+   runs-on: macos-latest
+   steps:
+     - run: brew install yq
+     - uses: actions/checkout@v3
+     - name: Get the app version
+       id: get_version
+       run: |
+         echo "VERSION=$(yq .version pubspec.yaml)" >> $GITHUB_ENV
+     - name: "Push version tag from pubspec.yaml"
+       uses: EndBug/latest-tag@latest
+       with:
+         tag-name: ${{ env.VERSION }}
+     - uses: subosito/flutter-action@v2
+       with:
+         channel: 'stable'
+         architecture: x64
+         cache: true
+     - run: flutter config --enable-macos-desktop
+     - run: dart run build_runner build --delete-conflicting-outputs
+     - run: dart run flutter_launcher_icons
+     - run: flutter build macos --release --no-tree-shake-icons
+     - uses: QQxiaoming/create-dmg-action@v0.0.2
+       with:
+         name: 'paladin-${{ env.VERSION }}'
+         srcdir: 'build/macos/Build/Products/Release/shackleton.app'
+     - name: Create Release
+       uses: softprops/action-gh-release@v0.1.15
+       with:
+         files: 'paladin-${{ env.VERSION }}.dmg'
+         name: 'paladin-${{ env.VERSION }}'
+         tag_name: ${{ env.VERSION }}

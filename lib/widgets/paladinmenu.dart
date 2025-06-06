@@ -1,10 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:provider/provider.dart';
 
 import '../models/collection.dart';
 import '../models/tag.dart';
-import '../notifiers/calibre_ws.dart';
-import '../notifiers/library_db.dart';
+import '../repositories/calibre_ws.dart';
+import '../providers/library_db.dart';
 import 'booklist.dart';
 import 'calibresync.dart';
 import 'collectionlist.dart';
@@ -48,7 +51,12 @@ class PaladinMenu extends StatelessWidget {
   void _navigateToSync() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => ChangeNotifierProvider(
         create: (context) => CalibreWS(context),
-        builder: (context, child) => const CalibreSync()))).then((value) => library.updateFields(null));
+        builder: (context, child) => const CalibreSync()))).then((value) {
+          if (Platform.isAndroid || Platform.isIOS) {
+            KeepScreenOn.turnOff();
+          }
+          library.updateFields(null);
+    });
   }
 
   Future _navigateToTag() async {
