@@ -7,10 +7,10 @@ import 'package:provider/provider.dart';
 import '../models/collection.dart';
 import '../models/tag.dart';
 import '../repositories/calibre_ws.dart';
-import '../providers/library_db.dart';
-import 'booklist.dart';
+import '../database/library_db.dart';
+import 'book_list.dart';
 import 'calibresync.dart';
-import 'collectionlist.dart';
+import 'collection_list.dart';
 
 class PaladinMenu extends StatelessWidget {
   static const TextStyle _style = TextStyle(fontSize: 10);

@@ -7,8 +7,8 @@ import 'package:provider/provider.dart';
 
 import '../models/book.dart';
 import '../models/collection.dart';
-import '../providers/library_db.dart';
-import 'booklist.dart';
+import '../database/library_db.dart';
+import 'book_list.dart';
 
 class BackCover extends StatefulWidget {
   final Book book;

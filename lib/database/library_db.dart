@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:paladin/repositories/authors_repository.dart';
+import 'package:paladin/repositories/series_repository.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -13,48 +15,44 @@ import '../models/collection.dart';
 import '../models/series.dart';
 import '../models/shelf.dart';
 import '../models/tag.dart';
+import '../repositories/books_repository.dart';
+
+part 'library_db.g.dart';
 
 @Riverpod(keepAlive: true)
-LibraryDB paladinDatabase() {
-  return LibraryDB();
-}
+class LibraryDB extends _$LibraryDB {
+  late Database _paladin;
 
-class LibraryDB {
-  static final LibraryDB _instance = LibraryDB._internal();
+  Future<Database> build() async {
+    sqfliteFfiInit();
+
+    _paladin = await databaseFactoryFfi.openDatabase(await _getDatabasePath(),
+        options: OpenDatabaseOptions(
+            version: 2,
+            onConfigure: (db) {
+              _paladin = db;
+              _enableForeignKeys(db);
+            },
+            onCreate: (db, version) {
+              _createTables(db, 0, version);
+            },
+            onOpen: (db) {
+              updateFields(db);
+            },
+            onUpgrade: (db, oldVersion, newVersion) {
+              _createTables(db, oldVersion, newVersion);
+            }));
+    return _paladin;
+  }
   var lock = Lock();
 
-  factory LibraryDB() {
-    return _instance;
-  }
 
-  late Database _paladin;
   Map<String, int> tableCount = {'books': 0, 'authors': 0, 'tags': 0, 'apps': 0, 'settings': 0};
   List<Shelf> shelves = [];
   Map<String, List<Collection>> collection = {};
 
-  static const String _authors = '''
-        create table if not exists authors(
-          id integer primary key,
-          name text not null,
-          unique (name) on conflict ignore);
-          ''';
-  static const String _books = '''
-        create table if not exists books(
-          uuid text primary key,
-          description text,
-          path text not null,
-          mimeType text not null,
-          added integer not null,
-          lastModified integer,
-          lastRead integer,
-          rating integer,
-          readStatus integer,
-          series integer, 
-          seriesIndex real,
-          title text not null,
-          unique(uuid) on conflict replace,
-          foreign key(series) references series(id));
-          ''';
+
+
   static const String _bookauthors = '''
         create table if not exists book_authors(
           authorId integer not null, 
@@ -73,11 +71,7 @@ class LibraryDB {
         create table calibre_library (
 					last_connected int);
 					''';
-  static const String _series = '''
-        create table if not exists series(
-          id integer primary key,
-          series text not null);
-        ''';
+
   static const String _shelves = '''
         create table if not exists shelves(
           name text not null,
@@ -90,36 +84,30 @@ class LibraryDB {
           tag text not null,
           unique(tag) on conflict ignore);
           ''';
-  static const String _indexAuthors = 'create index authors_idx on authors(name);';
   static const String _indexBookauthors = 'create index book_authors_idx on book_authors(bookId, authorId);';
   static const String _indexTagname = 'create index tagname_idx on tags(tag);';
   static const String _indexBooktags = 'create index book_tags_idx on book_tags(bookId, tagId);';
-  static const String _indexuuid = 'create index bookuuid_idx on books(uuid);';
-  static const String _indexSeriesname = 'create index seriesname_idx on series(series);';
   static const String _indexLastread = 'create index lastread_idx on books(lastRead);';
   static const String _indexAddeddate = 'create index added_idx on books(added);';
-
-  LibraryDB._internal() {
-    _openDatabase();
-  }
 
   void _createTables(Database db, int oldVersion, int newVersion) {
     _enableForeignKeys(db);
     if (oldVersion < 1) {
-      db.execute(_authors);
-      db.execute(_series);
-      db.execute(_books);
+      db.execute(AuthorsRepository.authors);
+      db.execute(BooksRepository.books);
+      db.execute(SeriesRepository.series);
       db.execute(_bookauthors);
       db.execute(_tags);
       db.execute(_booktags);
       db.execute(_calibreserver);
 
-      db.execute(_indexAuthors);
+      db.execute(AuthorsRepository.indexAuthors);
+      db.execute(BooksRepository.indexBooks);
+      db.execute(SeriesRepository.indexSeriesName);
       db.execute(_indexBookauthors);
       db.execute(_indexTagname);
       db.execute(_indexBooktags);
-      db.execute(_indexuuid);
-      db.execute(_indexSeriesname);
+
       db.execute(_indexLastread);
       db.execute(_indexAddeddate);
     }
@@ -135,6 +123,11 @@ class LibraryDB {
 
   Future _enableForeignKeys(Database db) async {
     await db.execute('PRAGMA foreign_keys = ON;');
+  }
+
+  Future<int> getCount(String table, { String? where, List<dynamic>? whereArgs }) async {
+    List<Map<String, dynamic>> results = await _paladin.query(table, columns: ['count(*) as count'], where: where, whereArgs: whereArgs);
+    return results.first['count'] as int;
   }
 
   Future _getCurrentlyReading(Database db, Collection coll) async {
@@ -177,26 +170,6 @@ class LibraryDB {
     return db.rawInsert('insert into shelves(name, type, size) values(?, ?, ?)', [name, type, size]);
   }
 
-  void _openDatabase() async {
-    sqfliteFfiInit();
-
-    _paladin = await databaseFactoryFfi.openDatabase(await _getDatabasePath(),
-        options: OpenDatabaseOptions(
-            version: 2,
-            onConfigure: (db) {
-              _paladin = db;
-              _enableForeignKeys(db);
-            },
-            onCreate: (db, version) {
-              _createTables(db, 0, version);
-            },
-            onOpen: (db) {
-              updateFields(db);
-            },
-            onUpgrade: (db, oldVersion, newVersion) {
-              _createTables(db, oldVersion, newVersion);
-            }));
-  }
 
   Future _processResults(coll, maps) async {
     await lock.synchronized(() async {
@@ -364,12 +337,7 @@ class LibraryDB {
     return lastConnected;
   }
 
-  Future updateBook(Book book) async {
-    book.lastRead = (DateTime.now().millisecondsSinceEpoch / 1000).round();
-    book.lastModified = book.lastRead;
-    await _paladin.update('books', { 'lastRead' : book.lastRead, 'rating' : book.rating }, where: 'uuid = ?', whereArgs: [ book.uuid]);
-    await _getCurrentlyReading(_paladin, Collection(type: CollectionType.CURRENT));
-  }
+
 
   Future updateFields(Database? db) async {
     db ??= _paladin;

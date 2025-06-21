@@ -4,7 +4,7 @@ import '../models/json_book.dart';
 
 part 'books_provider.g.dart';
 
-enum BooksType { processed, error}
+enum BooksType { processed, error }
 
 @Riverpod(keepAlive: true)
 class Books extends _$Books {

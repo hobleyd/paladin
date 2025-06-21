@@ -9,13 +9,12 @@ import '../models/book.dart';
 import '../models/json_book.dart';
 import '../providers/books_provider.dart';
 import '../providers/dio_provider.dart';
-import '../providers/library_db.dart';
+import '../database/library_db.dart';
 import '../providers/status_provider.dart';
-
 
 @Riverpod(keepAlive: true)
 CalibreWS calibreProvider() {
-  return CalibreWS();
+  return CalibreWS(ref);
 }
 
 class CalibreWS {

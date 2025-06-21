@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../models/collection.dart';
 import '../models/shelf.dart';
-import '../providers/library_db.dart';
+import '../database/library_db.dart';
 
 class ShelfSetting extends StatefulWidget {
   int shelfId;

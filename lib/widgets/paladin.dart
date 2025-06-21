@@ -9,12 +9,12 @@ import 'package:paladin/models/collection.dart';
 import '../models/book.dart';
 import '../models/shelf.dart';
 import '../repositories/calibre_ws.dart';
-import '../providers/library_db.dart';
+import '../database/library_db.dart';
 
 import 'bookshelf.dart';
 import 'booktile.dart';
 import 'calibresync.dart';
-import 'menu_buttons.dart';
+import 'menu/menu_buttons.dart';
 import 'paladinmenu.dart';
 
 class Paladin extends ConsumerWidget {

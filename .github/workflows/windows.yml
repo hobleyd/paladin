@@ -1,4 +1,4 @@
-name: shackleton-windows-ci
+name: paladin-windows-ci
 
 on: [push, workflow_dispatch]
       

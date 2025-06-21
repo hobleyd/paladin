@@ -1,4 +1,4 @@
-name: shackleton-macos-ci
+name: paladin-macos-ci
 
 on: [push, workflow_dispatch]
       
