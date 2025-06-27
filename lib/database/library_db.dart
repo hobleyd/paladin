@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:paladin/repositories/authors_repository.dart';
 import 'package:paladin/repositories/series_repository.dart';
+import 'package:paladin/repositories/shelves_repository.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -72,12 +73,7 @@ class LibraryDB extends _$LibraryDB {
 					last_connected int);
 					''';
 
-  static const String _shelves = '''
-        create table if not exists shelves(
-          name text not null,
-          type int not null,
-          size int not null);
-          ''';
+
   static const String _tags = '''
         create table tags(
           id integer primary key,
@@ -113,7 +109,7 @@ class LibraryDB extends _$LibraryDB {
     }
 
     if (oldVersion < 2) {
-      db.execute(_shelves);
+      db.execute(ShelvesRepository.shelves);
       _insertInitialShelves(db, 'Currently Reading', CollectionType.CURRENT.index, 15);
       _insertInitialShelves(db, 'Random Shelf',  CollectionType.RANDOM.index, 30);
     }
@@ -337,8 +333,6 @@ class LibraryDB extends _$LibraryDB {
     return lastConnected;
   }
 
-
-
   Future updateFields(Database? db) async {
     db ??= _paladin;
     debugPrint('updateFields');
@@ -353,5 +347,21 @@ class LibraryDB extends _$LibraryDB {
   Future updateShelf(Shelf shelf) async {
     await _paladin.insert('shelves', shelf.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
     await _getShelves(_paladin);
+  }
+
+  Future<int> insert(String table, Map<String, dynamic> rows, { ConflictAlgorithm? conflictAlgorithm }) async {
+    return _paladin.insert(table, rows, conflictAlgorithm: conflictAlgorithm);
+  }
+
+  Future<List<Map<String, dynamic>>> query(String table, { List<String>? columns, String? where, List<dynamic>? whereArgs, String? orderBy }) async {
+    return _paladin.query(table, columns: columns, where: where, whereArgs: whereArgs, orderBy: orderBy);
+  }
+
+  Future<List<Map<String, dynamic>>> rawQuery(String sql, List<Object?>? arguments) async {
+    return _paladin.rawQuery(sql, arguments);
+  }
+
+  Future<int> update(String table, Map<String, dynamic> values, String? where, List<String>? whereArgs) {
+    return _paladin.update(table, values, where: where, whereArgs: whereArgs);
   }
 }

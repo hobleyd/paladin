@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
 
-import '../models/collection.dart';
-import '../models/shelf.dart';
-import '../database/library_db.dart';
+import '../../models/collection.dart';
+import '../../models/shelf.dart';
+import '../../database/library_db.dart';
 
 class ShelfSetting extends StatefulWidget {
   int shelfId;
@@ -47,7 +47,7 @@ class _ShelfSetting extends State<ShelfSetting> {
           itemBuilder: (context, Map<String, dynamic> suggestion) {
             return Padding(padding: const EdgeInsets.only(top: 3, bottom: 3, left: 6), child: Text(suggestion[Shelf.shelfTableColumn[_shelf.type]]));
           },
-          onSuggestionSelected: (Map<String, dynamic> suggestion) {
+          onSelected: (Map<String, dynamic> suggestion) {
             _shelf.name = suggestion[Shelf.shelfTableColumn[_shelf.type]];
             typeAheadController.text = _shelf.name;
             _library.updateShelf(_shelf);

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../database/library_db.dart';
-import 'shelfsetting.dart';
+import '../widgets/settings/shelfsetting.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);

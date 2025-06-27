@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/collection.dart';
-import '../book_list.dart';
-import '../collection_list.dart';
-import '../settings.dart';
+import '../../screens/book_list.dart';
+import '../../screens/collection_list.dart';
+import '../../screens/settings.dart';
 
 class MenuButton extends ConsumerWidget {
   final int count;

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:epubx/epubx.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../database/library_db.dart';
+import '../repositories/books_repository.dart';
 import 'author.dart';
 import 'collection.dart';
 import 'json_book.dart';
@@ -64,7 +63,7 @@ class Book extends Collection {
   }
 
   Future readBook(BuildContext context, WidgetRef ref) async {
-    ref.read(booksRepositoryProvider.notfier).updateBookLastReadDate(this);
+    ref.read(booksRepositoryProvider.notifier).updateBookLastReadDate(this);
 
     if (Platform.isAndroid || Platform.isIOS) {
       OpenFilex.open(path, type: mimeType);
@@ -73,6 +72,9 @@ class Book extends Collection {
     }
   }
 
+  Future setRating(WidgetRef ref, int rating) async {
+    ref.read(booksRepositoryProvider.notifier).setRating(this, rating);
+  }
 
   static Future<Book> fromJSON(JSONBook jsonBook) async {
     List<Author> authors = [Author(name: jsonBook.Author)];
@@ -115,7 +117,6 @@ class Book extends Collection {
     }
     book.tags = await Tag.getTags(db, book.uuid);
     book.authors = await Author.getAuthors(db, book.uuid);
-    await book.getCoverPath();
 
     return book;
   }

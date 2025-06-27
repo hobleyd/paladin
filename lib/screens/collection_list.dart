@@ -7,7 +7,7 @@ import '../models/series.dart';
 import '../models/tag.dart';
 import '../database/library_db.dart';
 import 'book_list.dart';
-import 'booktile.dart';
+import '../widgets/books/book_tile.dart';
 
 class CollectionList extends StatefulWidget {
   final Collection collection;

@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:provider/provider.dart';
 
-import '../models/collection.dart';
-import '../models/tag.dart';
-import '../repositories/calibre_ws.dart';
-import '../database/library_db.dart';
-import 'book_list.dart';
-import 'calibresync.dart';
-import 'collection_list.dart';
+import '../../models/collection.dart';
+import '../../models/tag.dart';
+import '../../repositories/calibre_ws.dart';
+import '../../database/library_db.dart';
+import '../../screens/book_list.dart';
+import '../../screens/calibresync.dart';
+import '../../screens/collection_list.dart';
 
 class PaladinMenu extends StatelessWidget {
   static const TextStyle _style = TextStyle(fontSize: 10);

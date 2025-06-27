@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../models/book.dart';
 import '../models/collection.dart';
 import '../database/library_db.dart';
-import 'booktile.dart';
+import '../widgets/books/book_tile.dart';
 
 class BookList extends StatefulWidget {
   final Collection collection;

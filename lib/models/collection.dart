@@ -1,3 +1,7 @@
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
+import 'book.dart';
+
 enum CollectionType { AUTHOR, BOOK, SERIES, TAG, CURRENT, RANDOM, SETTINGS, APPS }
 
 class Collection {
@@ -18,8 +22,8 @@ class Collection {
 
   Collection({required this.type, this.query, this.queryArgs, this.key});
 
-  Collection? getBookCollection() {
-    return null;
+  Future<List<Book>> getBookCollection(Database? db) async {
+    return [];
   }
 
   String getType() {

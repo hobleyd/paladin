@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../widgets/booktile.dart';
+import '../widgets/books/book_tile.dart';
 import '../widgets/menu/menu_buttons.dart';
 
 class HomeScreen extends ConsumerWidget {
-  HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

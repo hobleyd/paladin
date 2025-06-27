@@ -34,7 +34,7 @@ class BooksRepository extends _$BooksRepository {
     return _getBooksCount();
   }
 
-  Future<void> updateAuthorsCount() async {
+  Future<void> updateBooksCount() async {
     state = AsyncValue.data(await _getBooksCount());
   }
 
@@ -43,18 +43,20 @@ class BooksRepository extends _$BooksRepository {
     return await libraryDb.getCount(booksTable);
   }
 
-  /*
-  Future setRating(BuildContext context, int newRating) async {
-    rating = newRating;
-    library.updateBook(this);
+
+  Future setRating(Book book, int newRating) async {
+    var libraryDb = ref.read(libraryDBProvider.notifier);
+    libraryDb.update(booksTable, { 'rating' : newRating }, 'uuid = ?', [book.uuid]);
   }
 
   Future updateBookLastReadDate(Book book) async {
-    book.lastRead = (DateTime.now().millisecondsSinceEpoch / 1000).round();
-    book.lastModified = book.lastRead!;
-    await _paladin.update('books', { 'lastRead' : book.lastRead, 'rating' : book.rating }, where: 'uuid = ?', whereArgs: [ book.uuid]);
+    int lastRead = (DateTime.now().millisecondsSinceEpoch / 1000).round();
+    int lastModified = book.lastRead!;
+
+    var libraryDb = ref.read(libraryDBProvider.notifier);
+    await libraryDb.update('books', { 'lastRead' : lastRead, 'lastModified' : lastModified }, 'uuid = ?', [ book.uuid]);
+
+    // TODO: Update Currently Reading Shelf!
     await _getCurrentlyReading(_paladin, Collection(type: CollectionType.CURRENT));
   }
-
-   */
 }

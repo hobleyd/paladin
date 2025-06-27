@@ -11,11 +11,11 @@ import '../models/shelf.dart';
 import '../repositories/calibre_ws.dart';
 import '../database/library_db.dart';
 
-import 'bookshelf.dart';
-import 'booktile.dart';
-import 'calibresync.dart';
+import 'books/bookshelf.dart';
+import 'books/book_tile.dart';
+import '../screens/calibresync.dart';
 import 'menu/menu_buttons.dart';
-import 'paladinmenu.dart';
+import 'menu/paladin_menu.dart';
 
 class Paladin extends ConsumerWidget {
   late LibraryDB _library;
