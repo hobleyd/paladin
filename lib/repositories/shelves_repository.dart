@@ -1,9 +1,9 @@
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../database/library_db.dart';
-import '../models/book.dart';
-import '../models/collection.dart';
+import '../models/shelf.dart';
 
 part 'shelves_repository.g.dart';
 
@@ -19,12 +19,22 @@ class ShelvesRepository extends _$ShelvesRepository {
           ''';
 
   @override
-  Future<List<Book>> build(Collection collection) async {
-    return _getCollection(collection);
+  Future<List<Shelf>> build() async {
+    return await _getShelves();
   }
 
-  Future<List<Book>> _getCollection(Collection collection) async {
-    var libraryDb = ref.read(libraryDBProvider);
-    return await collection.getBookCollection(libraryDb.value);
+  Future updateShelf(Shelf shelf) async {
+    var libraryDb = ref.read(libraryDBProvider.notifier);
+    await libraryDb.insert(table: 'shelves', rows: shelf.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+
+    // TODO: Could remove the DB call by altering state directly here
+    state = AsyncValue.data(await _getShelves());
+  }
+
+  Future<List<Shelf>> _getShelves() async {
+    var libraryDb = ref.read(libraryDBProvider.notifier);
+    final List<Map<String, dynamic>> maps = await libraryDb.query(table: 'shelves', columns: ['rowid', 'name', 'type', 'size'], orderBy: 'rowid asc');
+
+    return maps.map((shelf) => Shelf.fromMap(shelf)).toList();
   }
 }

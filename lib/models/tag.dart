@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:sqflite_common/sqlite_api.dart';
+import 'package:paladin/database/library_db.dart';
 
 import 'collection.dart';
 
@@ -23,15 +23,15 @@ class Tag extends Collection {
   }
 
   @override
-  Collection? getBookCollection() {
+  Collection getBookCollection() {
       return Collection(type: CollectionType.BOOK, query: 'select * from books where uuid in (select bookId from book_tags where tagId = ?)', queryArgs: [id!], key: tag);
   }
 
   factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
   Map<String, dynamic> toJson() => _$TagToJson(this);
 
-  static Future<List<Tag>> getTags(Database db, String uuid) async {
-    final List<Map<String, dynamic>> maps = await db.rawQuery('select tags.id, tags.tag from book_tags, tags where book_tags.bookId = ? and book_tags.tagId = tags.id;', [uuid]);
+  static Future<List<Tag>> getTags(LibraryDB db, String uuid) async {
+    final List<Map<String, dynamic>> maps = await db.rawQuery(sql: 'select tags.id, tags.tag from book_tags, tags where book_tags.bookId = ? and book_tags.tagId = tags.id;', args: [uuid]);
     return List.generate(maps.length, (i) {
       return fromMap(maps[i]);
     });

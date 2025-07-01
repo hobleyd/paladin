@@ -1,6 +1,3 @@
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-
-import 'book.dart';
 
 enum CollectionType { AUTHOR, BOOK, SERIES, TAG, CURRENT, RANDOM, SETTINGS, APPS }
 
@@ -9,7 +6,6 @@ class Collection {
   int count = 0;
   String? query;
   List<dynamic>? queryArgs;
-  String? key;
 
   static Map<CollectionType, String> collectionTypes = {
     CollectionType.CURRENT : 'Currently Reading',
@@ -20,14 +16,14 @@ class Collection {
     CollectionType.TAG     : 'Tags'
   };
 
-  Collection({required this.type, this.query, this.queryArgs, this.key});
+  Collection({ required this.type, this.query, this.queryArgs, required this.count });
 
-  Future<List<Book>> getBookCollection(Database? db) async {
-    return [];
+  Collection getBookCollection() {
+    return this;
   }
 
   String getType() {
-    return key ?? collectionTypes[type]!;
+    return collectionTypes[type]!;
   }
 
   @override

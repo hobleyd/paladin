@@ -7,10 +7,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/book.dart';
 import '../models/json_book.dart';
-import '../providers/books_provider.dart';
+import '../providers/calibre_book_provider.dart';
 import '../providers/dio_provider.dart';
 import '../database/library_db.dart';
 import '../providers/status_provider.dart';
+
+part 'calibre_ws.g.dart';
 
 @Riverpod(keepAlive: true)
 CalibreWS calibreProvider() {

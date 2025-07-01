@@ -1,4 +1,4 @@
-import 'package:sqflite_common/sqlite_api.dart';
+import 'package:paladin/database/library_db.dart';
 
 import 'collection.dart';
 
@@ -27,13 +27,13 @@ class Series extends Collection {
     return queryArgs?[0] ?? series;
   }
 
-  static Future<Series> getSeries(Database db, int seriesId) async {
-    final List<Map<String, dynamic>> maps = await db.query('series', where: 'id = ?', whereArgs: [seriesId]);
+  static Future<Series> getSeries(LibraryDB db, int seriesId) async {
+    final List<Map<String, dynamic>> maps = await db.query(table: 'series', where: 'id = ?', whereArgs: [seriesId]);
     return fromMap(maps[0]);
   }
 
   @override
-  Collection? getBookCollection() {
+  Collection getBookCollection() {
     return Collection(type: CollectionType.BOOK, query: 'select * from books where series = ?', queryArgs: [id!], key: series);
   }
 

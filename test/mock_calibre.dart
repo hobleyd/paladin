@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:paladin/models/json_book.dart';
 import 'package:paladin/services/calibre.dart';
 
 import 'mock_calibre.mocks.dart';
@@ -19,14 +20,14 @@ void main() {
           receiveTimeout: const Duration(seconds: 900),
           contentType: 'application/json',));
 
-    RequestOptions requestOptions = RequestOptions({'method': 'GET'});
-    when(mockDio.fetch()).thenAnswer((_) async =>
+    RequestOptions requestOptions = RequestOptions(queryParameters: {'method': 'GET'});
+    when(mockDio.fetch(requestOptions)).thenAnswer((_) async =>
         Response(data: booksResponseData, requestOptions: RequestOptions(path: 'https://calibrews.sharpblue.com.au/calibre/books/0')));
 
     final mockCalibre = Calibre(mockDio);
 
     test('test getBooks', () async {
-      List<Book> books = await mockCalibre.getBooks(1672577852);
+      List<JSONBook> books = await mockCalibre.getBooks(1672577852, 0, 10);
       expect(books.length, equals(1));
       expect(books[0].Title, equals('A Book'));
     });

@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../database/library_db.dart';
 import '../repositories/books_repository.dart';
 import 'author.dart';
 import 'collection.dart';
@@ -97,7 +98,7 @@ class Book extends Collection {
     return book;
   }
 
-  static Future<Book> fromMap(Database db, Map<String, dynamic> bookMap) async {
+  static Future<Book> fromMap(LibraryDB db, Map<String, dynamic> bookMap) async {
     Book book = Book(
       uuid: bookMap['uuid'],
       added: bookMap['added'],

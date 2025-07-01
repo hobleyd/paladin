@@ -2,12 +2,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/json_book.dart';
 
-part 'books_provider.g.dart';
+part 'calibre_book_provider.g.dart';
 
 enum BooksType { processed, error }
 
 @Riverpod(keepAlive: true)
-class Books extends _$Books {
+class CalibreBook extends _$CalibreBook {
   @override
   List<JSONBook> build(BooksType type) {
     return [];

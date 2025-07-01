@@ -1,6 +1,9 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:paladin/database/library_db.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 
+import 'book.dart';
 import 'collection.dart';
 
 part 'author.g.dart';
@@ -32,15 +35,15 @@ class Author extends Collection {
   }
 
   @override
-  Collection? getBookCollection() {
+  Collection getBookCollection()  {
     return Collection(type: CollectionType.BOOK, query: 'select * from books where uuid in (select bookId from book_authors where authorId = ?)', queryArgs: [id!], key: name);
   }
 
   factory Author.fromJson(Map<String, dynamic> json) => _$AuthorFromJson(json);
   Map<String, dynamic> toJson() => _$AuthorToJson(this);
 
-  static Future<List<Author>> getAuthors(Database db, String uuid) async {
-    final List<Map<String, dynamic>> maps = await db.rawQuery('select authors.id, authors.name from book_authors, authors where book_authors.authorId = authors.id and book_authors.bookId = ?;', [uuid]);
+  static Future<List<Author>> getAuthors(LibraryDB db, String uuid) async {
+    final List<Map<String, dynamic>> maps = await db.rawQuery(sql: 'select authors.id, authors.name from book_authors, authors where book_authors.authorId = authors.id and book_authors.bookId = ?;', args: [uuid]);
     return List.generate(maps.length, (i) {
       return fromMap(maps[i]);
     });

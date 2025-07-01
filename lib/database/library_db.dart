@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:paladin/repositories/authors_repository.dart';
-import 'package:paladin/repositories/series_repository.dart';
-import 'package:paladin/repositories/shelves_repository.dart';
+
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -17,6 +15,9 @@ import '../models/series.dart';
 import '../models/shelf.dart';
 import '../models/tag.dart';
 import '../repositories/books_repository.dart';
+import '../repositories/authors_repository.dart';
+import '../repositories/series_repository.dart';
+import '../repositories/shelves_repository.dart';
 
 part 'library_db.g.dart';
 
@@ -49,10 +50,7 @@ class LibraryDB extends _$LibraryDB {
 
 
   Map<String, int> tableCount = {'books': 0, 'authors': 0, 'tags': 0, 'apps': 0, 'settings': 0};
-  List<Shelf> shelves = [];
   Map<String, List<Collection>> collection = {};
-
-
 
   static const String _bookauthors = '''
         create table if not exists book_authors(
@@ -152,11 +150,6 @@ class LibraryDB extends _$LibraryDB {
     return database;
   }
 
-  Future _getShelves(Database db) async {
-    final List<Map<String, dynamic>> maps = await db.query('shelves', columns: ['rowid', 'name', 'type', 'size'], orderBy: 'rowid asc');
-    shelves = maps.map((shelf) => Shelf.fromMap(shelf)).toList();
-  }
-
   Future _getTableCount(Database db, String table) async {
     List<Map<String, Object?>> results = await db.rawQuery('select count(*) from $table');
     tableCount[table] = results[0].values.first as int;
@@ -167,26 +160,7 @@ class LibraryDB extends _$LibraryDB {
   }
 
 
-  Future _processResults(coll, maps) async {
-    await lock.synchronized(() async {
-      collection[coll.getType()] = [];
-      for (var map in maps) {
-        switch (coll.type) {
-          case CollectionType.AUTHOR:
-            collection[coll.getType()]!.add(Author.fromMap(map));
-            break;
-          case CollectionType.SERIES:
-            collection[coll.getType()]!.add(Series.fromMap(map));
-            break;
-          case CollectionType.TAG:
-            collection[coll.getType()]!.add(Tag.fromMap(map));
-            break;
-          default:
-            collection[coll.getType()]!.add(await Book.fromMap(_paladin, map));
-        }
-      }
-    });
-  }
+
 
   Future addShelf() async {
     await updateShelf(Shelf(name: "", type: CollectionType.SERIES, size: 30));
@@ -197,54 +171,6 @@ class LibraryDB extends _$LibraryDB {
     return List.generate(maps.length, (i) {
       return Author.fromMap(maps[i]);
     });
-  }
-
-  Future getCollection(Collection coll) async {
-    // This checked that the DB initialisation has completed and returns, if not.
-    if (collection.isEmpty) {
-      return;
-    }
-    debugPrint('getCollection: ${coll.getType()}, ${coll.type}, ${coll.query}, ${coll.queryArgs}');
-
-    if (!collection.containsKey(coll.getType())) {
-      if (coll.type == CollectionType.AUTHOR) {
-        if (coll.query != null) {
-          _paladin.rawQuery(coll.query!, coll.queryArgs).then((maps) => _processResults(coll, maps));
-        } else {
-          _paladin.rawQuery('''
-            select * from books where uuid = (
-            select uuid from book_authors, authors where book_authors.authorId = authors.id and authors.name = ?);)
-            ''', [coll.getType()]).then((maps) => _processResults(coll, maps));
-        }
-      } else if (coll.type == CollectionType.BOOK) {
-        if (coll.query != null) {
-          _paladin.rawQuery(coll.query!, coll.queryArgs).then((maps) => _processResults(coll, maps));
-        } else {
-          _paladin.query('books', where: 'uuid = ?', whereArgs: [coll.getType()]).then((maps) => _processResults(coll, maps));
-        }
-      } else if (coll.type == CollectionType.CURRENT) {
-        _paladin.query('books', where: 'lastRead > 0', orderBy: 'lastRead DESC', limit: 30).then((maps) => _processResults(coll, maps));
-      } else if (coll.type == CollectionType.RANDOM) {
-        _paladin.query('books', orderBy: 'RANDOM()', limit: 30).then((maps) => _processResults(coll, maps));
-      } else if (coll.type == CollectionType.SERIES) {
-        if (coll.query != null) {
-          _paladin.rawQuery(coll.query!, coll.queryArgs).then((maps) => _processResults(coll, maps));
-        } else {
-          _paladin.rawQuery(
-              'select * from books where series = (select id from series where series = ?)',
-              [coll.getType()]).then((maps) => _processResults(coll, maps));
-        }
-      } else if (coll.type == CollectionType.TAG) {
-        if (coll.query != null) {
-          _paladin.rawQuery(coll.query!, coll.queryArgs).then((maps) => _processResults(coll, maps));
-        } else {
-          _paladin.rawQuery('''
-            select * from books where uuid = (
-            select uuid from book_tags, tags where book_tags.tagId = tags.id and tags.tag = ?);)
-            ''', [coll.getType()]).then((maps) => _processResults(coll, maps));
-        }
-      }
-    }
   }
 
   Future<int> getLastConnected() async {
@@ -344,24 +270,19 @@ class LibraryDB extends _$LibraryDB {
     await _getCurrentlyReading(db, Collection(type: CollectionType.CURRENT));
   }
 
-  Future updateShelf(Shelf shelf) async {
-    await _paladin.insert('shelves', shelf.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
-    await _getShelves(_paladin);
-  }
-
-  Future<int> insert(String table, Map<String, dynamic> rows, { ConflictAlgorithm? conflictAlgorithm }) async {
+  Future<int> insert({ required String table, required Map<String, dynamic> rows, ConflictAlgorithm? conflictAlgorithm }) async {
     return _paladin.insert(table, rows, conflictAlgorithm: conflictAlgorithm);
   }
 
-  Future<List<Map<String, dynamic>>> query(String table, { List<String>? columns, String? where, List<dynamic>? whereArgs, String? orderBy }) async {
+  Future<List<Map<String, dynamic>>> query({ required String table, List<String>? columns, String? where, List<dynamic>? whereArgs, String? orderBy }) async {
     return _paladin.query(table, columns: columns, where: where, whereArgs: whereArgs, orderBy: orderBy);
   }
 
-  Future<List<Map<String, dynamic>>> rawQuery(String sql, List<Object?>? arguments) async {
+  Future<List<Map<String, dynamic>>> rawQuery({ required String sql, List<Object?>? args }) async {
     return _paladin.rawQuery(sql, arguments);
   }
 
-  Future<int> update(String table, Map<String, dynamic> values, String? where, List<String>? whereArgs) {
+  Future<int> update({ required String table, required Map<String, dynamic> values, String? where, List<String>? whereArgs }) {
     return _paladin.update(table, values, where: where, whereArgs: whereArgs);
   }
 }

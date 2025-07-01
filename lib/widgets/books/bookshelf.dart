@@ -1,27 +1,28 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/repositories/shelves_repository.dart';
 
 import '../../models/book.dart';
 import '../../models/collection.dart';
+import '../../models/shelf.dart';
 import '../../providers/cached_cover.dart';
+import '../../repositories/shelf_repository.dart';
 
 class BookShelf extends ConsumerStatefulWidget {
-  final Collection collection;
+  final Shelf shelf;
 
-  const BookShelf({super.key, required this.collection});
+  const BookShelf({super.key, required this.shelf});
 
   @override
   ConsumerState<BookShelf> createState() => _BookShelf();
 }
 
 class _BookShelf extends ConsumerState<BookShelf> {
-  Collection get collection => widget.collection;
+  Shelf get shelf => widget.shelf;
 
   @override
   Widget build(BuildContext context) {
-    var bookListAsync = ref.watch(ShelvesRepositoryProvider(collection));
+    var bookListAsync = ref.watch(ShelfRepositoryProvider(shelf.collection));
     return bookListAsync.when(error: (error, stackTrace) {
       return const Text("You have no Books? What's wrong with you?");
     }, loading: () {

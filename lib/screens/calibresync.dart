@@ -13,11 +13,7 @@ import '../models/json_book.dart';
 import '../repositories/calibre_ws.dart';
 
 class CalibreSync extends ConsumerStatefulWidget {
-  final KeyboardCallback keyHandler;
-  final TagHandler tagHandler;
-  final FileOfInterest? paneEntity;
-
-  const CalibreSync({Key? key, required this.keyHandler, required this.tagHandler, this.paneEntity, }) : super(key: key);
+  const CalibreSync({super.key, });
 
   @override
   ConsumerState<CalibreSync> createState() => _CalibreSync();
