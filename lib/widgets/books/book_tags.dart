@@ -24,7 +24,7 @@ class BookTags extends ConsumerWidget {
                         ..onTap = () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => BookList(collection: e.getBookCollection()!)),
+                            MaterialPageRoute(builder: (context) => BookList(collection: e)),
                           );
                         },
                     ),

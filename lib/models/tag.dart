@@ -15,16 +15,11 @@ class Tag extends Collection {
   Tag({
     this.id,
     required this.tag,
-  }) : super(type: CollectionType.TAG);
+  }) : super(type: CollectionType.TAG, count: 1, query: tagsQuery, queryArgs: [tag]);
 
   @override
   String getType() {
     return tag;
-  }
-
-  @override
-  Collection getBookCollection() {
-      return Collection(type: CollectionType.BOOK, query: 'select * from books where uuid in (select bookId from book_tags where tagId = ?)', queryArgs: [id!], key: tag);
   }
 
   factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);

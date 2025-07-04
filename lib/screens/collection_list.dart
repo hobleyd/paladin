@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/author.dart';
 import '../models/collection.dart';
@@ -7,31 +7,20 @@ import '../models/series.dart';
 import '../models/tag.dart';
 import '../database/library_db.dart';
 import 'book_list.dart';
-import '../widgets/books/book_tile.dart';
 
-class CollectionList extends StatefulWidget {
-  final Collection collection;
-  const CollectionList({Key? key, required this.collection}) : super(key: key);
-
-  @override
-  _CollectionList createState() => _CollectionList();
-}
-
-class _CollectionList extends State<CollectionList> {
-  late LibraryDB _library;
+class CollectionList extends ConsumerWidget {
   final TextEditingController searchController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
+  final Collection collection;
+
+  CollectionList({super.key, required this.collection});
 
   @override
-  Widget build(BuildContext context) {
-    final ScrollController scrollController = ScrollController();
-
-    return Consumer<LibraryDB>(builder: (context, model, child) {
-      _library = model;
-      _library.getCollection(widget.collection);
+  Widget build(BuildContext context, WidgetRef ref) {
 
       return Scaffold(
           appBar: AppBar(
-              title: Text(widget.collection.getType(), style: Theme.of(context).textTheme.titleLarge),
+              title: Text(collection.getType(), style: Theme.of(context).textTheme.titleLarge),
               actions: <Widget>[
                 SizedBox(
                   width: 180,
@@ -56,7 +45,7 @@ class _CollectionList extends State<CollectionList> {
                   child: SingleChildScrollView(
                     controller: scrollController,
                     child: ListView.builder(
-                        itemCount: _library.collection[widget.collection.getType()]?.length ?? 0,
+                        itemCount: collection[collection.getType()]?.length ?? 0,
                         itemBuilder: (context, index) {
                           return Container(
                               color: index % 2 == 0 ? Colors.grey : Colors.white,
@@ -66,16 +55,23 @@ class _CollectionList extends State<CollectionList> {
                                   child: TextButton(
                                     onPressed: () => _navigateToCollection(context, _getCollection(index)),
                                     style: ButtonStyle(
-                                        backgroundColor:
-                                            (index % 2 == 0) ? const MaterialStatePropertyAll(Colors.grey) : const MaterialStatePropertyAll(Colors.white),
-                                        foregroundColor: const MaterialStatePropertyAll(Colors.black)),
+                                        backgroundColor: (index % 2 == 0)
+                                            ? const WidgetStatePropertyAll(Colors.grey)
+                                            : const WidgetStatePropertyAll(Colors.white),
+                                        foregroundColor: const WidgetStatePropertyAll(Colors.black),
+                                    ),
                                     child: _getLabel(index),
-                                  )));
+                                  ),
+                              ),
+                          );
                         },
                         scrollDirection: Axis.vertical,
                         shrinkWrap: true),
-                  ))));
-    });
+                  ),
+              ),
+          ),
+      );
+    }
   }
 
   String _getAuthors(List<Collection>? coll, int index) {
@@ -88,7 +84,7 @@ class _CollectionList extends State<CollectionList> {
   }
 
   Collection? _getCollection(int index) {
-    switch (widget.collection.type) {
+    switch (collection.type) {
       case CollectionType.AUTHOR:
         final Author author = _library.collection[widget.collection.getType()]![index] as Author;
         return author.getBookCollection();

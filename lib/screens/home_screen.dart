@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intersperse/intersperse.dart';
 import 'package:paladin/repositories/books_repository.dart';
+import 'package:paladin/repositories/shelf_repository.dart';
 import 'package:paladin/repositories/shelves_repository.dart';
 import 'package:paladin/screens/calibresync.dart';
 
 import '../models/book.dart';
-import '../models/collection.dart';
 import '../models/shelf.dart';
 import '../widgets/books/book_tile.dart';
 import '../widgets/books/bookshelf.dart';
@@ -22,48 +22,33 @@ class HomeScreen extends ConsumerWidget {
     var bookCount = ref.watch(booksRepositoryProvider);
 
     return shelves.when(error: (error, stackTrace) {
-      return Scaffold(
-        appBar: null,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 6, bottom: 6),
-            child: _getInitialInstructions(context, bookCount.value),
-          ),
-        ),
-      );
+      return _getInitialInstructions(context, bookCount.value);
     }, loading: () {
       return const Center(child: CircularProgressIndicator());
     }, data: (List<Shelf> shelves) {
       Book? book;
-      for (var shelf in shelves) {
-        if (shelf.name == Collection.collectionTypes[CollectionType.RANDOM]) {
-
-        }
+      List<Book>? books = ref.watch(shelfRepositoryProvider(shelves[0].collection)).value;
+      if (books != null && books.isNotEmpty) {
+        book = books[0];
       }
-      return Scaffold(
-        appBar: null,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 6, bottom: 6),
-            child: Column(
-              crossAxisAlignment: book != null ? CrossAxisAlignment.start : CrossAxisAlignment.center,
-              children: [
-                book != null
-                    ? Expanded(
-                        child: BookTile(
-                        book: book,
-                        showMenu: true,
-                      ))
-                    : _getInitialInstructions(context, bookCount.value),
-                const SizedBox(height: 3),
-                const Divider(thickness: 1, height: 3, color: Colors.black),
-                const MenuButtons(),
-                const Divider(thickness: 1, height: 3, color: Colors.black),
-                ..._getShelves(shelves),
-              ],
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (book != null) ...[
+            Expanded(
+              child: BookTile(
+                book: book,
+                showMenu: true,
+              ),
             ),
-          ),
-        ),
+          ],
+          if (book == null) ...[_getInitialInstructions(context, bookCount.value)],
+          const SizedBox(height: 3),
+          const Divider(thickness: 1, height: 3, color: Colors.black),
+          const MenuButtons(),
+          const Divider(thickness: 1, height: 3, color: Colors.black),
+          ..._getShelves(shelves),
+        ],
       );
     });
   }

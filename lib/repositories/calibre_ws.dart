@@ -6,7 +6,9 @@ import 'package:http_status_code/http_status_code.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/book.dart';
+import '../models/calibre_sync_data.dart';
 import '../models/json_book.dart';
+import '../providers/cached_cover.dart';
 import '../providers/calibre_book_provider.dart';
 import '../providers/dio_provider.dart';
 import '../database/library_db.dart';
@@ -15,65 +17,56 @@ import '../providers/status_provider.dart';
 part 'calibre_ws.g.dart';
 
 @Riverpod(keepAlive: true)
-CalibreWS calibreProvider() {
-  return CalibreWS(ref);
-}
+class CalibreWS extends _$CalibreWS {
 
-class CalibreWS {
-  bool syncFromEpoch = false;
-  int syncDate = 0;
-  double progress = 0.0;
-  String status = "";
-
-  CalibreWS(WidgetRef ref) {
-    _getLastSyncDate();
+  CalibreSyncData build() {
+    return CalibreSyncData();
   }
 
   Future getBooks() async {
     var status = ref.read(statusProvider.notifier);
-    var library = paladinDatabase();
     var calibre = dioProvider();
 
     status.setStatus('Initialising Sync...');
 
     const int size = 100;
-    int count = await calibre.getCount(syncDate);
+    int count = await calibre.getCount(state.syncDate);
     status.setStatus('Received $count Books in the batch.');
     
     int offset = 0;
     while (offset < count) {
-      await getBooksWithOffset(ref, library, offset, size, count);
+      await getBooksWithOffset(offset, size, count);
       offset += size;
     }
 
-    syncDate = await library.setLastConnected();
-    status.setStatus('Completed Synchronisation');
+    LibraryDB library = ref.read(libraryDBProvider.notifier);
+    state = state.copyWith(syncDate: await library.setLastConnected(), status: 'Completed Synchronisation');
   }
 
-  Future getBooksWithOffset(WidgetRef ref, LibraryDB library, int offset, int size, int total) async {
+  Future getBooksWithOffset(int offset, int size, int total) async {
+    LibraryDB library = ref.read(libraryDBProvider.notifier);
     var calibre = dioProvider();
     var status = ref.read(statusProvider.notifier);
-    var library = paladinDatabase();
 
-    List<JSONBook> books = await calibre.getBooks(syncDate, offset, size);
+    List<JSONBook> books = await calibre.getBooks(state.syncDate, offset, size);
     String exception = "";
 
     int index = offset;
     for (var element in books) {
       status.setStatus('Syncing ${element.Title} ($index/$total)');
 
-      ref.read(booksProvider(BooksType.processed).notifier).add(element);
+      ref.read(calibreBookProvider(BooksType.processed).notifier).add(element);
       try {
         Book book = await Book.fromJSON(element);
 
         // Only download the Book if something has changed since last time!
-        if (book.lastModified == null || book.lastModified! > await library.getLastModified(book)) {
+        if (book.lastModified > await library.getLastModified(book)) {
           status.setStatus('Downloading ${element.Title} ($index/$total)');
           await _downloadBook(book);
           await library.insertBook(book);
         }
       } catch (e) {
-        ref.read(booksProvider(BooksType.error).notifier).add(element);
+        ref.read(calibreBookProvider(BooksType.error).notifier).add(element);
         exception = 'Got exception processing "${element.Title}":';
         if (e is DioException) {
           if (e.response != null) {
@@ -87,21 +80,20 @@ class CalibreWS {
         }
       }
 
-      progress = index++ / total;
+      state = state.copyWith(progress: index++ / total);
     }
   }
 
   Future setSyncFromEpoch(bool? syncFrom) async {
     if (syncFrom != null) {
-      syncFromEpoch = syncFrom;
-      _getLastSyncDate();
+      state = state.copyWith(syncFromEpoch: syncFrom);
     }
 
     return;
   }
 
   Future<void> _downloadBook(Book book) async {
-    final file = File(book.path!);
+    final file = File(book.path);
     if (!file.existsSync()) {
       file.createSync(recursive: true);
     }
@@ -113,12 +105,6 @@ class CalibreWS {
     }
     await sink.flush();
     await sink.close();
-    await book.cacheCover();
-  }
-
-  Future<void> _getLastSyncDate() async {
-    syncDate = syncFromEpoch ? 0 : await paladinDatabase().getLastConnected();
-
-    notifyListeners();
+    ref.read(cachedCoverProvider(book).notifier).cacheCover();
   }
 }

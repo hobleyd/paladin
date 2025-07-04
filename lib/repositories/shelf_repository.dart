@@ -14,6 +14,10 @@ class ShelfRepository extends _$ShelfRepository {
     return _getCollection(collection);
   }
 
+  void updateCollection(Collection coll) async {
+    state = AsyncValue.data(await _getCollection(coll));
+  }
+
   Future<List<Book>> _getCollection(Collection coll) async {
     var libraryDb = ref.read(libraryDBProvider.notifier);
 

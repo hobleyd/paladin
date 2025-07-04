@@ -1,16 +1,19 @@
-import'dart:io';
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
-import 'package:paladin/providers/paladin_theme.dart';
-import 'package:paladin/providers/progress_provider.dart';
-import 'package:paladin/providers/status_provider.dart';
 
+
+import '../interfaces/sync_with_calibre.dart';
 import '../models/json_book.dart';
 import '../repositories/calibre_ws.dart';
+import '../providers/calibre_book_provider.dart';
+import '../widgets/calibre/calibre_progress_bar.dart';
+import '../widgets/calibre/calibre_status.dart';
+import '../widgets/calibre/calibre_sync_button.dart';
+import '../widgets/calibre/calibre_book_list.dart';
 
 class CalibreSync extends ConsumerStatefulWidget {
   const CalibreSync({super.key, });
@@ -19,8 +22,7 @@ class CalibreSync extends ConsumerStatefulWidget {
   ConsumerState<CalibreSync> createState() => _CalibreSync();
 }
 
-class _CalibreSync extends ConsumerState<CalibreSync> {
-  final ScrollController scrollController = ScrollController();
+class _CalibreSync extends ConsumerState<CalibreSync> implements SyncWithCalibre {
   bool _processing = false;
 
   @override
@@ -30,98 +32,35 @@ class _CalibreSync extends ConsumerState<CalibreSync> {
     }
 
     return Scaffold(
-        appBar: AppBar(title: const Text('Synchronise Library')),
-        body: Column(children: [
+      appBar: AppBar(title: const Text('Synchronise Library')),
+      body: Column(
+        children: [
           Expanded(child: _getStatusList()),
-          _getProgressBar(ref),
-          _getSyncButton(),
-        ]));
-  }
-
-  Widget _getBookList(List<JSONBook> list) {
-    return Scrollbar(
-            controller: scrollController,
-            child: SingleChildScrollView(
-                controller: scrollController,
-                child: ListView.builder(
-                  itemCount: list.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(subtitle: Text(list[index].Author), title: Text(list[index].Title));
-                  },
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                )));
-  }
-
-  Widget _getProgressBar(WidgetRef ref) {
-    double progress = ref.watch(progressProvider);
-
-    return Column(children: [
-      const Divider(thickness: 1, height: 3, color: Colors.black),
-      if (progress > 0) ...[
-        LinearProgressIndicator(value: progress, semanticsLabel: 'Books Saved to Database'),
-        const Divider(thickness: 1, height: 3, color: Colors.black),
-      ]
-    ]);
-
-    // return progress > 0
-    //     ? Column(children: [
-    //         const Divider(thickness: 1, height: 3, color: Colors.black),
-    //         LinearProgressIndicator(value: progress, semanticsLabel: 'Books Saved to Database'),
-    //         const Divider(thickness: 1, height: 3, color: Colors.black),
-    //       ])
-    //     : const Divider(thickness: 1, height: 3, color: Colors.black);
-  }
-
-  Widget _getStatus() {
-    final DateTime lastSynced = DateTime.fromMillisecondsSinceEpoch(_calibre.syncDate * 1000);
-    final String formattedDate = DateFormat('MMMM d, y: H:mm').format(lastSynced);
-    return Column(children: [
-      Text('You last synchronised your library on $formattedDate', style: const TextStyle(fontWeight: FontWeight.bold)),
-      const SizedBox(height: 10),
-      const Text('Click the Sync button to download your books!', style: TextStyle(fontWeight: FontWeight.bold))]);
+          CalibreProgressBar(),
+          CalibreSyncButton(processing: _processing, sync: this),
+        ],
+      ),
+    );
   }
 
   Widget _getStatusList() {
+    List<JSONBook> errors = ref.watch(calibreBookProvider(BooksType.error));
+
     return _processing
-        ? _getBookList(_calibre.processedBooks)
-        : _calibre.errors.isNotEmpty
-            ? _getBookList(_calibre.errors)
-            : Padding(padding: const EdgeInsets.only(top: 50, bottom: 50), child: _getStatus());
+        ? CalibreBookList(bookType: BooksType.processed,)
+        : errors.isNotEmpty
+            ? CalibreBookList(bookType: BooksType.error,)
+            : Padding(padding: const EdgeInsets.only(top: 50, bottom: 50), child: CalibreStatus());
   }
 
-  Widget _getSyncButton(WidgetRef ref) {
-    if (!_processing) {
-      return IntrinsicWidth(child: Row(children: [
-        ElevatedButton(
-          onPressed: () => _syncWithCalibre(context),
-          style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
-          child: Text(_calibre.errors.isEmpty ? 'Sync' : 'Re-Sync', textAlign: TextAlign.center),
-        ),
-        const SizedBox(),
-        Flexible(fit: FlexFit.loose, child: CheckboxListTile(
-            controlAffinity: ListTileControlAffinity.leading,
-            selected: _calibre.syncFromEpoch,
-            title: const Text('From Epoch?'),
-            onChanged: (bool? checked) {
-              _calibre.setSyncFromEpoch(checked);
-            },
-            value: _calibre.syncFromEpoch)),
-      ]));
-    }
-
-    String status = ref.watch(statusProvider);
-    ThemeData theme = ref.watch(paladinThemeProvider);
-    return Text(status, style: theme.textTheme.titleLarge, textAlign: TextAlign.center);
-  }
-
-  Future<void> _syncWithCalibre(BuildContext context) async {
+  @override
+  Future<void> syncWithCalibre() async {
     setState(() {
       _processing = true;
     });
 
     await Isolate.run(() {
-      calibreProvider().getBooks();
+      ref.read(calibreWSProvider.notifier).getBooks();
     });
 
     setState(() {

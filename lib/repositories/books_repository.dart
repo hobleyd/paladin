@@ -42,7 +42,7 @@ class BooksRepository extends _$BooksRepository {
 
   Future setRating(Book book, int newRating) async {
     var libraryDb = ref.read(libraryDBProvider.notifier);
-    libraryDb.update(table: booksTable, values: { 'rating' : newRating }, where: 'uuid = ?', whereArgs: [book.uuid]);
+    libraryDb.updateTable(table: booksTable, values: { 'rating' : newRating }, where: 'uuid = ?', whereArgs: [book.uuid]);
   }
 
   Future updateBookLastReadDate(Book book) async {
@@ -50,7 +50,7 @@ class BooksRepository extends _$BooksRepository {
     int lastModified = book.lastRead!;
 
     var libraryDb = ref.read(libraryDBProvider.notifier);
-    await libraryDb.update(table: 'books', values: { 'lastRead' : lastRead, 'lastModified' : lastModified }, where: 'uuid = ?', whereArgs: [ book.uuid]);
+    await libraryDb.updateTable(table: 'books', values: { 'lastRead' : lastRead, 'lastModified' : lastModified }, where: 'uuid = ?', whereArgs: [ book.uuid]);
 
     // TODO: Update Currently Reading Shelf!
     //await _getCurrentlyReading(_paladin, Collection(type: CollectionType.CURRENT));

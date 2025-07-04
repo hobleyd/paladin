@@ -1,4 +1,5 @@
 
+import 'package:paladin/models/collection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -23,7 +24,16 @@ class ShelvesRepository extends _$ShelvesRepository {
     return await _getShelves();
   }
 
-  Future updateShelf(Shelf shelf) async {
+  Future<void> addShelf() async {
+    await updateShelf(Shelf(name: "", collection: Collection(type: CollectionType.SERIES, count: 30), size: 30));
+  }
+
+  Future<void> removeShelf(Shelf shelf) {
+    var libraryDb = ref.read(libraryDBProvider.notifier);
+    libraryDb.rawQuery(sql: 'delete from shelves where name = ?', args: [shelf.name]);
+  }
+
+  Future<void> updateShelf(Shelf shelf) async {
     var libraryDb = ref.read(libraryDBProvider.notifier);
     await libraryDb.insert(table: 'shelves', rows: shelf.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
 

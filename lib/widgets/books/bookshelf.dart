@@ -34,7 +34,7 @@ class _BookShelf extends ConsumerState<BookShelf> {
           Container(
             width: double.infinity,
             child: Text(
-              '${collection.getType()} (${bookShelf.length})',
+              '${shelf.collection.getType()} (${bookShelf.length})',
               style: Theme.of(context).textTheme.labelSmall,
               textAlign: TextAlign.center,
             ),

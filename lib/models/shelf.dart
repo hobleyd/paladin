@@ -15,6 +15,20 @@ class Shelf {
     CollectionType.RANDOM : 'select *, count(*) as count from books order by random limit ?'
   };
 
+  static const shelfTable = {
+    CollectionType.AUTHOR : 'authors',
+    CollectionType.SERIES : 'series',
+    CollectionType.TAG    : 'tags',
+  };
+
+  static const shelfTableColumn = {
+    CollectionType.AUTHOR : 'name',
+    CollectionType.SERIES : 'series',
+    CollectionType.TAG    : 'tag',
+  };
+
+  CollectionType get type => collection.type;
+
   Shelf({this.shelfId, required this.name, required this.collection, required this.size});
 
   static Shelf fromMap(Map<String, dynamic> shelf) {

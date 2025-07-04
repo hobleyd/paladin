@@ -160,12 +160,6 @@ class LibraryDB extends _$LibraryDB {
   }
 
 
-
-
-  Future addShelf() async {
-    await updateShelf(Shelf(name: "", type: CollectionType.SERIES, size: 30));
-  }
-
   Future<List<Author>> getAuthors() async {
     final List<Map<String, dynamic>> maps = await _paladin.query('authors');
     return List.generate(maps.length, (i) {
@@ -181,10 +175,6 @@ class LibraryDB extends _$LibraryDB {
   Future<int> getLastModified(Book book) async {
     final List<Map<String, dynamic>> maps = await _paladin.query('books', columns: [ 'lastModified'], where: 'uuid = ?', whereArgs: [book.uuid]);
     return maps.isNotEmpty ? maps.first['lastModified'] as int : 0;
-  }
-
-  Future<List<Map<String, dynamic>>> getShelfName(String table, String column, String query, int size) async {
-    return _paladin.query(table, columns: [column], where:  '$column like ?', whereArgs: ['%${query.replaceAll(' ', '%')}%'], limit: size);
   }
 
   Future<Tag?> getTag(String tag) async {
@@ -274,15 +264,15 @@ class LibraryDB extends _$LibraryDB {
     return _paladin.insert(table, rows, conflictAlgorithm: conflictAlgorithm);
   }
 
-  Future<List<Map<String, dynamic>>> query({ required String table, List<String>? columns, String? where, List<dynamic>? whereArgs, String? orderBy }) async {
-    return _paladin.query(table, columns: columns, where: where, whereArgs: whereArgs, orderBy: orderBy);
+  Future<List<Map<String, dynamic>>> query({ required String table, List<String>? columns, String? where, List<dynamic>? whereArgs, String? orderBy, int? limit }) async {
+    return _paladin.query(table, columns: columns, where: where, whereArgs: whereArgs, orderBy: orderBy, limit: limit);
   }
 
   Future<List<Map<String, dynamic>>> rawQuery({ required String sql, List<Object?>? args }) async {
-    return _paladin.rawQuery(sql, arguments);
+    return _paladin.rawQuery(sql, args);
   }
 
-  Future<int> update({ required String table, required Map<String, dynamic> values, String? where, List<String>? whereArgs }) {
+  Future<int> updateTable({ required String table, required Map<String, dynamic> values, String? where, List<String>? whereArgs }) {
     return _paladin.update(table, values, where: where, whereArgs: whereArgs);
   }
 }

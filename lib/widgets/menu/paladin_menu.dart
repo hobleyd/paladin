@@ -1,29 +1,21 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:keep_screen_on/keep_screen_on.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/collection.dart';
 import '../../models/tag.dart';
-import '../../repositories/calibre_ws.dart';
 import '../../database/library_db.dart';
 import '../../screens/book_list.dart';
 import '../../screens/calibresync.dart';
-import '../../screens/collection_list.dart';
 
-class PaladinMenu extends StatelessWidget {
+class PaladinMenu extends ConsumerWidget {
   static const TextStyle _style = TextStyle(fontSize: 10);
   late LibraryDB library;
-  late BuildContext context;
 
-  PaladinMenu({Key? key}) : super(key: key);
+  PaladinMenu({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    library = Provider.of<LibraryDB>(context, listen: false);
-    this.context = context;
-
+  Widget build(BuildContext context, WidgetRef ref) {
     return PopupMenuButton<String>(
       icon: const Icon(Icons.menu),
       itemBuilder: (BuildContext context) =>
@@ -39,30 +31,18 @@ class PaladinMenu extends StatelessWidget {
     if (item != null) {
       switch (item) {
         case 'future':
-          _navigateToTag();
+          _navigateToTag(context);
           break;
         case 'sync':
-          _navigateToSync();
+          Navigator.push(context, MaterialPageRoute(builder: (context) => CalibreSync()));
           break;
       }
     }
   }
 
-  void _navigateToSync() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => ChangeNotifierProvider(
-        create: (context) => CalibreWS(context),
-        builder: (context, child) => const CalibreSync()))).then((value) {
-          if (Platform.isAndroid || Platform.isIOS) {
-            KeepScreenOn.turnOff();
-          }
-          library.updateFields(null);
-    });
-  }
-
-  Future _navigateToTag() async {
-    Tag? futureReads = await library.getTag('Future Reads');
+  Future _navigateToTag(BuildContext context) async {
     if (context.mounted) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => BookList(collection: futureReads!.getBookCollection()!))).then((value) => library.updateFields(null));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => BookList(collection: Tag(tag: 'Future Reads'))));
     }
   }
 }

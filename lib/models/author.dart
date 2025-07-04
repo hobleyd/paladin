@@ -1,9 +1,6 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paladin/database/library_db.dart';
-import 'package:sqflite_common/sqlite_api.dart';
 
-import 'book.dart';
 import 'collection.dart';
 
 part 'author.g.dart';
@@ -18,7 +15,7 @@ class Author extends Collection {
   Author({
     this.id,
     required this.name,
-  }) : super(type: CollectionType.AUTHOR);
+  }) : super(type: CollectionType.AUTHOR, count: 1, query: authorsQuery, queryArgs: [name]);
 
   String getAuthorNameNormalised() {
     if (name.contains(',')) {
@@ -32,11 +29,6 @@ class Author extends Collection {
   @override
   String getType() {
     return name;
-  }
-
-  @override
-  Collection getBookCollection()  {
-    return Collection(type: CollectionType.BOOK, query: 'select * from books where uuid in (select bookId from book_authors where authorId = ?)', queryArgs: [id!], key: name);
   }
 
   factory Author.fromJson(Map<String, dynamic> json) => _$AuthorFromJson(json);

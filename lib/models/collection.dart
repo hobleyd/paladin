@@ -2,7 +2,7 @@
 enum CollectionType { AUTHOR, BOOK, SERIES, TAG, CURRENT, RANDOM, SETTINGS, APPS }
 
 class Collection {
-  final CollectionType type;
+  CollectionType type;
   int count = 0;
   String? query;
   List<dynamic>? queryArgs;
@@ -17,10 +17,6 @@ class Collection {
   };
 
   Collection({ required this.type, this.query, this.queryArgs, required this.count });
-
-  Collection getBookCollection() {
-    return this;
-  }
 
   String getType() {
     return collectionTypes[type]!;

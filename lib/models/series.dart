@@ -11,7 +11,7 @@ class Series extends Collection {
   Series({
     this.id,
     required this.series,
-  }) : super(type: CollectionType.SERIES);
+  }) : super(type: CollectionType.SERIES, count: 1, query: seriesQuery, queryArgs: [series]);
 
   String getSeriesNameNormalised() {
     if (series.contains(',')) {
@@ -30,11 +30,6 @@ class Series extends Collection {
   static Future<Series> getSeries(LibraryDB db, int seriesId) async {
     final List<Map<String, dynamic>> maps = await db.query(table: 'series', where: 'id = ?', whereArgs: [seriesId]);
     return fromMap(maps[0]);
-  }
-
-  @override
-  Collection getBookCollection() {
-    return Collection(type: CollectionType.BOOK, query: 'select * from books where series = ?', queryArgs: [id!], key: series);
   }
 
   static Series fromMap(Map<String, dynamic> series) {

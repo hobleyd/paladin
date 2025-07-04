@@ -48,7 +48,7 @@ class Book extends Collection {
     this.series,
     this.seriesIndex,
     this.tags,
-    required this.title}) : super(type: CollectionType.BOOK);
+    required this.title}) : super(type: CollectionType.BOOK, count: 1);
 
 
   static Future<String> getBookPath({ required List<Author> authors, required String uuid }) async {
