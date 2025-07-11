@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.paladin">
+    package="au.com.sharpblue.paladin">
    <application
         android:label="Paladin"
         android:name="${applicationName}"
