@@ -1,8 +1,9 @@
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/interfaces/sync_with_calibre.dart';
 import 'package:paladin/providers/calibre_book_provider.dart';
-import 'package:paladin/repositories/calibre_ws.dart';
+import 'package:paladin/providers/calibre_ws.dart';
 
 import '../../models/calibre_sync_data.dart';
 import '../../models/json_book.dart';
@@ -10,37 +11,30 @@ import '../../providers/paladin_theme.dart';
 import '../../providers/status_provider.dart';
 
 class CalibreSyncButton extends ConsumerWidget {
-  final bool processing;
-  final SyncWithCalibre sync;
-
-  const CalibreSyncButton({super.key, required this.processing, required this.sync});
+  const CalibreSyncButton({super.key,});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (!processing) {
+    CalibreSyncData syncData = ref.watch(calibreWSProvider);
+    if (!syncData.processing) {
       List<JSONBook> errors = ref.watch(calibreBookProvider(BooksType.error));
-      CalibreSyncData syncData = ref.watch(calibreWSProvider);
-      return IntrinsicWidth(
-        child: Row(
-          children: [
-            ElevatedButton(
-              onPressed: () => sync.syncWithCalibre(),
-              style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
-              child: Text(errors.isEmpty ? 'Sync' : 'Re-Sync', textAlign: TextAlign.center),
-            ),
-            const SizedBox(),
-            Flexible(
-                fit: FlexFit.loose,
-                child: CheckboxListTile(
-                    controlAffinity: ListTileControlAffinity.leading,
-                    selected: syncData.syncFromEpoch,
-                    title: const Text('From Epoch?'),
-                    onChanged: (bool? checked) {
-                      ref.read(calibreWSProvider.notifier).setSyncFromEpoch(checked);
-                    },
-                    value: syncData.syncFromEpoch)),
-          ],
-        ),
+      return Row(
+        children: [
+          const Spacer(),
+          const Text('From Epoch?'),
+          Checkbox(
+              onChanged: (bool? checked) {
+                ref.read(calibreWSProvider.notifier).setSyncFromEpoch(checked);
+              },
+              value: syncData.syncFromEpoch),
+          const SizedBox(),
+          ElevatedButton(
+            onPressed: () => ref.read(calibreWSProvider.notifier).getBooks(),
+            style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
+            child: Text(errors.isEmpty ? 'Sync' : 'Re-Sync', textAlign: TextAlign.center),
+          ),
+          const Spacer(),
+        ],
       );
     }
 

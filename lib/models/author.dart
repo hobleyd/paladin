@@ -60,4 +60,9 @@ class Author extends Collection {
       'name': name,
     };
   }
+
+  @override
+  String toString() {
+    return '$name [$count]';
+  }
 }

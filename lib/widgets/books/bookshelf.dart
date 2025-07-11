@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/book.dart';
-import '../../models/collection.dart';
 import '../../models/shelf.dart';
 import '../../providers/cached_cover.dart';
 import '../../repositories/shelf_repository.dart';
+import '../home/fatal_error.dart';
 
 class BookShelf extends ConsumerStatefulWidget {
   final Shelf shelf;
@@ -24,7 +24,7 @@ class _BookShelf extends ConsumerState<BookShelf> {
   Widget build(BuildContext context) {
     var bookListAsync = ref.watch(ShelfRepositoryProvider(shelf.collection));
     return bookListAsync.when(error: (error, stackTrace) {
-      return const Text("You have no Books? What's wrong with you?");
+      return FatalError(error: error.toString(), trace: stackTrace);
     }, loading: () {
       return const Text('');
     }, data: (List<Book> bookShelf) {

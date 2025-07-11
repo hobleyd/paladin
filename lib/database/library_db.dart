@@ -1,18 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:paladin/repositories/last_connected.dart';
 
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:synchronized/synchronized.dart';
 
-import '../models/author.dart';
 import '../models/book.dart';
 import '../models/collection.dart';
-import '../models/series.dart';
-import '../models/shelf.dart';
 import '../models/tag.dart';
 import '../repositories/books_repository.dart';
 import '../repositories/authors_repository.dart';
@@ -25,6 +22,7 @@ part 'library_db.g.dart';
 class LibraryDB extends _$LibraryDB {
   late Database _paladin;
 
+  @override
   Future<Database> build() async {
     sqfliteFfiInit();
 
@@ -39,18 +37,13 @@ class LibraryDB extends _$LibraryDB {
               _createTables(db, 0, version);
             },
             onOpen: (db) {
-              updateFields(db);
             },
             onUpgrade: (db, oldVersion, newVersion) {
               _createTables(db, oldVersion, newVersion);
             }));
+
     return _paladin;
   }
-  var lock = Lock();
-
-
-  Map<String, int> tableCount = {'books': 0, 'authors': 0, 'tags': 0, 'apps': 0, 'settings': 0};
-  Map<String, List<Collection>> collection = {};
 
   static const String _bookauthors = '''
         create table if not exists book_authors(
@@ -59,6 +52,7 @@ class LibraryDB extends _$LibraryDB {
           foreign key(authorId) references authors(id),
           foreign key(bookId) references books(uuid));
           ''';
+
   static const String _booktags = '''
         create table if not exists book_tags(
           bookId text not null, 
@@ -66,11 +60,6 @@ class LibraryDB extends _$LibraryDB {
           foreign key(bookId) REFERENCES books(uuid),
           foreign key(tagId) REFERENCES tags(id));
           ''';
-  static const String _calibreserver = '''
-        create table calibre_library (
-					last_connected int);
-					''';
-
 
   static const String _tags = '''
         create table tags(
@@ -93,7 +82,7 @@ class LibraryDB extends _$LibraryDB {
       db.execute(_bookauthors);
       db.execute(_tags);
       db.execute(_booktags);
-      db.execute(_calibreserver);
+      db.execute(CalibreLastConnectedDate.calibre);
 
       db.execute(AuthorsRepository.indexAuthors);
       db.execute(BooksRepository.indexBooks);
@@ -119,25 +108,14 @@ class LibraryDB extends _$LibraryDB {
     await db.execute('PRAGMA foreign_keys = ON;');
   }
 
-  Future<int> getCount(String table, { String? where, List<dynamic>? whereArgs }) async {
-    List<Map<String, dynamic>> results = await _paladin.query(table, columns: ['count(*) as count'], where: where, whereArgs: whereArgs);
-    return results.first['count'] as int;
-  }
-
-  Future _getCurrentlyReading(Database db, Collection coll) async {
-    final List<Map<String, dynamic>> maps = await _paladin.query('books', where: 'lastRead > 0', orderBy: 'lastRead DESC', limit: 10);
-    collection[coll.getType()] = [];
-    for (var map in maps) {
-      collection[coll.getType()]!.add(await Book.fromMap(_paladin, map));
-    }
-  }
-
   Future<String> _getDatabasePath() async {
     String database = "";
     if (!kIsWeb) {
       if (Platform.isAndroid) {
         Directory documentsDirectory = await getApplicationDocumentsDirectory();
         database = documentsDirectory.path;
+      } else if (Platform.isWindows) {
+        database = path.join(Platform.environment['APPDATA']!, 'Paladin');
       } else {
         database = path.join(Platform.environment['HOME']!, '.paladin');
       }
@@ -150,36 +128,18 @@ class LibraryDB extends _$LibraryDB {
     return database;
   }
 
-  Future _getTableCount(Database db, String table) async {
-    List<Map<String, Object?>> results = await db.rawQuery('select count(*) from $table');
-    tableCount[table] = results[0].values.first as int;
-  }
-
   Future _insertInitialShelves(Database db, String name, int type, int size) async {
     return db.rawInsert('insert into shelves(name, type, size) values(?, ?, ?)', [name, type, size]);
   }
 
-
-  Future<List<Author>> getAuthors() async {
-    final List<Map<String, dynamic>> maps = await _paladin.query('authors');
-    return List.generate(maps.length, (i) {
-      return Author.fromMap(maps[i]);
-    });
-  }
-
-  Future<int> getLastConnected() async {
-    final List<Map<String, dynamic>> maps = await _paladin.query('calibre_library', limit: 1);
-    return maps.isNotEmpty ? maps.first['last_connected'] as int : 0;
+  Future<int> getCount(String table, { String? where, List<dynamic>? whereArgs }) async {
+    List<Map<String, dynamic>> results = await _paladin.query(table, columns: ['count(*) as count'], where: where, whereArgs: whereArgs);
+    return results.first['count'] as int;
   }
 
   Future<int> getLastModified(Book book) async {
     final List<Map<String, dynamic>> maps = await _paladin.query('books', columns: [ 'lastModified'], where: 'uuid = ?', whereArgs: [book.uuid]);
     return maps.isNotEmpty ? maps.first['lastModified'] as int : 0;
-  }
-
-  Future<Tag?> getTag(String tag) async {
-    final List<Map<String, dynamic>> maps = await _paladin.query('tags', where: 'tag = ?', whereArgs: [tag]);
-    return maps.isNotEmpty ? Tag.fromMap(maps.first) : null;
   }
 
   Future<void> insertBook(Book book) async {
@@ -240,24 +200,6 @@ class LibraryDB extends _$LibraryDB {
         }
       }
     }
-  }
-
-  Future<int> setLastConnected() async {
-    int lastConnected = (DateTime.now().millisecondsSinceEpoch / 1000).round();
-    await _paladin.insert('calibre_library', { 'rowid': 0, 'last_connected': lastConnected}, conflictAlgorithm: ConflictAlgorithm.replace);
-
-    return lastConnected;
-  }
-
-  Future updateFields(Database? db) async {
-    db ??= _paladin;
-    debugPrint('updateFields');
-    await _getTableCount(db, 'books');
-    await _getTableCount(db, 'authors');
-    await _getTableCount(db, 'series');
-    await _getTableCount(db, 'tags');
-    await _getShelves(db);
-    await _getCurrentlyReading(db, Collection(type: CollectionType.CURRENT));
   }
 
   Future<int> insert({ required String table, required Map<String, dynamic> rows, ConflictAlgorithm? conflictAlgorithm }) async {

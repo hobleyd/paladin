@@ -10,7 +10,7 @@ class TagsRepository extends _$TagsRepository {
   static const String tagsTable = 'tags';
 
   static const String tags = '''
-        create table if not exists tags(
+        create table if not exists $tagsTable(
           id integer primary key,
           tags text not null);
         ''';

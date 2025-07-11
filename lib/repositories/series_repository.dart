@@ -10,7 +10,7 @@ class SeriesRepository extends _$SeriesRepository {
   static const String seriesTable = 'series';
 
   static const String series = '''
-        create table if not exists series(
+        create table if not exists $seriesTable(
           id integer primary key,
           series text not null);
         ''';

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/book.dart';
-import '../../models/series.dart';
 import '../../screens/book_list.dart';
 
 class BookSeries extends ConsumerWidget {

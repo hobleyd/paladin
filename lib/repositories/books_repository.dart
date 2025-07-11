@@ -2,7 +2,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../database/library_db.dart';
 import '../models/book.dart';
-import '../models/collection.dart';
 
 part 'books_repository.g.dart';
 
@@ -11,7 +10,7 @@ class BooksRepository extends _$BooksRepository {
   static const String booksTable = 'books';
 
   static const String books = '''
-        create table if not exists books(
+        create table if not exists $booksTable(
           uuid text primary key,
           description text,
           path text not null,

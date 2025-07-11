@@ -51,4 +51,9 @@ class Tag extends Collection {
       'tag': tag,
     };
   }
+
+  @override
+  String toString() {
+    return '$tag [$count]';
+  }
 }

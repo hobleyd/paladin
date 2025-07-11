@@ -34,7 +34,7 @@ class MenuButtons extends ConsumerWidget {
                     const VerticalDivider(color: Colors.black, thickness: 1),
                     MenuButton(label: 'Tags', count: tagsCount, collection: Collection(type: CollectionType.TAG, count: tagsCount, query: Tag.tagsQuery, queryArgs: ['%'])),
                     const VerticalDivider(color: Colors.black, thickness: 1),
-                    MenuButton(label: 'Settings', count: 4, collection: Collection(type: CollectionType.SETTINGS, count: 4)),
+                    MenuButton(label: 'Settings', count: 4, collection: Collection(type: CollectionType.SETTINGS, query: "", count: 4)),
                   ],
               ),
           ),

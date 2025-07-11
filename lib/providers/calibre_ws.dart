@@ -1,36 +1,37 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http_status_code/http_status_code.dart';
+import 'package:paladin/repositories/last_connected.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:http_status_code/http_status_code.dart';
 
 import '../models/book.dart';
 import '../models/calibre_sync_data.dart';
 import '../models/json_book.dart';
-import '../providers/cached_cover.dart';
-import '../providers/calibre_book_provider.dart';
-import '../providers/dio_provider.dart';
+import 'cached_cover.dart';
+import 'calibre_book_provider.dart';
+import 'calibre_dio.dart';
 import '../database/library_db.dart';
-import '../providers/status_provider.dart';
+import 'status_provider.dart';
 
 part 'calibre_ws.g.dart';
 
 @Riverpod(keepAlive: true)
 class CalibreWS extends _$CalibreWS {
-
+  @override
   CalibreSyncData build() {
     return CalibreSyncData();
   }
 
-  Future getBooks() async {
+  Future<void> getBooks() async {
     var status = ref.read(statusProvider.notifier);
-    var calibre = dioProvider();
+    var calibre = ref.read(calibreDioProvider);
 
+    state = state.copyWith(processing: true);
     status.setStatus('Initialising Sync...');
 
     const int size = 100;
-    int count = await calibre.getCount(state.syncDate);
+    int count = await calibre.getCount(ref.read(calibreLastConnectedDateProvider.notifier).lastConnected);
     status.setStatus('Received $count Books in the batch.');
     
     int offset = 0;
@@ -39,16 +40,17 @@ class CalibreWS extends _$CalibreWS {
       offset += size;
     }
 
-    LibraryDB library = ref.read(libraryDBProvider.notifier);
-    state = state.copyWith(syncDate: await library.setLastConnected(), status: 'Completed Synchronisation');
+    ref.read(calibreLastConnectedDateProvider.notifier).setLastConnected();
+    state = state.copyWith(status: 'Completed Synchronisation');
+    state = state.copyWith(processing: false);
   }
 
-  Future getBooksWithOffset(int offset, int size, int total) async {
+  Future<void> getBooksWithOffset(int offset, int size, int total) async {
     LibraryDB library = ref.read(libraryDBProvider.notifier);
-    var calibre = dioProvider();
+    var calibre = ref.read(calibreDioProvider);
     var status = ref.read(statusProvider.notifier);
 
-    List<JSONBook> books = await calibre.getBooks(state.syncDate, offset, size);
+    List<JSONBook> books = await calibre.getBooks(ref.read(calibreLastConnectedDateProvider.notifier).lastConnected, offset, size);
     String exception = "";
 
     int index = offset;
@@ -84,7 +86,7 @@ class CalibreWS extends _$CalibreWS {
     }
   }
 
-  Future setSyncFromEpoch(bool? syncFrom) async {
+  Future<void> setSyncFromEpoch(bool? syncFrom) async {
     if (syncFrom != null) {
       state = state.copyWith(syncFromEpoch: syncFrom);
     }
@@ -98,7 +100,7 @@ class CalibreWS extends _$CalibreWS {
       file.createSync(recursive: true);
     }
 
-    final response = dioProvider().getBook(book.uuid, 4096);
+    final response = ref.read(calibreDioProvider).getBook(book.uuid, 4096);
     final sink = file.openWrite();
     await for (final chunk in response) {
       sink.add(chunk);

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sqflite_common/sqlite_api.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../database/library_db.dart';
@@ -48,7 +47,7 @@ class Book extends Collection {
     this.series,
     this.seriesIndex,
     this.tags,
-    required this.title}) : super(type: CollectionType.BOOK, count: 1);
+    required this.title}) : super(type: CollectionType.BOOK, query: booksQuery, count: 1);
 
 
   static Future<String> getBookPath({ required List<Author> authors, required String uuid }) async {
@@ -58,7 +57,7 @@ class Book extends Collection {
       Directory documentsDirectory = await getApplicationDocumentsDirectory();
       path = documentsDirectory.path;
     }
-    path = '$path/books/${authors![0].name[0]}/$uuid.epub';
+    path = '$path/books/${authors[0].name[0]}/$uuid.epub';
 
     return path;
   }

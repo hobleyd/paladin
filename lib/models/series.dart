@@ -54,6 +54,6 @@ class Series extends Collection {
 
   @override
   String toString() {
-    return '$series with id $id';
+    return '$series [$count]';
   }
 }

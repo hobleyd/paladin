@@ -25,12 +25,12 @@ class ShelvesRepository extends _$ShelvesRepository {
   }
 
   Future<void> addShelf() async {
-    await updateShelf(Shelf(name: "", collection: Collection(type: CollectionType.SERIES, count: 30), size: 30));
+    await updateShelf(Shelf(name: "", collection: Collection(type: CollectionType.SERIES, query: "", count: 30), size: 30));
   }
 
-  Future<void> removeShelf(Shelf shelf) {
+  Future<void> removeShelf(Shelf shelf) async {
     var libraryDb = ref.read(libraryDBProvider.notifier);
-    libraryDb.rawQuery(sql: 'delete from shelves where name = ?', args: [shelf.name]);
+    await libraryDb.rawQuery(sql: 'delete from shelves where name = ?', args: [shelf.name]);
   }
 
   Future<void> updateShelf(Shelf shelf) async {

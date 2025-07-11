@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/repositories/shelf_repository.dart';
 
 import '../../models/book.dart';
-import '../../models/shelf.dart';
 import '../../providers/cached_cover.dart';
 import '../../screens/backcover.dart';
 import '../menu/paladin_menu.dart';

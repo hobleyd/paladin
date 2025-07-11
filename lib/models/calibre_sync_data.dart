@@ -1,17 +1,17 @@
 class CalibreSyncData {
   bool syncFromEpoch = false;
-  int syncDate = 0;
   double progress = 0.0;
   String status = "";
+  bool processing = false;
 
-  CalibreSyncData({this.syncFromEpoch = false, this.syncDate = 0, this.progress = 0.0, this.status = ""});
+  CalibreSyncData({this.syncFromEpoch = false, this.progress = 0.0, this.status = "", this.processing = false});
 
-  CalibreSyncData copyWith({bool? syncFromEpoch, int? syncDate, double? progress, String? status}) {
+  CalibreSyncData copyWith({bool? syncFromEpoch, int? syncDate, double? progress, String? status, bool? processing}) {
     return CalibreSyncData(
       syncFromEpoch: syncFromEpoch ?? this.syncFromEpoch,
-      syncDate: syncDate ?? this.syncDate,
       progress: progress ?? this.progress,
       status: status ?? this.status,
+      processing: processing ?? this.processing,
     );
   }
 }

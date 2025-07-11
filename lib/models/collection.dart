@@ -4,7 +4,7 @@ enum CollectionType { AUTHOR, BOOK, SERIES, TAG, CURRENT, RANDOM, SETTINGS, APPS
 class Collection {
   CollectionType type;
   int count = 0;
-  String? query;
+  String query;
   List<dynamic>? queryArgs;
 
   static Map<CollectionType, String> collectionTypes = {
@@ -16,7 +16,7 @@ class Collection {
     CollectionType.TAG     : 'Tags'
   };
 
-  Collection({ required this.type, this.query, this.queryArgs, required this.count });
+  Collection({ required this.type, required this.query, this.queryArgs, required this.count });
 
   String getType() {
     return collectionTypes[type]!;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../database/library_db.dart';
 import '../models/shelf.dart';
 import '../repositories/shelves_repository.dart';
 import '../widgets/settings/shelf_setting.dart';
@@ -10,7 +9,7 @@ class Settings extends ConsumerStatefulWidget {
   const Settings({super.key});
 
   @override
-  _Settings createState() => _Settings();
+  ConsumerState<Settings> createState() => _Settings();
 }
 
 class _Settings extends ConsumerState<Settings> {
