@@ -14,19 +14,23 @@ class CalibreBookList extends ConsumerWidget {
     final ScrollController scrollController = ScrollController();
 
     List<JSONBook> books = ref.read(calibreBookProvider(bookType));
-    return Scrollbar(
-      controller: scrollController,
-      child: SingleChildScrollView(
+    return SingleChildScrollView(
         controller: scrollController,
         child: ListView.builder(
           itemCount: books.length,
           itemBuilder: (context, index) {
-            return ListTile(subtitle: Text(books[index].Author), title: Text(books[index].Title));
+            return Container(
+              color: index % 2 == 0 ? Colors.grey[50] : Colors.white,
+              padding: const EdgeInsets.only(left: 8.0, top: 2.0, bottom: 2.0),
+              child: ListTile(
+                subtitle: Text(books[index].Author),
+                title: Text(books[index].Title),
+              ),
+            );
           },
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
         ),
-      ),
     );
   }
 }
