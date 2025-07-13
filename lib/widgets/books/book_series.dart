@@ -15,7 +15,7 @@ class BookSeries extends ConsumerWidget {
     return book.series != null
         ? RichText(
             text: TextSpan(
-              style: Theme.of(context).textTheme.labelSmall /*bodyLarge?*/,
+              style: Theme.of(context).textTheme.bodySmall,
               children: [
                 TextSpan(
                   text: book.series!.getSeriesNameNormalised(),

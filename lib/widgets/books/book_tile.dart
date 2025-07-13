@@ -34,31 +34,25 @@ class BookTile extends ConsumerWidget {
           Expanded(
             child: Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 4.0, bottom: 2.0),
-                  child: Center(
+                Center(
                     child: Column(
                       children: [
                         BookTitle(book: book,),
-                        const SizedBox(height: 3),
-                        if (book.series != null) ...[
-                          BookSeries(book: book),
-                          const SizedBox(height: 3),
-                        ],
+                        if (showMenu) BookSeries(book: book),
                         Authors(book: book),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 3),
                         Blurb(book: book),
                       ],
                     ),
                   ),
-                ),
                 Align(
                   alignment: Alignment.topRight,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      showMenu ? PaladinMenu() : const Text(''),
-                      LastRead(book: book),
+                      if (showMenu) PaladinMenu(),
+                      if (!showMenu && book.series != null) BookSeries(book: book),
+                      if (!showMenu) LastRead(book: book),
                     ],
                   ),
                 ),

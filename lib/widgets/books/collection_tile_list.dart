@@ -28,7 +28,7 @@ class CollectionTileList extends ConsumerWidget {
               itemCount: collectionList.length,
               itemBuilder: (context, index) {
                 return Container(
-                  color: index % 2 == 0 ? Colors.grey : Colors.white,
+                  color: index % 2 == 0 ? Colors.grey[50] : Colors.white,
                   padding: const EdgeInsets.only(left: 8.0, top: 2.0, bottom: 2.0),
                   child: Align(
                     alignment: Alignment.centerLeft,

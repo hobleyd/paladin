@@ -15,7 +15,7 @@ class Authors extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return RichText(
         text: TextSpan(
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: Theme.of(context).textTheme.bodySmall,
             children: book.authors
                 ?.mapIndexed((i, e) =>
                 TextSpan(
