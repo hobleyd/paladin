@@ -14,8 +14,7 @@ class CalibreBook extends _$CalibreBook {
   }
 
   void add(JSONBook book) {
-    List<JSONBook> entities = [...state, book];
-    entities.sort((a, b) => a.Title.compareTo(b.Title));
+    List<JSONBook> entities = [book, ...state];
 
     state = entities;
   }
