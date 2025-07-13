@@ -54,18 +54,18 @@ flutter:
   uses-material-design: true
   assets:
     - assets/generic_book_cover.png
-    - assets/launcher.png
+    - assets/paladin.png
     - assets/sharpblue.png
     - assets/google_fonts/
 
-flutter_icons:
-  image_path: 'assets/launcher.png'
+flutter_launcher_icons:
+  image_path: 'assets/paladin.png'
   android: true
-  ios: true
+  ios: false
   remove_alpha_ios: true
   macos:
     generate: true
   web:
-    generate: true
+    generate: false
   windows:
-    generate: true
+    generate: false
