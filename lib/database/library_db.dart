@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:paladin/repositories/last_connected.dart';
+import 'package:paladin/utils/application_path.dart';
 
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -109,17 +110,7 @@ class LibraryDB extends _$LibraryDB {
   }
 
   Future<String> _getDatabasePath() async {
-    String database = "";
-    if (!kIsWeb) {
-      if (Platform.isAndroid) {
-        Directory documentsDirectory = await getApplicationDocumentsDirectory();
-        database = documentsDirectory.path;
-      } else if (Platform.isWindows) {
-        database = path.join(Platform.environment['APPDATA']!, 'Paladin');
-      } else {
-        database = path.join(Platform.environment['HOME']!, '.paladin');
-      }
-    }
+    String database = await getApplicationPath();
     database += '/db/';
 
     await Directory(database).create(recursive: true);

@@ -4,6 +4,7 @@ import 'package:epubx/epubx.dart' hide Image;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as images;
+import 'package:paladin/utils/application_path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -14,13 +15,10 @@ part 'cached_cover.g.dart';
 @riverpod
 class CachedCover extends _$CachedCover {
   late File _cover;
+
   @override
   Future<Image> build(Book book) async {
-    String coverPath = '';
-    if (!kIsWeb) {
-      Directory documentsDirectory = await getApplicationDocumentsDirectory();
-      coverPath = documentsDirectory.path;
-    }
+    String coverPath = await getApplicationPath();
 
     _cover = File('$coverPath/covers/${book.authors![0].name[0]}/${book.uuid}.jpg');
 
