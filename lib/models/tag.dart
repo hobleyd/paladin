@@ -18,7 +18,7 @@ class Tag extends Collection {
   }) : super(type: CollectionType.TAG, count: 1, query: tagsQuery, queryArgs: [tag]);
 
   @override
-  String getType() {
+  String getLabel() {
     return tag;
   }
 

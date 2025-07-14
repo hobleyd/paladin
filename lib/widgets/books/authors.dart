@@ -19,7 +19,7 @@ class Authors extends ConsumerWidget {
             children: book.authors
                 ?.mapIndexed((i, e) =>
                 TextSpan(
-                    text: '${e.name}${i < book.authors!.length - 1 && i < book.authors!.length ? ', ' : ''}',
+                    text: '${e.getNameNormalised()}${i < book.authors!.length - 1 && i < book.authors!.length ? ', ' : ''}',
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
                         Navigator.push(

@@ -15,7 +15,7 @@ class CollectionList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
       return Scaffold(
           appBar: AppBar(
-              title: Text(collection.getType(), style: Theme.of(context).textTheme.titleLarge),
+              title: Text(collection.getLabel(), style: Theme.of(context).textTheme.titleLarge),
               actions: <Widget>[
                 SizedBox(
                   width: 180,

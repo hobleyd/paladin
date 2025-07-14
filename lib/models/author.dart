@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paladin/database/library_db.dart';
+import 'package:paladin/utils/normalised.dart';
 
 import 'collection.dart';
 
@@ -17,17 +18,13 @@ class Author extends Collection {
     required this.name,
   }) : super(type: CollectionType.AUTHOR, count: 1, query: authorsQuery, queryArgs: [name]);
 
-  String getAuthorNameNormalised() {
-    if (name.contains(',')) {
-      List<String> parts = name.split(',');
-      return '${parts[1].trim()} ${parts[0].trim()}';
-    }
-
-    return name;
+  @override
+  String getNameNormalised() {
+    return name.contains(',') ? getNormalisedString(name) : name;
   }
 
   @override
-  String getType() {
+  String getLabel() {
     return name;
   }
 

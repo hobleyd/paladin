@@ -1,5 +1,9 @@
 
+import 'package:paladin/utils/normalised.dart';
+
 enum CollectionType { AUTHOR, BOOK, SERIES, TAG, CURRENT, RANDOM, SETTINGS, APPS }
+
+// TODO: do I really need the Series and Tags subclasses here?
 
 class Collection {
   CollectionType type;
@@ -18,8 +22,16 @@ class Collection {
 
   Collection({ required this.type, required this.query, this.queryArgs, required this.count });
 
-  String getType() {
-    return collectionTypes[type]!;
+  String getLabel() {
+    return switch (type) {
+      CollectionType.CURRENT => collectionTypes[type]!,
+      CollectionType.RANDOM => collectionTypes[type]!,
+      _ => queryArgs?.first.contains(',') ? getNormalisedString(queryArgs?.first!) : queryArgs?.first,
+    };
+  }
+
+  String getNameNormalised() {
+    return getLabel();
   }
 
   @override
