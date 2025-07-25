@@ -8,20 +8,13 @@ import '../../providers/cached_cover.dart';
 import '../../repositories/shelf_repository.dart';
 import '../home/fatal_error.dart';
 
-class BookShelf extends ConsumerStatefulWidget {
+class BookShelf extends ConsumerWidget {
   final Shelf shelf;
 
   const BookShelf({super.key, required this.shelf});
 
   @override
-  ConsumerState<BookShelf> createState() => _BookShelf();
-}
-
-class _BookShelf extends ConsumerState<BookShelf> {
-  Shelf get shelf => widget.shelf;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     var bookListAsync = ref.watch(ShelfRepositoryProvider(shelf.collection));
     return bookListAsync.when(error: (error, stackTrace) {
       return FatalError(error: error.toString(), trace: stackTrace);
@@ -34,7 +27,7 @@ class _BookShelf extends ConsumerState<BookShelf> {
           Container(
             width: double.infinity,
             child: Text(
-              '${shelf.collection.getType()} (${bookShelf.length})',
+              '${shelf.collection.getNameNormalised()} (${bookShelf.length})',
               style: Theme.of(context).textTheme.labelSmall,
               textAlign: TextAlign.center,
             ),

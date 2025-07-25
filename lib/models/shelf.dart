@@ -9,11 +9,11 @@ class Shelf {
   int size;
 
   static const shelfQuery = {
-    CollectionType.AUTHOR  : 'select *, count(*) as count from books where uuid in (select bookId from book_authors, authors where authors.id = book_authors.authorId and authors.name = ?)',
-    CollectionType.SERIES  : 'select *, count(*) as count from books where series = (select id from series where series = ?);',
-    CollectionType.TAG     : 'select *, count(*) as count from books where uuid in (select bookId from book_tags, tags where tags.id = book_tags.tagId and tags.tag = ?)',
-    CollectionType.RANDOM  : 'select *, count(*) as count from books order by random() limit ?',
-    CollectionType.CURRENT : 'select *, count(*) as count from books order by lastRead DESC limit ?'
+    CollectionType.AUTHOR  : 'select * from books where uuid in (select bookId from book_authors, authors where authors.id = book_authors.authorId and authors.name = ?)',
+    CollectionType.SERIES  : 'select * from books where series = (select id from series where series = ?);',
+    CollectionType.TAG     : 'select * from books where uuid in (select bookId from book_tags, tags where tags.id = book_tags.tagId and tags.tag = ?)',
+    CollectionType.RANDOM  : 'select * from books order by random() limit ?',
+    CollectionType.CURRENT : 'select * from books where lastRead > 0 order by lastRead DESC limit ?'
   };
 
   static const shelfTable = {
@@ -39,7 +39,7 @@ class Shelf {
       name: shelf['name'],
       collection: Collection(
           type: CollectionType.values[shelf['type']],
-          count: shelf['count'] ?? 0,
+          count: shelf.length,
           query: shelfQuery[CollectionType.values[shelf['type']]]!,
           queryArgs: (shelf['type'] == CollectionType.RANDOM.index || shelf['type'] == CollectionType.CURRENT.index)
               ? [shelf['size']]

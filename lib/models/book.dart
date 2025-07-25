@@ -140,6 +140,6 @@ class Book extends Collection {
 
   @override
   String toString() {
-    return '$title (#$seriesIndex of ${series?.series})';
+    return '$title (#$seriesIndex of ${series?.getNameNormalised()})';
   }
 }

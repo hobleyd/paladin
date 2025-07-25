@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:paladin/database/library_db.dart';
+import 'package:paladin/utils/normalised.dart';
 
 import 'collection.dart';
 
@@ -13,17 +15,13 @@ class Series extends Collection {
     required this.series,
   }) : super(type: CollectionType.SERIES, count: 1, query: seriesQuery, queryArgs: [series]);
 
-  String getSeriesNameNormalised() {
-    if (series.contains(',')) {
-      List<String> parts = series.split(',');
-      return '${parts[1].trim()} ${parts[0].trim()}';
-    }
-
-    return series;
+  @override
+  String getNameNormalised() {
+    return series.contains(',') ? getNormalisedString(series) : series;
   }
 
   @override
-  String getType() {
+  String getLabel() {
     return queryArgs?[0] ?? series;
   }
 

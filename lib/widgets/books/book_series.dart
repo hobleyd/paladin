@@ -18,7 +18,7 @@ class BookSeries extends ConsumerWidget {
               style: Theme.of(context).textTheme.bodySmall,
               children: [
                 TextSpan(
-                  text: book.series!.getSeriesNameNormalised(),
+                  text: book.series!.getNameNormalised(),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
                       Navigator.push(

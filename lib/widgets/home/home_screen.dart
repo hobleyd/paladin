@@ -18,13 +18,10 @@ class HomeScreen extends ConsumerWidget {
     var shelves = ref.watch(shelvesRepositoryProvider);
 
     return shelves.when(error: (error, stackTrace) {
-      debugPrint('HomeScreen.build: $stackTrace');
       return FatalError(error:error.toString(), trace: stackTrace);
     }, loading: () {
       return const Center(child: CircularProgressIndicator());
     }, data: (List<Shelf> shelves) {
-      debugPrint('shelves: ${shelves[0].collection}');
-
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
