@@ -31,14 +31,13 @@ class _Settings extends ConsumerState<Settings> {
       }).toList();
 
       final List<Widget> add = [
-        Center(
-          child: Row(
-            children: [
-              Padding(padding: const EdgeInsets.only(top: 10), child: IconButton(icon: const Icon(Icons.remove), onPressed: () => _removeShelf())),
-              const SizedBox(width: 10),
-              Padding(padding: const EdgeInsets.only(top: 10), child: IconButton(icon: const Icon(Icons.add), onPressed: () => _addShelf())),
-            ],
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(padding: const EdgeInsets.only(top: 10), child: IconButton(icon: const Icon(Icons.remove), onPressed: () => _removeShelf())),
+            const SizedBox(width: 10),
+            Padding(padding: const EdgeInsets.only(top: 10), child: IconButton(icon: const Icon(Icons.add), onPressed: () => _addShelf())),
+          ],
         ),
       ];
 
