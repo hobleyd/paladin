@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/repositories/collection_repository.dart';
 
 import '../models/collection.dart';
-import '../repositories/shelf_repository.dart';
 import '../widgets/books/collection_tile_list.dart';
 
-class CollectionList extends ConsumerWidget {
-  final TextEditingController searchController = TextEditingController();
+class CollectionList extends ConsumerStatefulWidget {
   final Collection collection;
 
   CollectionList({super.key, required this.collection});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CollectionList> createState() => _CollectionList();
+}
+
+class _CollectionList extends ConsumerState<CollectionList> {
+  final TextEditingController searchController = TextEditingController();
+
+  Collection get collection => widget.collection;
+
+  @override
+  Widget build(BuildContext context) {
       return Scaffold(
           appBar: AppBar(
               title: Text(collection.getLabel(), style: Theme.of(context).textTheme.titleLarge),
@@ -22,15 +30,17 @@ class CollectionList extends ConsumerWidget {
                   child: TextField(
                     controller: searchController,
                     decoration: const InputDecoration(
+                      isDense: true,
                       hintText: 'search...',
                       hintStyle: TextStyle(
-                        color: Colors.white,
+                        color: Colors.grey,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
+                    onSubmitted: (_) => _search(),
                   ),
                 ),
-                IconButton(icon: const Icon(Icons.search), onPressed: () => _search(ref)),
+                IconButton(icon: const Icon(Icons.search), onPressed: () => _search()),
                 IconButton(icon: const Icon(Icons.menu), onPressed: null),
               ]),
           body: Padding(
@@ -40,9 +50,11 @@ class CollectionList extends ConsumerWidget {
       );
     }
 
-  void _search(WidgetRef ref) {
-    String searchTerm = '%${searchController.text.replaceAll(' ', '%')}%';
-    collection.queryArgs = [searchTerm];
-    ref.read(shelfRepositoryProvider(collection).notifier).updateCollection(collection);
+  void _search() {
+    setState(() {
+      String searchTerm = '%${searchController.text.replaceAll(' ', '%')}%';
+      collection.queryArgs = [searchTerm];
+      ref.read(collectionRepositoryProvider(collection).notifier).updateCollection(collection);
+    });
   }
 }
