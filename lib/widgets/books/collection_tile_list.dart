@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/repositories/collection_repository.dart';
 
 import '../../models/collection.dart';
 import '../../repositories/shelf_repository.dart';
@@ -13,16 +14,14 @@ class CollectionTileList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var collectionListAsync = ref.watch(shelfRepositoryProvider(collection));
+    var collectionListAsync = ref.watch(collectionRepositoryProvider(collection));
     return collectionListAsync.when(error: (error, stackTrace) {
       // TODO: better error message
-      return const Text("It's a crime. You have no books!");
+      return Text("It's a crime. You have no books!\n$stackTrace");
     }, loading: () {
       return const Center(child: CircularProgressIndicator());
     }, data: (List<Collection> collectionList) {
-      return Scrollbar(
-        controller: scrollController,
-        child: SingleChildScrollView(
+      return SingleChildScrollView(
           controller: scrollController,
           child: ListView.builder(
               itemCount: collectionList.length,
@@ -47,7 +46,6 @@ class CollectionTileList extends ConsumerWidget {
               },
               scrollDirection: Axis.vertical,
               shrinkWrap: true),
-        ),
       );
     });
   }
