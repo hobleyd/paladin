@@ -16,6 +16,7 @@ class ShelfType extends ConsumerWidget {
       child: InputDecorator(
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+          labelStyle: Theme.of(context).textTheme.labelLarge,
           labelText: 'Shelf Type',
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
         ),
