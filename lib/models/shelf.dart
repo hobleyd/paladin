@@ -11,7 +11,7 @@ class Shelf {
   static const shelfQuery = {
     CollectionType.AUTHOR  : 'select * from books where uuid in (select bookId from book_authors, authors where authors.id = book_authors.authorId and authors.name = ?)',
     CollectionType.SERIES  : 'select * from books where series = (select id from series where series = ?);',
-    CollectionType.TAG     : 'select * from books where uuid in (select bookId from book_tags, tags where tags.id = book_tags.tagId and tags.tag = ?)',
+    CollectionType.TAG     : 'select * from books where uuid in (select bookId from book_tags, tags where tags.id = book_tags.tagId and tags.tag = ?) order by random() limit ?',
     CollectionType.RANDOM  : 'select * from books order by random() limit ?',
     CollectionType.CURRENT : 'select * from books where lastRead > 0 order by lastRead DESC limit ?'
   };
@@ -29,21 +29,27 @@ class Shelf {
   };
 
   CollectionType get type => collection.type;
+  bool get needsName => shelfNeedsName(type);
+  bool get needsSize => shelfNeedsSize(type);
 
   Shelf({this.shelfId, required this.name, required this.collection, required this.size});
 
+  static bool shelfNeedsName(CollectionType type) => [CollectionType.BOOK, CollectionType.TAG, CollectionType.AUTHOR, CollectionType.SERIES].contains(type);
+  static bool shelfNeedsSize(CollectionType type) => [CollectionType.TAG, CollectionType.CURRENT, CollectionType.RANDOM].contains(type);
+
   static Shelf fromMap(Map<String, dynamic> shelf) {
-    debugPrint('fromMap: $shelf');
+    CollectionType type = CollectionType.values[shelf['type']];
     return Shelf(
       shelfId: shelf['rowid'],
       name: shelf['name'],
       collection: Collection(
-          type: CollectionType.values[shelf['type']],
+          type: type,
           count: shelf.length,
           query: shelfQuery[CollectionType.values[shelf['type']]]!,
-          queryArgs: (shelf['type'] == CollectionType.RANDOM.index || shelf['type'] == CollectionType.CURRENT.index)
-              ? [shelf['size']]
-              : [shelf['name']],
+          queryArgs: [
+              if (shelfNeedsName(type)) ...[shelf['name']],
+              if (shelfNeedsSize(type)) ...[shelf['size']],
+        ],
       ),
       size: shelf['size']
     );
