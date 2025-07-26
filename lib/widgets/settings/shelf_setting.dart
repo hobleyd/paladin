@@ -16,8 +16,9 @@ class ShelfSetting extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Row(children: [
       ShelfType(shelf: shelf),
-      Expanded(child: ShelfName(shelf: shelf)),
-      ShelfSize(shelf: shelf),
+      Expanded(flex: 4, child: ShelfName(shelf: shelf)),
+      if (shelf.needsSize)
+        Expanded(flex: 1, child: ShelfSize(shelf: shelf)),
     ]);
   }
 }

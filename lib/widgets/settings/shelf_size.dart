@@ -12,11 +12,10 @@ class ShelfSize extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SizedBox(
-      width: 50,
-      child: InputDecorator(
+    return InputDecorator(
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+          labelStyle: Theme.of(context).textTheme.labelLarge,
           labelText: 'Size',
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
         ),
@@ -25,6 +24,7 @@ class ShelfSize extends ConsumerWidget {
             value: shelf.size,
             icon: const Icon(Icons.arrow_drop_down),
             iconSize: 24,
+            isExpanded: true,
             elevation: 16,
             style: const TextStyle(color: Colors.black, fontSize: 10),
             onChanged: (value) {
@@ -36,7 +36,6 @@ class ShelfSize extends ConsumerWidget {
             }).toList(),
           ),
         ),
-      ),
-    );
+      );
   }
 }
