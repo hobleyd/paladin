@@ -8,30 +8,29 @@ import '../../models/shelf.dart';
 import '../../repositories/shelves_repository.dart';
 
 class ShelfName extends ConsumerWidget {
-  final TextEditingController typeAheadController = TextEditingController();
-  final FocusNode focusNode = FocusNode();
   final Shelf shelf;
 
-  ShelfName({super.key, required this.shelf});
+  const ShelfName({super.key, required this.shelf});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    typeAheadController.text = shelf.name;
-
     return InputDecorator(
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+        labelStyle: Theme.of(context).textTheme.labelLarge,
         labelText: 'Name',
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
       ),
       child: TypeAheadField<String>(
         builder: (context, controller, focusNode) {
+          controller.text = shelf.name;
+          focusNode.unfocus();
+
           return TextField(
             autofocus: false,
-            controller: typeAheadController,
+            controller: controller,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
-              labelText: 'Name',
             ),
             enabled: !(shelf.type == CollectionType.CURRENT || shelf.type == CollectionType.RANDOM),
             focusNode: focusNode,
@@ -42,7 +41,6 @@ class ShelfName extends ConsumerWidget {
         },
         onSelected: (String shelfName) {
           shelf.name = shelfName;
-          typeAheadController.text = shelf.name;
           ref.read(shelvesRepositoryProvider.notifier).updateShelf(shelf);
         },
         suggestionsCallback: (String pattern) async {
