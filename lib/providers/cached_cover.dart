@@ -1,11 +1,9 @@
 import 'dart:io';
 
 import 'package:epubx/epubx.dart' hide Image;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as images;
 import 'package:paladin/utils/application_path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/book.dart';

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intersperse/intersperse.dart';
-import 'package:paladin/repositories/books_repository.dart';
 import 'package:paladin/repositories/shelves_repository.dart';
 import 'package:paladin/widgets/home/currently_reading.dart';
 import 'package:paladin/widgets/home/fatal_error.dart';

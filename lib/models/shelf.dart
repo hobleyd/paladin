@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart' show debugPrint;
-
 import 'collection.dart';
 
 class Shelf {

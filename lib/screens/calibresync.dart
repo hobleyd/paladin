@@ -1,12 +1,9 @@
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
 
-
-import '../interfaces/sync_with_calibre.dart';
 import '../models/calibre_sync_data.dart';
 import '../models/json_book.dart';
 import '../providers/calibre_ws.dart';

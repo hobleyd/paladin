@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paladin/repositories/collection_repository.dart';
 
 import '../../models/collection.dart';
-import '../../repositories/shelf_repository.dart';
 import '../../screens/book_list.dart';
 
 class CollectionTileList extends ConsumerWidget {

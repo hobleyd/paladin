@@ -1,17 +1,14 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:paladin/repositories/last_connected.dart';
 import 'package:paladin/utils/application_path.dart';
 
 import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../models/book.dart';
 import '../models/collection.dart';
-import '../models/tag.dart';
 import '../repositories/books_repository.dart';
 import '../repositories/authors_repository.dart';
 import '../repositories/series_repository.dart';

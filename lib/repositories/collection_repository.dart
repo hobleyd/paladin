@@ -23,13 +23,11 @@ class CollectionRepository extends _$CollectionRepository {
       return [];
     }
 
-    List<Collection> details = results.map((element) => switch (coll.type) {
+    return results.map((element) => switch (coll.type) {
       CollectionType.AUTHOR => Author.fromMap(element),
       CollectionType.SERIES => Series.fromMap(element),
       CollectionType.TAG => Tag.fromMap(element),
       _ => throw UnimplementedError(),
     }).toList();
-
-    return details as List<Collection>;
   }
 }

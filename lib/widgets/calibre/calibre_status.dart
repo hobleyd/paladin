@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:paladin/providers/calibre_ws.dart';
 import 'package:paladin/repositories/last_connected.dart';
 import 'package:paladin/widgets/home/fatal_error.dart';
 
