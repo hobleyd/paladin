@@ -19,7 +19,7 @@ class MenuButton extends ConsumerWidget {
       child: TextButton(
         onPressed: () => _navigateToCollection(context, collection),
         style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.white), foregroundColor: WidgetStatePropertyAll(Colors.black)),
-        child: Text('$label\n$count', textAlign: TextAlign.center, style: Theme.of(context).textTheme.labelSmall,),
+        child: Text('$label\n($count)', textAlign: TextAlign.center, style: Theme.of(context).textTheme.labelSmall,),
       ),
     );
   }
