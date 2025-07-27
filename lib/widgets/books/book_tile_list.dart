@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/repositories/collection_repository.dart';
 import 'package:paladin/widgets/home/fatal_error.dart';
 
 import '../../models/book.dart';
@@ -14,12 +15,12 @@ class BookTileList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var bookListAsync = ref.watch(shelfRepositoryProvider(collection));
+    var bookListAsync = ref.watch(collectionRepositoryProvider(collection));
     return bookListAsync.when(error: (error, stackTrace) {
       return FatalError(error: error.toString(), trace: stackTrace);
     }, loading: () {
       return const Center(child: CircularProgressIndicator());
-    }, data: (List<Book> bookList) {
+    }, data: (List<Collection> bookList) {
       return ListView.builder(
           itemCount: bookList.length,
           itemBuilder: (context, index) {
@@ -29,7 +30,7 @@ class BookTileList extends ConsumerWidget {
                       SizedBox(
                           height: MediaQuery.of(context).size.height / 6,
                           child: BookTile(
-                            book: bookList[index],
+                            book: bookList[index] as Book,
                             showMenu: false,
                           )),
                       const Divider(color: Colors.black, thickness: 1),

@@ -2,17 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/collection.dart';
+import '../repositories/collection_repository.dart';
 import '../repositories/shelf_repository.dart';
 import '../widgets/books/book_tile_list.dart';
 
-class BookList extends ConsumerWidget {
-  final TextEditingController searchController = TextEditingController();
+class BookList extends ConsumerStatefulWidget {
   final Collection collection;
 
-  BookList({super.key, required this.collection});
+  const BookList({super.key, required this.collection});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BookList> createState() => _BookList();
+}
+
+class _BookList extends ConsumerState<BookList> {
+  final TextEditingController searchController = TextEditingController();
+
+  Collection get collection => widget.collection;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Books', style: Theme.of(context).textTheme.titleLarge), actions: <Widget>[
         SizedBox(
@@ -20,15 +29,17 @@ class BookList extends ConsumerWidget {
           child: TextField(
             controller: searchController,
             decoration: const InputDecoration(
+              isDense: true,
               hintText: 'search...',
               hintStyle: TextStyle(
-                color: Colors.white,
+                color: Colors.grey,
                 fontStyle: FontStyle.italic,
               ),
             ),
+            onSubmitted: (_) => _search(),
           ),
         ),
-        IconButton(icon: const Icon(Icons.search), onPressed: () => _search(ref)),
+        IconButton(icon: const Icon(Icons.search), onPressed: () => _search()),
         IconButton(icon: const Icon(Icons.menu), onPressed: null),
       ]),
       body: Padding(
@@ -38,9 +49,11 @@ class BookList extends ConsumerWidget {
     );
   }
 
-  void _search(WidgetRef ref) {
-    String searchTerm = '%${searchController.text.replaceAll(' ', '%')}%';
-    collection.queryArgs = [searchTerm];
-    ref.read(shelfRepositoryProvider(collection).notifier).updateCollection(collection);
+  void _search() {
+    setState(() {
+      String searchTerm = '%${searchController.text.replaceAll(' ', '%')}%';
+      collection.queryArgs = [searchTerm];
+      ref.read(collectionRepositoryProvider(collection).notifier).updateCollection(collection);
+    });
   }
 }

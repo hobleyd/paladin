@@ -4,6 +4,7 @@ import 'package:paladin/repositories/collection_repository.dart';
 import 'package:paladin/widgets/home/fatal_error.dart';
 
 import '../../models/collection.dart';
+import '../../models/shelf.dart';
 import '../../screens/book_list.dart';
 
 class CollectionTileList extends ConsumerWidget {
@@ -36,10 +37,15 @@ class CollectionTileList extends ConsumerWidget {
     });
   }
 
-  Future _navigateToCollection(BuildContext context, Collection? collection) async {
-    if (collection != null) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => BookList(collection: collection)));
-    }
+  Future _navigateToCollection(BuildContext context, Collection collection) async {
+    final Collection collectionQuery = Collection(
+        type: CollectionType.BOOK,
+        query: Shelf.shelfQuery[collection.type]!,
+        queryArgs: [...?collection.queryArgs, if (Shelf.shelfNeedsSize(collection.type)) collection.count],
+        count: collection.count
+    );
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) => BookList(collection: collectionQuery)));
 
     return null;
   }
