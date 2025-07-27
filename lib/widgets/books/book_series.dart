@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/book.dart';
+import '../../models/collection.dart';
+import '../../models/shelf.dart';
 import '../../screens/book_list.dart';
 
 class BookSeries extends ConsumerWidget {
@@ -23,7 +25,11 @@ class BookSeries extends ConsumerWidget {
                     ..onTap = () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => BookList(collection: book.series!)),
+                        MaterialPageRoute(
+                          builder: (context) => BookList(
+                            collection: Collection(type: CollectionType.BOOK, query: Shelf.shelfQuery[CollectionType.SERIES]!, queryArgs: [book.series!.getNameNormalised()], count: 0),
+                          ),
+                        ),
                       );
                     },
                 ),
