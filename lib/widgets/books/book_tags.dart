@@ -15,17 +15,14 @@ class BookTags extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return RichText(
       text: TextSpan(
-          style: Theme.of(context).textTheme.bodyLarge,
+          style: Theme.of(context).textTheme.bodySmall,
           children: book.tags
                   ?.mapIndexed(
                     (i, e) => TextSpan(
                       text: '${e.tag}${i < book.tags!.length - 1 && i < book.tags!.length ? ', ' : ''}',
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => BookList(collection: e)),
-                          );
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => BookList(collection: e)),);
                         },
                     ),
                   ).toList() ?? []
