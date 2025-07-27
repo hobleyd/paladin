@@ -23,7 +23,11 @@ class BookTile extends ConsumerWidget {
 
     return InkWell(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => BackCover(book: book)));
+        if (showMenu) {
+          book.readBook(context, ref);
+        } else {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => BackCover(book: book)));
+        }
       },
       child: Row(
         children: [
