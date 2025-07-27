@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../database/library_db.dart';
 import '../models/author.dart';
+import '../models/book.dart';
 import '../models/collection.dart';
 import '../models/series.dart';
 import '../models/tag.dart';
@@ -23,12 +24,13 @@ class CollectionRepository extends _$CollectionRepository {
       return [];
     }
 
-    return results.map((element) => switch (collection.type) {
+    return await Future.wait(results.map((element) async => switch (collection.type) {
       CollectionType.AUTHOR => Author.fromMap(element),
+      CollectionType.BOOK   => Book.fromMap(libraryDb, element),
       CollectionType.SERIES => Series.fromMap(element),
-      CollectionType.TAG => Tag.fromMap(element),
+      CollectionType.TAG    => Tag.fromMap(element),
       _ => throw UnimplementedError(),
-    }).toList();
+    }));
   }
 
   void updateCollection(Collection collection) async {
