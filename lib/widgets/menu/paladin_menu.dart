@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../models/collection.dart';
 import '../../models/shelf.dart';
@@ -15,8 +18,9 @@ class PaladinMenu extends ConsumerWidget {
       icon: const Icon(Icons.menu),
       itemBuilder: (BuildContext context) =>
       <PopupMenuEntry<String>>[
-        PopupMenuItem<String>(value: 'future', child: Text('Future Reads', style: Theme.of(context).textTheme.bodyMedium),),
-        PopupMenuItem<String>(value: 'sync', child: Text('Synchronise Library', style: Theme.of(context).textTheme.bodyMedium),),
+        PopupMenuItem<String>(value: 'future',   child: Text('Future Reads', style: Theme.of(context).textTheme.bodyMedium),),
+        PopupMenuItem<String>(value: 'sync',     child: Text('Synchronise Library', style: Theme.of(context).textTheme.bodyMedium),),
+        if (Platform.isAndroid) PopupMenuItem<String>(value: 'settings', child: Text('System Settings', style: Theme.of(context).textTheme.bodyMedium),),
       ],
       onSelected: (String? item) => _selectMenuItem(context, item),
     );
@@ -39,6 +43,9 @@ class PaladinMenu extends ConsumerWidget {
               ),
             ),
           );
+          break;
+        case 'settings':
+          openAppSettings();
           break;
         case 'sync':
           Navigator.push(context, MaterialPageRoute(builder: (context) => CalibreSync()));
