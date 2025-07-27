@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../models/collection.dart';
+import '../../models/shelf.dart';
 import '../../models/tag.dart';
 import '../../database/library_db.dart';
 import '../../screens/book_list.dart';
 import '../../screens/calibresync.dart';
 
 class PaladinMenu extends ConsumerWidget {
-  static const TextStyle _style = TextStyle(fontSize: 10);
-  late LibraryDB library;
-
-  PaladinMenu({super.key});
+  const PaladinMenu({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,8 +17,8 @@ class PaladinMenu extends ConsumerWidget {
       icon: const Icon(Icons.menu),
       itemBuilder: (BuildContext context) =>
       <PopupMenuEntry<String>>[
-        const PopupMenuItem<String>(value: 'future', child: Text('Future Reads', style: _style),),
-        const PopupMenuItem<String>(value: 'sync', child: Text('Synchronise Library', style: _style),),
+        PopupMenuItem<String>(value: 'future', child: Text('Future Reads', style: Theme.of(context).textTheme.bodyMedium),),
+        PopupMenuItem<String>(value: 'sync', child: Text('Synchronise Library', style: Theme.of(context).textTheme.bodyMedium),),
       ],
       onSelected: (String? item) => _selectMenuItem(context, item),
     );
@@ -29,18 +28,24 @@ class PaladinMenu extends ConsumerWidget {
     if (item != null) {
       switch (item) {
         case 'future':
-          _navigateToTag(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BookList(
+                collection: Collection(
+                    type: CollectionType.BOOK,
+                    query: Shelf.shelfQuery[CollectionType.TAG]!,
+                    queryArgs: ['Future Reads', 100],
+                    count: 100,
+                ),
+              ),
+            ),
+          );
           break;
         case 'sync':
           Navigator.push(context, MaterialPageRoute(builder: (context) => CalibreSync()));
           break;
       }
-    }
-  }
-
-  Future _navigateToTag(BuildContext context) async {
-    if (context.mounted) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => BookList(collection: Tag(tag: 'Future Reads'))));
     }
   }
 }
