@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/collection.dart';
 import '../../models/shelf.dart';
-import '../../models/tag.dart';
-import '../../database/library_db.dart';
 import '../../screens/book_list.dart';
 import '../../screens/calibresync.dart';
 

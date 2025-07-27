@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/collection.dart';
 import '../repositories/collection_repository.dart';
-import '../repositories/shelf_repository.dart';
 import '../widgets/books/book_tile_list.dart';
 
 class BookList extends ConsumerStatefulWidget {

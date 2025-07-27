@@ -36,7 +36,7 @@ class _BookShelf extends ConsumerState<BookShelf> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
+          SizedBox(
             width: double.infinity,
             child: Text(
               '${shelf.collection.getNameNormalised()} (${visibleBooks.min}-${visibleBooks.max} of ${bookShelf.length})',
@@ -54,29 +54,29 @@ class _BookShelf extends ConsumerState<BookShelf> {
 
                 return VisibilityDetector(
                   key: Key('${shelf.collection.getNameNormalised()}-$index'),
-                  onVisibilityChanged: (visibility) => _updateVisibility(index+1, visibility.visibleFraction > 0.5),
-                    child: InkWell(
-                  onTap: () => book.readBook(context, ref),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Expanded(child: coverAsync.value ?? Image.asset('assets/generic_book_cover.png', fit: BoxFit.cover)),
-                        const SizedBox(height: 3),
-                        SizedBox(
-                          width: 80,
-                          child: AutoSizeText(
-                            '$title\n', // the \n ensures that all titles are 2 lines which ensures the Book Covers are all identically sized in height.
-                            group: shelfTitleGroup,
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            minFontSize: 8,
+                  onVisibilityChanged: (visibility) => _updateVisibility(index + 1, visibility.visibleFraction > 0.5),
+                  child: InkWell(
+                    onTap: () => book.readBook(context, ref),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Expanded(child: coverAsync.value ?? Image.asset('assets/generic_book_cover.png', fit: BoxFit.cover)),
+                          const SizedBox(height: 3),
+                          SizedBox(
+                            width: 80,
+                            child: AutoSizeText(
+                              '$title\n', // the \n ensures that all titles are 2 lines which ensures the Book Covers are all identically sized in height.
+                              group: shelfTitleGroup,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              minFontSize: 8,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
                 );
               },
               scrollDirection: Axis.horizontal,

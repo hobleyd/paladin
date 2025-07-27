@@ -5,7 +5,6 @@ import 'package:paladin/widgets/home/fatal_error.dart';
 
 import '../../models/book.dart';
 import '../../models/collection.dart';
-import '../../repositories/shelf_repository.dart';
 import 'book_tile.dart';
 
 class BookTileList extends ConsumerWidget {

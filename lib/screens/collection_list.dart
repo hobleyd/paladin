@@ -21,7 +21,7 @@ class _CollectionList extends ConsumerState<CollectionList> {
 
   @override
   Widget build(BuildContext context) {
-    searchController.text = collection.getLabel();
+      searchController.text = collection.getLabel();
       return Scaffold(
           appBar: AppBar(
               title: Text(Collection.collectionTypes[collection.type]!, style: Theme.of(context).textTheme.titleLarge),
