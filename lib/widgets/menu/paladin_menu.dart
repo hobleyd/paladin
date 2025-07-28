@@ -19,6 +19,7 @@ class PaladinMenu extends ConsumerWidget {
       itemBuilder: (BuildContext context) =>
       <PopupMenuEntry<String>>[
         PopupMenuItem<String>(value: 'future',   child: Text('Future Reads', style: Theme.of(context).textTheme.bodyMedium),),
+        PopupMenuItem<String>(value: 'history',  child: Text('Reading History', style: Theme.of(context).textTheme.bodyMedium),),
         PopupMenuItem<String>(value: 'sync',     child: Text('Synchronise Library', style: Theme.of(context).textTheme.bodyMedium),),
         if (Platform.isAndroid) PopupMenuItem<String>(value: 'settings', child: Text('System Settings', style: Theme.of(context).textTheme.bodyMedium),),
       ],
@@ -38,6 +39,21 @@ class PaladinMenu extends ConsumerWidget {
                     type: CollectionType.BOOK,
                     query: Shelf.shelfQuery[CollectionType.TAG]!,
                     queryArgs: ['Future Reads', 100],
+                    count: 100,
+                ),
+              ),
+            ),
+          );
+          break;
+        case 'history':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BookList(
+                collection: Collection(
+                    type: CollectionType.BOOK,
+                    query: Shelf.shelfQuery[CollectionType.CURRENT]!,
+                    queryArgs: [1000],
                     count: 100,
                 ),
               ),
