@@ -8,17 +8,16 @@ import 'shelf_size.dart';
 import 'shelf_type.dart';
 
 class ShelfSetting extends ConsumerWidget {
-  final Shelf shelf;
+  final int shelfId;
 
-  const ShelfSetting({super.key, required this.shelf});
+  const ShelfSetting({super.key, required this.shelfId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Row(children: [
-      ShelfType(shelf: shelf),
-      Expanded(flex: 4, child: ShelfName(shelf: shelf)),
-      if (shelf.needsSize)
-        Expanded(flex: 1, child: ShelfSize(shelf: shelf)),
+      ShelfType(shelfId: shelfId),
+      Expanded(flex: 4, child: ShelfName(shelfId: shelfId)),
+      Expanded(flex: 1, child: ShelfSize(shelfId: shelfId)),
     ]);
   }
 }

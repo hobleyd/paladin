@@ -1,10 +1,8 @@
 
-import 'package:paladin/models/collection.dart';
+import 'package:paladin/utils/iterable.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../database/library_db.dart';
-import '../models/shelf.dart';
 
 part 'shelves_repository.g.dart';
 
@@ -20,31 +18,33 @@ class ShelvesRepository extends _$ShelvesRepository {
           ''';
 
   @override
-  Future<List<Shelf>> build() async {
+  Future<List<int>> build() async {
     return await _getShelves();
   }
 
   Future<void> addShelf() async {
-    await updateShelf(Shelf(name: "", collection: Collection(type: CollectionType.SERIES, query: "", count: 30), size: 30));
+    List<int> current = List.from(state.value!);
+    current.add(current.max+1);
+
+    // We don't update the DB here as the Shelf will need to be populated with valid content, first.
+    state = AsyncValue.data(current);
   }
 
-  Future<void> removeShelf(Shelf shelf) async {
+  Future<void> removeShelf() async {
+    List<int> current = state.value!;
+
     var libraryDb = ref.read(libraryDBProvider.notifier);
-    await libraryDb.rawQuery(sql: 'delete from shelves where name = ?', args: [shelf.name]);
+    await libraryDb.rawQuery(sql: 'delete from shelves where rowid = ?', args: [current.last]);
+
+    current.remove(current.last);
+    state = AsyncValue.data(current);
+
   }
 
-  Future<void> updateShelf(Shelf shelf) async {
-    var libraryDb = ref.read(libraryDBProvider.notifier);
-    await libraryDb.insert(table: 'shelves', rows: shelf.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
-
-    // TODO: Could remove the DB call by altering state directly here
-    state = AsyncValue.data(await _getShelves());
-  }
-
-  Future<List<Shelf>> _getShelves() async {
+  Future<List<int>> _getShelves() async {
     var libraryDb = ref.read(libraryDBProvider.notifier);
     final List<Map<String, dynamic>> maps = await libraryDb.query(table: 'shelves', columns: ['rowid', 'name', 'type', 'size'], orderBy: 'rowid asc');
 
-    return maps.map((shelf) => Shelf.fromMap(shelf)).toList();
+    return maps.map((shelf) => shelf['rowid'] as int).toList();
   }
 }

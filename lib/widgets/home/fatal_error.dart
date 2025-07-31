@@ -11,7 +11,7 @@ class FatalError extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // TODO: Be more helpful.
     return Center(
-        child: Text(error)
+        child: Text("$error\n$trace")
     );
   }
 }

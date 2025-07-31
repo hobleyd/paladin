@@ -7,27 +7,27 @@ import '../../models/book.dart';
 import '../../models/collection.dart';
 import '../../models/shelf.dart';
 import '../../providers/cached_cover.dart';
-import '../../repositories/shelf_repository.dart';
+import '../../repositories/shelf_books_repository.dart';
 import '../../screens/backcover.dart';
 import '../../utils/iterable.dart';
 import '../home/fatal_error.dart';
 
-class BookShelf extends ConsumerStatefulWidget {
+class BooksOnShelf extends ConsumerStatefulWidget {
   final Shelf shelf;
 
-  const BookShelf({super.key, required this.shelf});
+  const BooksOnShelf({super.key, required this.shelf});
 
   @override
-  ConsumerState<BookShelf> createState() => _BookShelf();
+  ConsumerState<BooksOnShelf> createState() => _BooksOnShelf();
 }
 
-class _BookShelf extends ConsumerState<BookShelf> {
+class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
   Shelf get shelf => widget.shelf;
   Set<int> visibleBooks = {};
 
   @override
   Widget build(BuildContext context) {
-    var bookListAsync = ref.watch(ShelfRepositoryProvider(shelf.collection));
+    var bookListAsync = ref.watch(shelfBooksRepositoryProvider(shelf.collection));
     AutoSizeGroup shelfTitleGroup = AutoSizeGroup();
 
     return bookListAsync.when(

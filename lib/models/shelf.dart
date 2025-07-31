@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart';
+
 import 'collection.dart';
 
+@immutable
 class Shelf {
-  int? shelfId;
+  int shelfId;
   String name;
   Collection collection;
   int size;
@@ -30,10 +33,19 @@ class Shelf {
   bool get needsName => shelfNeedsName(type);
   bool get needsSize => shelfNeedsSize(type);
 
-  Shelf({this.shelfId, required this.name, required this.collection, required this.size});
+  Shelf({required this.shelfId, required this.name, required this.collection, required this.size});
 
   static bool shelfNeedsName(CollectionType type) => [CollectionType.BOOK, CollectionType.TAG, CollectionType.AUTHOR, CollectionType.SERIES].contains(type);
   static bool shelfNeedsSize(CollectionType type) => [CollectionType.TAG, CollectionType.CURRENT, CollectionType.RANDOM].contains(type);
+
+  Shelf copyWith({int? shelfId, String? name, Collection? collection, int? size}) {
+    return Shelf(
+      shelfId: shelfId ?? this.shelfId,
+      name: name ?? this.name,
+      collection: collection ?? this.collection,
+      size: size ?? this.size,
+    );
+  }
 
   static Shelf fromMap(Map<String, dynamic> shelf) {
     CollectionType type = CollectionType.values[shelf['type']];

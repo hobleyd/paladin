@@ -1,9 +1,8 @@
 
+import 'package:paladin/models/shelf.dart';
 import 'package:paladin/utils/normalised.dart';
 
 enum CollectionType { AUTHOR, BOOK, SERIES, TAG, CURRENT, RANDOM, SETTINGS, APPS }
-
-// TODO: do I really need the Series and Tags subclasses here?
 
 class Collection {
   CollectionType type;
@@ -26,7 +25,7 @@ class Collection {
     return switch (type) {
       CollectionType.CURRENT => collectionTypes[type]!,
       CollectionType.RANDOM => collectionTypes[type]!,
-      _ => queryArgs?.first.contains(',') ? getNormalisedString(queryArgs?.first!) : queryArgs?.first,
+      _ => Shelf.shelfNeedsName(type) ? queryArgs?.first.contains(',') ? getNormalisedString(queryArgs?.first!) : queryArgs?.first : queryArgs?.first,
     };
   }
 

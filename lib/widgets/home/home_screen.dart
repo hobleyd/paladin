@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intersperse/intersperse.dart';
 import 'package:paladin/repositories/shelves_repository.dart';
-import 'package:paladin/widgets/home/currently_reading.dart';
 import 'package:paladin/widgets/home/fatal_error.dart';
 
-import '../../models/shelf.dart';
-import '../books/bookshelf.dart';
+import '../shelf/bookshelf.dart';
 import '../menu/menu_buttons.dart';
+import 'currently_reading.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -20,30 +19,31 @@ class HomeScreen extends ConsumerWidget {
       return FatalError(error:error.toString(), trace: stackTrace);
     }, loading: () {
       return const Center(child: CircularProgressIndicator());
-    }, data: (List<Shelf> shelves) {
+    }, data: (List<int> shelfIds) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CurrentlyReading(currentlyReading: shelves[0]),
+          CurrentlyReading(shelfId: shelfIds.first),
           const SizedBox(height: 3),
           const Divider(thickness: 1, height: 3, color: Colors.black),
           const MenuButtons(),
           const Divider(thickness: 1, height: 3, color: Colors.black),
-          ..._getShelves(shelves),
+          ..._getShelves(shelfIds),
         ],
       );
     });
   }
 
-  List<Widget> _getShelves(List<Shelf> shelves) {
+  List<Widget> _getShelves(List<int> shelfIds) {
     return intersperse(
         const Divider(thickness: 1, height: 3, color: Colors.black),
-        shelves.map(
-          (shelf) => Expanded(
-            child: BookShelf(
-              shelf: shelf,
-            ),
-          ),
+        shelfIds.map(
+              (shelfId) =>
+              Expanded(
+                child: BookShelf(
+                  shelfId: shelfId,
+                ),
+              ),
         )).toList();
   }
 }
