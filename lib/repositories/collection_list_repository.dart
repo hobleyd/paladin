@@ -7,10 +7,10 @@ import '../models/collection.dart';
 import '../models/series.dart';
 import '../models/tag.dart';
 
-part 'collection_repository.g.dart';
+part 'collection_list_repository.g.dart';
 
 @riverpod
-class CollectionRepository extends _$CollectionRepository {
+class CollectionListRepository extends _$CollectionListRepository {
   @override
   Future<List<Collection>> build(Collection collection) async {
     return _getCollection(collection);

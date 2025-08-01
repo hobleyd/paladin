@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/repositories/collection_repository.dart';
+import 'package:paladin/repositories/collection_list_repository.dart';
 import 'package:paladin/widgets/home/fatal_error.dart';
 
 import '../../models/book.dart';
@@ -14,7 +14,7 @@ class BookTileList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var bookListAsync = ref.watch(collectionRepositoryProvider(collection));
+    var bookListAsync = ref.watch(collectionListRepositoryProvider(collection));
     return bookListAsync.when(error: (error, stackTrace) {
       return FatalError(error: error.toString(), trace: stackTrace);
     }, loading: () {

@@ -1,16 +1,8 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paladin/repositories/shelf_repository.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
-import '../../models/book.dart';
-import '../../models/collection.dart';
 import '../../models/shelf.dart';
-import '../../providers/cached_cover.dart';
-import '../../repositories/shelf_books_repository.dart';
-import '../../screens/backcover.dart';
-import '../../utils/iterable.dart';
 import '../home/fatal_error.dart';
 import 'books_on_shelf.dart';
 

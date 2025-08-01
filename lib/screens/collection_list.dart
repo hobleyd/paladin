@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/repositories/collection_repository.dart';
+import 'package:paladin/repositories/collection_list_repository.dart';
 
 import '../models/collection.dart';
 import '../widgets/books/collection_tile_list.dart';
@@ -54,7 +54,7 @@ class _CollectionList extends ConsumerState<CollectionList> {
   void _search() {
     setState(() {
       final String searchTerm = '%${searchController.text.replaceAll(' ', '%')}%';
-      ref.read(collectionRepositoryProvider(collection).notifier).updateCollection(collection.copyWith(queryArgs: [searchTerm]));
+      ref.read(collectionListRepositoryProvider(collection).notifier).updateCollection(collection.copyWith(queryArgs: [searchTerm]));
     });
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/repositories/collection_repository.dart';
+import 'package:paladin/repositories/collection_list_repository.dart';
 import 'package:paladin/widgets/home/fatal_error.dart';
 
 import '../../models/collection.dart';
@@ -14,7 +14,7 @@ class CollectionTileList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var collectionListAsync = ref.watch(collectionRepositoryProvider(collection));
+    var collectionListAsync = ref.watch(collectionListRepositoryProvider(collection));
     return collectionListAsync.when(error: (error, trace) {
       return FatalError(error: "It's a crime; your book collection is empty!", trace: trace);
     }, loading: () {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/collection.dart';
-import '../repositories/collection_repository.dart';
+import '../repositories/collection_list_repository.dart';
 import '../widgets/books/book_tile_list.dart';
 
 class BookList extends ConsumerStatefulWidget {
@@ -51,7 +51,7 @@ class _BookList extends ConsumerState<BookList> {
   void _search() {
     setState(() {
       final String searchTerm = '%${searchController.text.replaceAll(' ', '%')}%';
-      ref.read(collectionRepositoryProvider(collection).notifier).updateCollection(collection.copyWith(queryArgs: [searchTerm]));
+      ref.read(collectionListRepositoryProvider(collection).notifier).updateCollection(collection.copyWith(queryArgs: [searchTerm]));
     });
   }
 }
