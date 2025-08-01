@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paladin/database/library_db.dart';
 
@@ -5,6 +6,7 @@ import 'collection.dart';
 
 part 'tag.g.dart';
 
+@immutable
 @JsonSerializable()
 class Tag extends Collection {
   static const String tagsQuery = 'select tags.id, tags.tag, count(book_tags.tagId) as count from tags left join book_tags on tags.id = book_tags.tagId where tags.tag like ? group by tags.id order by tags.tag';
@@ -15,7 +17,11 @@ class Tag extends Collection {
   Tag({
     this.id,
     required this.tag,
-  }) : super(type: CollectionType.TAG, count: 1, query: tagsQuery, queryArgs: [tag]);
+    super.type = CollectionType.TAG,
+    super.query = tagsQuery,
+    required super.queryArgs,
+    super.count = 1,
+  });
 
   @override
   String getLabel() {
@@ -33,16 +39,12 @@ class Tag extends Collection {
   }
 
   static Tag fromMap(Map<String, dynamic> tag) {
-    Tag result =  Tag(
+    return Tag(
       id: tag['id'],
       tag: tag['tag'],
+      queryArgs: [tag['tag']],
+      count: tag['count'],
     );
-
-    if (tag.containsKey('count')) {
-      result.count = tag['count'];
-    }
-
-    return result;
   }
 
   Map<String, dynamic> toMap() {

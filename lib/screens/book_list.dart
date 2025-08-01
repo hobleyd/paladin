@@ -50,9 +50,8 @@ class _BookList extends ConsumerState<BookList> {
 
   void _search() {
     setState(() {
-      String searchTerm = '%${searchController.text.replaceAll(' ', '%')}%';
-      collection.queryArgs = [searchTerm];
-      ref.read(collectionRepositoryProvider(collection).notifier).updateCollection(collection);
+      final String searchTerm = '%${searchController.text.replaceAll(' ', '%')}%';
+      ref.read(collectionRepositoryProvider(collection).notifier).updateCollection(collection.copyWith(queryArgs: [searchTerm]));
     });
   }
 }

@@ -7,6 +7,7 @@ import '../../models/book.dart';
 import '../../models/collection.dart';
 import '../../models/shelf.dart';
 import '../../providers/cached_cover.dart';
+import '../../providers/shelf_collection.dart';
 import '../../repositories/shelf_books_repository.dart';
 import '../../screens/backcover.dart';
 import '../../utils/iterable.dart';
@@ -27,7 +28,8 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
 
   @override
   Widget build(BuildContext context) {
-    var bookListAsync = ref.watch(shelfBooksRepositoryProvider(shelf.collection));
+    var shelfCollection = ref.watch(ShelfCollectionProvider(shelf.shelfId));
+    var bookListAsync = ref.watch(shelfBooksRepositoryProvider(shelfCollection!));
     AutoSizeGroup shelfTitleGroup = AutoSizeGroup();
 
     return bookListAsync.when(

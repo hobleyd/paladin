@@ -1,4 +1,5 @@
 import 'package:paladin/models/collection.dart';
+import 'package:paladin/providers/shelf_collection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -27,10 +28,10 @@ class ShelfRepository extends _$ShelfRepository {
     var libraryDb = ref.read(libraryDBProvider.notifier);
     final List<Map<String, dynamic>> maps = await libraryDb.query(table: 'shelves', columns: ['rowid', 'name', 'type', 'size'], where: 'rowid = ?', whereArgs: [shelfId]);
 
-    return maps.isEmpty
+    Shelf shelf = maps.isEmpty
         ? Shelf(
             shelfId: shelfId,
-            name: Collection.collectionTypes[CollectionType.RANDOM]!,
+            name: Collection.collectionType(CollectionType.RANDOM),
             collection: Collection(
                 type: CollectionType.RANDOM,
                 query: Shelf.shelfQuery[CollectionType.RANDOM]!,
@@ -38,13 +39,13 @@ class ShelfRepository extends _$ShelfRepository {
                 count: 10),
             size: 10)
         : maps.map((shelf) => Shelf.fromMap(shelf)).toList().first;
+
+    ref.read(shelfCollectionProvider(shelfId).notifier).updateCollection(shelf.collection);
+    return shelf;
   }
 
   Future<void> updateShelfCollection(CollectionType collectionType) async {
     Shelf current = state.value!;
-
-    current.collection.type = collectionType;
-    current.collection.query = Shelf.shelfQuery[collectionType]!;
 
     String name = current.name;
     if (!Shelf.shelfNeedsName(collectionType)) {
@@ -56,32 +57,44 @@ class ShelfRepository extends _$ShelfRepository {
       size = 10;
     }
 
-    current = current.copyWith(shelfId: shelfId, name: name, collection: current.collection, size: size);
+    current = current.copyWith(
+        shelfId: shelfId,
+        name: name,
+        collection: current.collection.copyWith(type: collectionType, query: Shelf.shelfQuery[collectionType]!,),
+        size: size);
     updateState(current);
   }
 
   Future<void> updateShelfName(String name) async {
     Shelf current = state.value!;
-    if (Shelf.shelfNeedsName(current.collection.type)) {
-      current.collection.queryArgs = [name];
+
+    List<dynamic> queryArgs = [];
+    if (current.collection.queryArgs != null) {
+      if (current.collection.queryArgs!.length == 2) {
+        queryArgs = [name, current.collection.queryArgs!.last];
+      }
     }
-    current = current.copyWith(name: name, collection: current.collection);
+    current = current.copyWith(name: name, collection: current.collection.copyWith(queryArgs: queryArgs));
+
     updateState(current);
   }
 
   Future<void> updateShelfSize(int size) async {
     Shelf current = state.value!;
-    current.collection.count = size;
 
-    if (Shelf.shelfNeedsSize(current.collection.type)) {
-      current.collection.queryArgs = [size];
+    List<dynamic> queryArgs = [];
+    if (current.collection.queryArgs != null) {
+      if (current.collection.queryArgs!.isNotEmpty) {
+        queryArgs = [current.collection.queryArgs!.first, size];
+      }
     }
-    current = current.copyWith(collection: current.collection, size: current.collection.count);
 
+    current = current.copyWith(collection: current.collection.copyWith(count: size, queryArgs: queryArgs), size: size);
     updateState(current);
   }
 
   Future<void> updateState(Shelf current) async {
+    ref.read(shelfCollectionProvider(current.shelfId).notifier).updateCollection(current.collection);
     state = AsyncValue.data(current);
 
     // TODO: Only update the DB if we have all the required fields!

@@ -7,6 +7,7 @@ import 'package:path/path.dart' as path;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
+import '../models/author.dart';
 import '../models/book.dart';
 import '../models/collection.dart';
 import '../repositories/books_repository.dart';
@@ -150,18 +151,18 @@ class LibraryDB extends _$LibraryDB {
     _paladin.insert('books', book.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
 
     // Insert all the Authors, updating the id for the next foreign key
-    for (var author in book.authors!) {
+    List<Author> authors = [];
+    for (Author author in book.authors!) {
       List<Map> result = await _paladin.query('authors', columns: ['id'], where: 'name = ?', whereArgs: [author.name]);
-      if (result.isNotEmpty) {
-        author.id = result.first['id'] as int;
-      }
-      else {
-        author.id = await _paladin.insert('authors', author.toMap());
-      }
+
+      authors.add(author.copyAuthorWith(id: result.isNotEmpty
+          ? result.first['id'] as int
+          : await _paladin.insert('authors', author.toMap())
+      ));
     }
 
     // Insert the many-many relationship into book_authors.
-    for (var author in book.authors!) {
+    for (var author in authors) {
       List<Map> result = await _paladin.query('book_authors', columns: ['authorId'], where: 'authorId = ? and bookId = ?', whereArgs: [author.id, book.uuid]);
       if (result.isEmpty) {
         _paladin.insert('book_authors', { 'authorId': author.id, 'bookId': book.uuid});

@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:paladin/database/library_db.dart';
 import 'package:paladin/utils/normalised.dart';
 
 import 'collection.dart';
 
+@immutable
 class Series extends Collection {
   static const String seriesQuery = 'select series.id, series.series, count(books.uuid) as count from series left join books on books.series = series.id where series.series like ? group by series.id order by series.series;';
 
@@ -12,7 +14,11 @@ class Series extends Collection {
   Series({
     this.id,
     required this.series,
-  }) : super(type: CollectionType.SERIES, count: 1, query: seriesQuery, queryArgs: [series]);
+    super.type = CollectionType.SERIES,
+    super.query = seriesQuery,
+    required super.queryArgs,
+    super.count = 1,
+  });
 
   @override
   String getNameNormalised() {
@@ -30,16 +36,12 @@ class Series extends Collection {
   }
 
   static Series fromMap(Map<String, dynamic> series) {
-    Series result = Series(
+    return Series(
       id: series['id'],
       series: series['series'],
+      queryArgs: [series['series']],
+      count: series['count']
     );
-
-    if (series.containsKey('count')) {
-      result.count = series['count'];
-    }
-
-    return result;
   }
 
   Map<String, dynamic> toMap() {

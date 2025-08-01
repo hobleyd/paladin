@@ -77,7 +77,7 @@ class Book extends Collection {
   }
 
   static Future<Book> fromJSON(JSONBook jsonBook) async {
-    List<Author> authors = [Author(name: jsonBook.Author)];
+    List<Author> authors = [Author(name: jsonBook.Author, queryArgs: [jsonBook.Author])];
     Book book = Book(
       uuid: jsonBook.UUID,
       authors: authors,
@@ -86,9 +86,9 @@ class Book extends Collection {
       lastRead: jsonBook.Last_Read,
       rating: jsonBook.Rating ?? 0,
       readStatus: jsonBook.Is_read ? 1 : 0,
-      series: jsonBook.Series.isNotEmpty ? Series(series: jsonBook.Series) : null,
+      series: jsonBook.Series.isNotEmpty ? Series(series: jsonBook.Series, queryArgs: [jsonBook.Series]) : null,
       seriesIndex: jsonBook.Series.isNotEmpty ? jsonBook.Series_index : null,
-      tags: jsonBook.Tags!.map((element) => Tag(tag: element)).toList(),
+      tags: jsonBook.Tags!.map((element) => Tag(tag: element, queryArgs: [element])).toList(),
       title: jsonBook.Title,
       mimeType: 'application/epub+zip',
       path: await getBookPath(authors: authors, uuid: jsonBook.UUID),

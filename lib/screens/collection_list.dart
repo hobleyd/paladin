@@ -24,7 +24,7 @@ class _CollectionList extends ConsumerState<CollectionList> {
       searchController.text = collection.getLabel();
       return Scaffold(
           appBar: AppBar(
-              title: Text(Collection.collectionTypes[collection.type]!, style: Theme.of(context).textTheme.titleLarge),
+              title: Text(Collection.collectionType(collection.type), style: Theme.of(context).textTheme.titleLarge),
               actions: <Widget>[
                 SizedBox(
                   width: 180,
@@ -53,9 +53,8 @@ class _CollectionList extends ConsumerState<CollectionList> {
 
   void _search() {
     setState(() {
-      String searchTerm = '%${searchController.text.replaceAll(' ', '%')}%';
-      collection.queryArgs = [searchTerm];
-      ref.read(collectionRepositoryProvider(collection).notifier).updateCollection(collection);
+      final String searchTerm = '%${searchController.text.replaceAll(' ', '%')}%';
+      ref.read(collectionRepositoryProvider(collection).notifier).updateCollection(collection.copyWith(queryArgs: [searchTerm]));
     });
   }
 }

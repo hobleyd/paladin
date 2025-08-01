@@ -1,22 +1,32 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:paladin/database/library_db.dart';
 import 'package:paladin/utils/normalised.dart';
 
 import 'collection.dart';
 
-part 'author.g.dart';
-
-@JsonSerializable()
+@immutable
 class Author extends Collection {
   static const String authorsQuery = 'select authors.id, authors.name, count(book_authors.bookId) as count from authors left join book_authors on authors.id = book_authors.authorId where authors.name like ? group by authors.id order by authors.name';
 
-  int? id;
-  String name;
+  final int? id;
+  final String name;
 
-  Author({
+  const Author({
     this.id,
     required this.name,
-  }) : super(type: CollectionType.AUTHOR, count: 1, query: authorsQuery, queryArgs: [name]);
+    super.type = CollectionType.AUTHOR,
+    super.query = authorsQuery,
+    required super.queryArgs,
+    super.count = 1,
+  });
+
+  Author copyAuthorWith({int? id, String? name}) {
+    return Author(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      queryArgs: queryArgs ?? [name],
+    );
+  }
 
   @override
   String getNameNormalised() {
@@ -28,9 +38,6 @@ class Author extends Collection {
     return name;
   }
 
-  factory Author.fromJson(Map<String, dynamic> json) => _$AuthorFromJson(json);
-  Map<String, dynamic> toJson() => _$AuthorToJson(this);
-
   static Future<List<Author>> getAuthors(LibraryDB db, String uuid) async {
     final List<Map<String, dynamic>> maps = await db.rawQuery(sql: 'select authors.id, authors.name from book_authors, authors where book_authors.authorId = authors.id and book_authors.bookId = ?;', args: [uuid]);
     return List.generate(maps.length, (i) {
@@ -39,16 +46,12 @@ class Author extends Collection {
   }
 
   static Author fromMap(Map<String, dynamic> author) {
-    Author result =  Author(
+    return Author(
       id: author['id'],
       name: author['name'],
+      queryArgs: [author['name']],
+      count: author['count'],
     );
-
-    if (author.containsKey('count')) {
-      result.count = author['count'];
-    }
-
-    return result;
   }
 
   Map<String, dynamic> toMap() {

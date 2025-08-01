@@ -39,8 +39,8 @@ class ShelfType extends ConsumerWidget {
               onChanged: (CollectionType? value) {
                 ref.read(shelfRepositoryProvider(shelf.shelfId).notifier).updateShelfCollection(value!);
               },
-              items: Collection.collectionTypes.entries.map((item) {
-                return DropdownMenuItem(value: item.key, child: Text(item.value));
+              items: CollectionType.values.map((type) {
+                return DropdownMenuItem(value: type, child: Text(Collection.collectionType(type)));
               }).toList(),
             ),
           ),
