@@ -36,9 +36,11 @@ class Collection {
 
   String getLabel() {
     return switch (type) {
-      CollectionType.CURRENT => collectionType(type),
-      CollectionType.RANDOM  => collectionType(type),
-      _ => Shelf.shelfNeedsName(type) ? queryArgs?.first.contains(',') ? getNormalisedString(queryArgs?.first!) : queryArgs?.first : queryArgs?.first,
+      CollectionType.CURRENT   => collectionType(type),
+      CollectionType.RANDOM    => collectionType(type),
+      CollectionType.SETTINGS  => collectionType(type),
+      CollectionType.APPS      => collectionType(type),
+      _ => queryArgs?.first.contains(',') ? getNormalisedString(queryArgs?.first!) : queryArgs?.first,
     };
   }
 
