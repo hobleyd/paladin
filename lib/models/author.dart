@@ -10,14 +10,15 @@ class Author extends Collection {
 
   final int? id;
   final String name;
+  final int? count;
 
   const Author({
     this.id,
     required this.name,
+    this.count,
     super.type = CollectionType.AUTHOR,
     super.query = authorsQuery,
     required super.queryArgs,
-    super.count = 1,
   });
 
   Author copyAuthorWith({int? id, String? name}) {
@@ -50,7 +51,6 @@ class Author extends Collection {
       id: author['id'],
       name: author['name'],
       queryArgs: [author['name']],
-      count: author['count'],
     );
   }
 

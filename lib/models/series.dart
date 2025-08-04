@@ -8,17 +8,28 @@ import 'collection.dart';
 class Series extends Collection {
   static const String seriesQuery = 'select series.id, series.series, count(books.uuid) as count from series left join books on books.series = series.id where series.series like ? group by series.id order by series.series;';
 
-  int? id;
-  String series;
+  final int? id;
+  final String series;
+  final int? count;
 
-  Series({
+  const Series({
     this.id,
     required this.series,
+    this.count,
     super.type = CollectionType.SERIES,
     super.query = seriesQuery,
     required super.queryArgs,
-    super.count = 1,
   });
+
+  Series copySeriesWith({int? id, }) {
+    return Series(
+      id:        id ?? this.id,
+      query:     query,
+      queryArgs: queryArgs,
+      series:    series,
+      type:      type,
+    );
+  }
 
   @override
   String getNameNormalised() {
@@ -40,7 +51,7 @@ class Series extends Collection {
       id: series['id'],
       series: series['series'],
       queryArgs: [series['series']],
-      count: series['count']
+      count: series['count'] ?? series.length,
     );
   }
 

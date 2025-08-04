@@ -53,7 +53,7 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: shelfCollection.count,
+                itemCount: bookShelf.length,
                 itemBuilder: (context, index) {
                   Book book = bookShelf[index];
                   String title = book.title.split(':').first;

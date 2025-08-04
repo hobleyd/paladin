@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:paladin/models/collection.dart';
 import 'package:paladin/providers/shelf_collection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -5,6 +6,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../database/library_db.dart';
 import '../models/shelf.dart';
+import '../utils/math_constants.dart';
 
 part 'shelf_repository.g.dart';
 
@@ -36,7 +38,7 @@ class ShelfRepository extends _$ShelfRepository {
                 type: CollectionType.RANDOM,
                 query: Shelf.shelfQuery[CollectionType.RANDOM]!,
                 queryArgs: [10],
-                count: 10),
+            ),
             size: 10)
         : maps.map((shelf) => Shelf.fromMap(shelf)).toList().first;
 
@@ -44,36 +46,27 @@ class ShelfRepository extends _$ShelfRepository {
     return shelf;
   }
 
-  Future<void> updateShelfCollection(CollectionType collectionType) async {
+  Future<void> updateShelfType(CollectionType collectionType) async {
     Shelf current = state.value!;
 
-    String name = current.name;
-    if (!Shelf.shelfNeedsName(collectionType)) {
-      name = "";
-    }
+    // Reset the Shelf name if we change the type.
+    String name = "";
 
     int size = current.size;
     if (!Shelf.shelfNeedsSize(collectionType)) {
-      size = 10;
+      size = maxInt;
     }
 
-    current = current.copyWith(
-        shelfId: shelfId,
-        name: name,
-        collection: current.collection.copyWith(type: collectionType, query: Shelf.shelfQuery[collectionType]!,),
-        size: size);
+    List<dynamic> queryArgs = [if (Shelf.shelfNeedsName(collectionType)) name, if (Shelf.shelfNeedsSize(collectionType)) size];
+    current = current.copyWith(collection: current.collection.copyWith(type: collectionType, query: Shelf.shelfQuery[collectionType]!, queryArgs: queryArgs),);
+
     updateState(current);
   }
 
   Future<void> updateShelfName(String name) async {
     Shelf current = state.value!;
 
-    List<dynamic> queryArgs = [];
-    if (current.collection.queryArgs != null) {
-      if (current.collection.queryArgs!.length == 2) {
-        queryArgs = [name, current.collection.queryArgs!.last];
-      }
-    }
+    List<dynamic> queryArgs = [if (Shelf.shelfNeedsName(current.collection.type)) name, if (Shelf.shelfNeedsSize(current.collection.type)) current.size];
     current = current.copyWith(name: name, collection: current.collection.copyWith(queryArgs: queryArgs));
 
     updateState(current);
@@ -82,14 +75,9 @@ class ShelfRepository extends _$ShelfRepository {
   Future<void> updateShelfSize(int size) async {
     Shelf current = state.value!;
 
-    List<dynamic> queryArgs = [];
-    if (current.collection.queryArgs != null) {
-      if (current.collection.queryArgs!.isNotEmpty) {
-        queryArgs = [current.collection.queryArgs!.first, size];
-      }
-    }
+    List<dynamic> queryArgs = [if (Shelf.shelfNeedsName(current.collection.type)) current.name, size];
+    current = current.copyWith(collection: current.collection.copyWith(queryArgs: queryArgs), size: size);
 
-    current = current.copyWith(collection: current.collection.copyWith(count: size, queryArgs: queryArgs), size: size);
     updateState(current);
   }
 

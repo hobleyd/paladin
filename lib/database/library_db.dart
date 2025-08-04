@@ -10,6 +10,8 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../models/author.dart';
 import '../models/book.dart';
 import '../models/collection.dart';
+import '../models/series.dart';
+import '../models/tag.dart';
 import '../repositories/books_repository.dart';
 import '../repositories/authors_repository.dart';
 import '../repositories/series_repository.dart';
@@ -133,19 +135,20 @@ class LibraryDB extends _$LibraryDB {
 
   Future<void> insertBook(Book book) async {
     // Ensure we update the Added date if we don't already have it.
-    book.added ??= (DateTime.now().millisecondsSinceEpoch / 1000).round();
+    int added = book.added ?? (DateTime.now().millisecondsSinceEpoch / 1000).round();
 
     // Insert Series, returning foreign key for the Book.
+    Series? series;
     if (book.series != null) {
       if (book.series!.id == null) {
         List<Map> result = await _paladin.query('series', columns: ['id'], where: 'series = ?', whereArgs: [book.series!.series]);
-        if (result.isNotEmpty) {
-          book.series!.id = result.first['id'] as int;
-        } else {
-          book.series!.id = await _paladin.insert('series', book.series!.toMap());
-        }
+        series = book.series!.copySeriesWith(id: result.isNotEmpty
+          ? result.first['id'] as int
+          : await _paladin.insert('series', book.series!.toMap())
+        );
       }
     }
+    book = book.copyBookWith(added: added, series: series);
 
     // Now insert the Book.
     _paladin.insert('books', book.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
@@ -171,18 +174,17 @@ class LibraryDB extends _$LibraryDB {
 
     // Insert all the Tags, updating the id for the next foreign key
     if (book.tags != null) {
+      List<Tag> tags = [];
       for (var tag in book.tags!) {
         List<Map> result = await _paladin.query('tags', columns: ['id'], where: 'tag = ?', whereArgs: [tag.tag]);
-        if (result.isNotEmpty) {
-          tag.id = result.first['id'] as int;
-        }
-        else {
-          tag.id = await _paladin.insert('tags', tag.toMap());
-        }
+        tags.add(tag.copyTagWith(id: result.isNotEmpty
+          ? result.first['id'] as int
+          : await _paladin.insert('tags', tag.toMap())
+        ));
       }
 
       // Insert the many-many relationship into book_tags.
-      for (var tag in book.tags!) {
+      for (var tag in tags) {
         List<Map> result = await _paladin.query('book_tags', columns: ['tagId'], where: 'tagId = ? and bookId = ?', whereArgs: [tag.id, book.uuid]);
         if (result.isEmpty) {
           _paladin.insert('book_tags', { 'tagId': tag.id, 'bookId': book.uuid});

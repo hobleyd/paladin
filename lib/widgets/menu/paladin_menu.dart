@@ -8,6 +8,7 @@ import '../../models/collection.dart';
 import '../../models/shelf.dart';
 import '../../screens/book_list.dart';
 import '../../screens/calibresync.dart';
+import '../../utils/math_constants.dart';
 
 class PaladinMenu extends ConsumerWidget {
   const PaladinMenu({super.key});
@@ -38,8 +39,7 @@ class PaladinMenu extends ConsumerWidget {
                 collection: Collection(
                     type: CollectionType.BOOK,
                     query: Shelf.shelfQuery[CollectionType.TAG]!,
-                    queryArgs: ['Future Reads', 100],
-                    count: 100,
+                    queryArgs: ['Future Reads', maxInt],
                 ),
               ),
             ),
@@ -53,8 +53,7 @@ class PaladinMenu extends ConsumerWidget {
                 collection: Collection(
                     type: CollectionType.BOOK,
                     query: Shelf.shelfQuery[CollectionType.CURRENT]!,
-                    queryArgs: [1000],
-                    count: 100,
+                    queryArgs: [maxInt],
                 ),
               ),
             ),

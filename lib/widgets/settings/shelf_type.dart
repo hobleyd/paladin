@@ -37,9 +37,9 @@ class ShelfType extends ConsumerWidget {
               elevation: 16,
               style: const TextStyle(color: Colors.black, fontSize: 10),
               onChanged: (CollectionType? value) {
-                ref.read(shelfRepositoryProvider(shelf.shelfId).notifier).updateShelfCollection(value!);
+                ref.read(shelfRepositoryProvider(shelf.shelfId).notifier).updateShelfType(value!);
               },
-              items: CollectionType.values.map((type) {
+              items: Shelf.shelfQuery.keys.map((type) {
                 return DropdownMenuItem(value: type, child: Text(Collection.collectionType(type)));
               }).toList(),
             ),

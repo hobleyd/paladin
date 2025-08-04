@@ -8,7 +8,7 @@ import '../widgets/books/collection_tile_list.dart';
 class CollectionList extends ConsumerStatefulWidget {
   final Collection collection;
 
-  CollectionList({super.key, required this.collection});
+  const CollectionList({super.key, required this.collection});
 
   @override
   ConsumerState<CollectionList> createState() => _CollectionList();

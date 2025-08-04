@@ -27,7 +27,7 @@ class BookSeries extends ConsumerWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => BookList(
-                            collection: Collection(type: CollectionType.BOOK, query: Shelf.shelfQuery[CollectionType.SERIES]!, queryArgs: [book.series!.getNameNormalised()], count: 0),
+                            collection: Collection(type: CollectionType.BOOK, query: Shelf.shelfQuery[CollectionType.SERIES]!, queryArgs: [book.series!.getNameNormalised()],),
                           ),
                         ),
                       );

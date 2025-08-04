@@ -6,6 +6,7 @@ import 'package:paladin/widgets/home/fatal_error.dart';
 import '../../models/collection.dart';
 import '../../models/shelf.dart';
 import '../../screens/book_list.dart';
+import '../../utils/math_constants.dart';
 
 class CollectionTileList extends ConsumerWidget {
   final Collection collection;
@@ -41,8 +42,7 @@ class CollectionTileList extends ConsumerWidget {
     final Collection collectionQuery = Collection(
         type: CollectionType.BOOK,
         query: Shelf.shelfQuery[collection.type]!,
-        queryArgs: [...?collection.queryArgs, if (Shelf.shelfNeedsSize(collection.type)) collection.count],
-        count: collection.count
+        queryArgs: [...?collection.queryArgs, if (Shelf.shelfNeedsSize(collection.type)) maxInt],
     );
 
     Navigator.push(context, MaterialPageRoute(builder: (context) => BookList(collection: collectionQuery)));

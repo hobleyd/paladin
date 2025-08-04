@@ -1,14 +1,19 @@
 
 import 'package:flutter/foundation.dart';
-import 'package:paladin/models/shelf.dart';
 import 'package:paladin/utils/normalised.dart';
 
 enum CollectionType { AUTHOR, BOOK, SERIES, TAG, CURRENT, RANDOM, SETTINGS, APPS}
 
+/*
+ * A Collection is the metadata describing a Set of books, settings, or (mobile) applications; it can be used
+ * to filter down the collection of things, by a defined set of attributes: Author, Series, Tag, Title etc.
+ *
+ * A Collection will be displayed on a Shelf, or a specific Widget designed to show the content appropriately.
+ */
+
 @immutable
 class Collection {
   final CollectionType type;
-  final int count;
   final String query;
   final List<dynamic>? queryArgs;
 
@@ -23,14 +28,13 @@ class Collection {
     CollectionType.APPS     => 'Applications'
   };
 
-  const Collection({ required this.type, required this.query, this.queryArgs, this.count = 0});
+  const Collection({ required this.type, required this.query, this.queryArgs, });
 
-  Collection copyWith({CollectionType? type, String? query, List<dynamic>? queryArgs, int? count}) {
+  Collection copyWith({CollectionType? type, String? query, List<dynamic>? queryArgs, }) {
     return Collection(
-      type: type ?? this.type,
-      query: query ?? this.query,
+      type:      type ?? this.type,
+      query:     query ?? this.query,
       queryArgs: queryArgs ?? this.queryArgs,
-      count: count ?? this.count,
     );
   }
 

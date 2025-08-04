@@ -11,18 +11,29 @@ part 'tag.g.dart';
 class Tag extends Collection {
   static const String tagsQuery = 'select tags.id, tags.tag, count(book_tags.tagId) as count from tags left join book_tags on tags.id = book_tags.tagId where tags.tag like ? group by tags.id order by tags.tag';
 
-  int? id;
-  String tag;
+  final int? id;
+  final String tag;
+  final int? count;
 
-  Tag({
+  const Tag({
     this.id,
     required this.tag,
+    this.count,
     super.type = CollectionType.TAG,
-    super.query = tagsQuery,
-    required super.queryArgs,
-    super.count = 1,
+    super.query = Tag.tagsQuery,
+    super.queryArgs,
   });
 
+  Tag copyTagWith({int? id, }) {
+    return Tag(
+      id:        id ?? this.id,
+      query:     query,
+      queryArgs: queryArgs,
+      tag:       tag,
+      type:      type,
+      count:     count,
+    );
+  }
   @override
   String getLabel() {
     return tag;
@@ -43,7 +54,7 @@ class Tag extends Collection {
       id: tag['id'],
       tag: tag['tag'],
       queryArgs: [tag['tag']],
-      count: tag['count'],
+      count: tag['count'] ?? tag.length,
     );
   }
 

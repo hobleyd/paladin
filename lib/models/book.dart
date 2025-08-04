@@ -18,22 +18,23 @@ import 'tag.dart';
 @immutable
 class Book extends Collection {
   static const String booksQuery = 'select * from books where title like ? order by added desc;';
-  String uuid;
-  int? added;
-  List<Author>? authors; // Only nullable because getting authors from DB is a two step process.
-  String description;
-  String mimeType;
-  String path;
-  int lastModified;
-  int? lastRead;
-  int rating;
-  int readStatus;
-  Series? series;
-  double? seriesIndex;
-  List<Tag>? tags;
-  String title;
 
-  Book({
+  final String uuid;
+  final int? added;
+  final List<Author>? authors; // Only nullable because getting authors from DB is a two step process.
+  final String description;
+  final String mimeType;
+  final String path;
+  final int lastModified;
+  final int? lastRead;
+  final int rating;
+  final int readStatus;
+  final Series? series;
+  final double? seriesIndex;
+  final List<Tag>? tags;
+  final String title;
+
+  const Book({
     required this.uuid,
     this.added,
     this.authors,
@@ -47,8 +48,26 @@ class Book extends Collection {
     this.series,
     this.seriesIndex,
     this.tags,
-    required this.title}) : super(type: CollectionType.BOOK, query: booksQuery, count: 1);
+    required this.title}) : super(type: CollectionType.BOOK, query: booksQuery,);
 
+  Book copyBookWith({String? uuid, int? added, int? lastRead, int? rating, int? readStatus, Series? series}) {
+    return Book(
+      uuid:         uuid ?? this.uuid,
+      added:        added ?? this.added,
+      authors:      authors,
+      description:  description,
+      mimeType:     mimeType,
+      path:         path,
+      lastModified: lastModified,
+      lastRead:     lastRead ?? this.lastRead,
+      rating:       rating ?? this.rating,
+      readStatus:   readStatus ?? this.readStatus,
+      series:       series ?? this.series,
+      seriesIndex:  seriesIndex,
+      tags:         tags,
+      title:        title,
+    );
+  }
 
   static Future<String> getBookPath({ required List<Author> authors, required String uuid }) async {
     String path='';
@@ -98,27 +117,30 @@ class Book extends Collection {
   }
 
   static Future<Book> fromMap(LibraryDB db, Map<String, dynamic> bookMap) async {
-    Book book = Book(
-      uuid: bookMap['uuid'],
-      added: bookMap['added'],
-      description: bookMap['description'],
-      path: bookMap['path'],
-      mimeType: bookMap['mimeType'],
-      lastModified: bookMap['lastModified'],
-      lastRead: bookMap['lastRead'],
-      rating: bookMap['rating'],
-      readStatus: bookMap['readStatus'],
-      seriesIndex: bookMap['seriesIndex'],
-      title: bookMap['title'],
-    );
+    List<Author> authors = await Author.getAuthors(db, bookMap['uuid']);
+    List<Tag> tags = await Tag.getTags(db, bookMap['uuid']);
 
+    Series? series;
     if (bookMap.containsKey('series') && bookMap['series'] != null) {
-      book.series = await Series.getSeries(db, bookMap['series']);
+      series = await Series.getSeries(db, bookMap['series']);
     }
-    book.tags = await Tag.getTags(db, book.uuid);
-    book.authors = await Author.getAuthors(db, book.uuid);
 
-    return book;
+    return Book(
+      uuid:         bookMap['uuid'],
+      added:        bookMap['added'],
+      authors:      authors,
+      description:  bookMap['description'],
+      path:         bookMap['path'],
+      lastModified: bookMap['lastModified'],
+      lastRead:     bookMap['lastRead'],
+      mimeType:     bookMap['mimeType'],
+      rating:       bookMap['rating'],
+      readStatus:   bookMap['readStatus'],
+      series:       series,
+      seriesIndex:  bookMap['seriesIndex'],
+      tags:         tags,
+      title:        bookMap['title'],
+    );
   }
 
   Map<String, dynamic> toMap() {
