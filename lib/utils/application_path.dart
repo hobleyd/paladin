@@ -11,7 +11,7 @@ Future<String> getApplicationPath() async {
       Directory documentsDirectory = await getApplicationDocumentsDirectory();
       dir = documentsDirectory.path;
     } else if (Platform.isWindows) {
-      dir = path.join(Platform.environment['APPDATA']!, 'Paladin');
+      dir = path.join(Platform.environment['LOCALAPPDATA']!, 'Paladin');
     } else {
       dir = path.join(Platform.environment['HOME']!, '.paladin');
     }
