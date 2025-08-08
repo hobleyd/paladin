@@ -27,7 +27,7 @@ class CalibreSyncButton extends ConsumerWidget {
               value: syncData.syncFromEpoch),
           const SizedBox(),
           ElevatedButton(
-            onPressed: () => ref.read(calibreWSProvider.notifier).getBooks(),
+            onPressed: () => ref.read(calibreWSProvider.notifier).synchroniseWithCalibre(),
             style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
             child: Text(errors.isEmpty ? 'Sync' : 'Re-Sync', textAlign: TextAlign.center),
           ),
@@ -35,9 +35,8 @@ class CalibreSyncButton extends ConsumerWidget {
         ],
       );
     }
-
-    String status = ref.watch(statusProvider);
-    ThemeData theme = ref.watch(paladinThemeProvider);
-    return Text(status, style: theme.textTheme.titleLarge, textAlign: TextAlign.center);
+    else {
+      return Text('Synchonisation is underway...', textAlign: TextAlign.center);
+    }
   }
 }

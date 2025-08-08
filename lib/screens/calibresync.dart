@@ -12,6 +12,7 @@ import '../widgets/calibre/calibre_progress_bar.dart';
 import '../widgets/calibre/calibre_status.dart';
 import '../widgets/calibre/calibre_sync_button.dart';
 import '../widgets/calibre/calibre_book_list.dart';
+import '../widgets/calibre/sync_notifications.dart';
 
 class CalibreSync extends ConsumerWidget {
   const CalibreSync({super.key, });
@@ -29,12 +30,20 @@ class CalibreSync extends ConsumerWidget {
       appBar: AppBar(title: const Text('Synchronise Library')),
       body: Column(
         children: [
-          Expanded(child: calibre.processing
-              ? CalibreBookList(bookType: BooksType.processed,)
-              : errors.isNotEmpty
-                ? CalibreBookList(bookType: BooksType.error,)
-                : Padding(padding: const EdgeInsets.only(top: 50, bottom: 50), child: CalibreStatus()),
-          ),
+          calibre.processing || errors.isNotEmpty
+              ? Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: calibre.processing
+                            ? CalibreBookList(bookType: BooksType.processed)
+                            : CalibreBookList(bookType: BooksType.error),
+                      ),
+                      Expanded(child: SyncNotifications()),
+                    ],
+                  ),
+                )
+              : Expanded(child: Padding(padding: const EdgeInsets.only(top: 50, bottom: 50), child: CalibreStatus())),
           CalibreProgressBar(),
           CalibreSyncButton(),
         ],

@@ -5,11 +5,14 @@ part 'status_provider.g.dart';
 @Riverpod(keepAlive: true)
 class Status extends _$Status {
   @override
-  String build() {
-    return "";
+  List<String> build() {
+    return [];
   }
 
-  void setStatus(String status) {
-    state = status;
+  void addStatus(String status) {
+    List<String> messages = List.from(state);
+    messages.insert(0, status);
+
+    state = messages;
   }
 }

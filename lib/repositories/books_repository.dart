@@ -34,14 +34,25 @@ class BooksRepository extends _$BooksRepository {
     return _getBooksCount();
   }
 
+  Future<List<Book>> getReadingList(int last_modified) async {
+    var libraryDb = ref.read(libraryDBProvider.notifier);
+    List<Map<String, dynamic>> results = await libraryDb.query(
+        table: "books",
+        columns: ["uuid", "path", "mimeType", "added", "lastModified", "lastRead", "rating", "readStatus", "series", "seriesIndex", "title"],
+        where: "lastRead > 0 and lastModified > ?",
+        whereArgs: [last_modified],
+        orderBy: "lastRead ASC");
 
-  Future<void> updateBooksCount() async {
-    state = AsyncValue.data(await _getBooksCount());
+    return Future.wait(results.map((book) => Book.fromMap(libraryDb, book)).toList());
   }
 
   Future setRating(Book book, int newRating) async {
     var libraryDb = ref.read(libraryDBProvider.notifier);
     libraryDb.updateTable(table: booksTable, values: { 'rating' : newRating }, where: 'uuid = ?', whereArgs: [book.uuid]);
+  }
+
+  Future<void> updateBooksCount() async {
+    state = AsyncValue.data(await _getBooksCount());
   }
 
   Future updateBookLastReadDate(Book book) async {

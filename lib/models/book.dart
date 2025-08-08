@@ -143,6 +143,20 @@ class Book extends Collection {
     );
   }
 
+  JSONBook toJSON() {
+    return JSONBook(
+        UUID: uuid,
+        Author: authors?.join(" ") ?? "",
+        Blurb: description,
+        Is_read: readStatus == 1 ? true : false,
+        Last_modified: lastModified,
+        Last_Read: lastRead,
+        Rating: rating,
+        Series: series?.series ?? "",
+        Series_index: seriesIndex ?? 0,
+        Title: title);
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'uuid': uuid,

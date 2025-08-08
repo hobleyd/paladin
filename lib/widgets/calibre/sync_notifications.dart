@@ -1,19 +1,15 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Notification, NotificationListener;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/providers/status_provider.dart';
 
-import '../../models/json_book.dart';
-import '../../providers/calibre_book_provider.dart';
-
-class CalibreBookList extends ConsumerWidget {
-  final BooksType bookType;
-
-  const CalibreBookList({super.key, required this.bookType});
+class SyncNotifications extends ConsumerWidget {
+  const SyncNotifications({super.key, });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ScrollController scrollController = ScrollController();
+    List<String> updates = ref.watch(statusProvider);
 
-    List<JSONBook> books = ref.read(calibreBookProvider(bookType));
     return Container(
       alignment: Alignment.topLeft,
       margin: const EdgeInsets.all(15.0),
@@ -24,18 +20,21 @@ class CalibreBookList extends ConsumerWidget {
       child: SingleChildScrollView(
         controller: scrollController,
         child: ListView.builder(
-          itemCount: books.length,
+          itemCount: updates.length,
           itemBuilder: (context, index) {
             return Container(
-              color: index % 2 == 0 ? Colors.grey[50] : Colors.white,
-              padding: const EdgeInsets.only(left: 8.0, top: 2.0, bottom: 2.0),
-              child: ListTile(
-                subtitle: Text(books[index].Author),
-                title: Text(books[index].Title),
+              color: index % 2 == 0 ? Colors.grey[50] : Colors.blue[50],
+              child: Text(
+                updates[index],
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .bodySmall,
+                textAlign: TextAlign.left,
               ),
             );
           },
-          scrollDirection: Axis.vertical,
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
         ),
       ),

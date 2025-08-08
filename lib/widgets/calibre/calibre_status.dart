@@ -16,12 +16,14 @@ class CalibreStatus extends ConsumerWidget {
     }, loading: () {
       return const Center(child: CircularProgressIndicator());
     }, data: (DateTime syncDate) {
-      final String formattedDate = DateFormat('MMMM d, y: H:mm').format(syncDate);
-      return Column(
+      final String formattedText = syncDate.millisecondsSinceEpoch == 0
+            ? "We have no records of any prior synchronisation, sorry!"
+            : "You last synchronised your library on ${DateFormat('MMMM d, y: H:mm').format(syncDate)}";
+        return Column(
         children: [
-          Text('You last synchronised your library on $formattedDate', style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(' $formattedText', style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),
-          const Text('Click the Sync button to download your books!', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text('Click the Sync button (below) to download your books!', style: TextStyle(fontWeight: FontWeight.bold)),
         ],
       );
     });

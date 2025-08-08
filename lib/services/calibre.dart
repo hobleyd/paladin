@@ -10,20 +10,20 @@ part 'calibre.g.dart';
 abstract class Calibre {
   factory Calibre(Dio dio, {String baseUrl}) = _Calibre;
 
-  @GET("/calibre/book/{uuid}")
+  @GET("/book/{uuid}")
   @DioResponseType(ResponseType.bytes)
   Stream<List<int>> getBook(@Path("uuid") String uuid, @Query('chunk_size') int chunkSize);
 
-  @GET("/calibre/books/{last_modified}")
-  Future<List<JSONBook>> getBooks(@Path("last_modified") int last_modified, @Query('page') int page, @Query('size') int size);
+  @GET("/books/{last_modified}")
+  Future<List<JSONBook>> getBooks(@Path("last_modified") int last_modified, @Query('offset') int offset, @Query('limit') int limit);
 
-  @GET("/calibre/count")
+  @GET("/count")
   Future<int> getCount(@Query('last_modified') int last_modified);
 
-  @GET("/calibre/tags/{uuid}")
+  @GET("/tags/{uuid}")
   Future<List<Tag>> getTags(@Path("uuid") String uuid);
 
-  @PUT("/calibre/update")
+  @PUT("/update")
   @Headers(<String, dynamic>{
     "Content-Type" : "application/json",
   })
