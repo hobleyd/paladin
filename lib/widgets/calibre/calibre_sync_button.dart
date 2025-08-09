@@ -24,7 +24,8 @@ class CalibreSyncButton extends ConsumerWidget {
               onChanged: (bool? checked) {
                 ref.read(calibreWSProvider.notifier).setSyncFromEpoch(checked);
               },
-              value: syncData.syncFromEpoch),
+              value: syncData.syncFromEpoch,
+          ),
           const SizedBox(),
           ElevatedButton(
             onPressed: () => ref.read(calibreWSProvider.notifier).synchroniseWithCalibre(),
