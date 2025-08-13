@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart' hide Headers;
 import 'package:retrofit/retrofit.dart';
 
+import '../models/book_count.dart';
+import '../models/calibre_update_response.dart';
 import '../models/json_book.dart';
 import '../models/tag.dart';
 
@@ -14,11 +16,11 @@ abstract class Calibre {
   @DioResponseType(ResponseType.bytes)
   Stream<List<int>> getBook(@Path("uuid") String uuid, @Query('chunk_size') int chunkSize);
 
-  @GET("/books/{last_modified}")
-  Future<List<JSONBook>> getBooks(@Path("last_modified") int last_modified, @Query('offset') int offset, @Query('limit') int limit);
+  @GET("/books")
+  Future<List<JSONBook>> getBooks(@Query("last_modified") int last_modified, @Query('offset') int offset, @Query('limit') int limit);
 
-  @GET("/count")
-  Future<int> getCount(@Query('last_modified') int last_modified);
+  @GET("/count/{last_modified}")
+  Future<BookCount> getCount(@Path('last_modified') int last_modified);
 
   @GET("/tags/{uuid}")
   Future<List<Tag>> getTags(@Path("uuid") String uuid);
@@ -27,5 +29,5 @@ abstract class Calibre {
   @Headers(<String, dynamic>{
     "Content-Type" : "application/json",
   })
-  Future<List<JSONBook>> updateBooks(@Body() List<JSONBook> books);
+  Future<CalibreUpdateResponse> updateBooks(@Body() List<JSONBook> books);
 }

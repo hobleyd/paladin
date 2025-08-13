@@ -21,7 +21,7 @@ class CalibreStatus extends ConsumerWidget {
             : "You last synchronised your library on ${DateFormat('MMMM d, y: H:mm').format(syncDate)}";
         return Column(
         children: [
-          Text(' $formattedText', style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text('$formattedText', style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),
           const Text('Click the Sync button (below) to download your books!', style: TextStyle(fontWeight: FontWeight.bold)),
         ],

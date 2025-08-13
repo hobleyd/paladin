@@ -6,6 +6,7 @@ import 'package:http_status_code/http_status_code.dart';
 
 import '../database/library_db.dart';
 import '../models/book.dart';
+import '../models/book_count.dart';
 import '../models/calibre_sync_data.dart';
 import '../models/json_book.dart';
 import '../repositories/books_repository.dart';
@@ -32,19 +33,23 @@ class CalibreWS extends _$CalibreWS {
     return;
   }
 
+  void stopSynchronisation() {
+    state = state.copyWith(processing: false);
+  }
+
   Future<void> synchroniseWithCalibre() async {
     var status = ref.read(statusProvider.notifier);
 
     state = state.copyWith(processing: true);
     status.addStatus('Initialising Sync...');
 
-    await _updateReadStatuses();
+    //await _updateReadStatuses();
     await _getUpdatedBooks();
 
     ref.read(calibreLastConnectedDateProvider.notifier).setLastConnected();
 
     status.addStatus('Completed Synchronisation');
-    state = state.copyWith(status: 'Completed Synchronisation', processing: false);
+    state = state.copyWith(status: 'Completed Synchronisation', );
   }
 
   Future<void> _downloadBook(Book book) async {
@@ -69,12 +74,12 @@ class CalibreWS extends _$CalibreWS {
     int lastConnected = ref.read(calibreLastConnectedDateProvider.notifier).lastConnected;
 
     const int size = 100;
-    int count = await calibre.getCount(lastConnected);
-    status.addStatus('Received $count Books in the batch.');
+    BookCount bookCount = await calibre.getCount(lastConnected);
+    status.addStatus('Received ${bookCount.count} Books in the batch.');
 
     int offset = 0;
-    while (offset < count) {
-      await _getBooksWithOffset(offset, size, count);
+    while (offset < bookCount.count) {
+      await _getBooksWithOffset(offset, size, bookCount.count);
       offset += size;
     }
   }
@@ -84,26 +89,25 @@ class CalibreWS extends _$CalibreWS {
     var calibre = ref.read(calibreDioProvider);
     var status = ref.read(statusProvider.notifier);
 
+    status.addStatus('Syncing ${total < size ? total : size} books ($offset/$total)');
+
     List<JSONBook> books = await calibre.getBooks(ref.read(calibreLastConnectedDateProvider.notifier).lastConnected, offset, size);
-    String exception = "";
-
     int index = offset;
-    for (var element in books) {
-      status.addStatus('Syncing ${element.Title} ($index/$total)');
-
+    for (JSONBook element in books) {
       ref.read(calibreBookProvider(BooksType.processed).notifier).add(element);
       try {
-        Book book = await Book.fromJSON(element);
+        element.Tags = await calibre.getTags(element.UUID);
 
+        Book calibreBook = await Book.fromJSON(element);
         // Only download the Book if something has changed since last time!
-        if (book.lastModified > await library.getLastModified(book)) {
-          status.addStatus('Downloading ${element.Title} ($index/$total)');
-          await _downloadBook(book);
-          await library.insertBook(book);
+        if (calibreBook.lastModified > await library.getLastModified(calibreBook)) {
+          status.addStatus('${calibreBook.title} ($index/$total) has changed; downloading...');
+          await _downloadBook(calibreBook);
+          await library.insertBook(calibreBook);
         }
       } catch (e) {
         ref.read(calibreBookProvider(BooksType.error).notifier).add(element);
-        exception = 'Got exception processing "${element.Title}":';
+        String exception = 'Got exception processing "${element.Title}":';
         if (e is DioException) {
           if (e.response != null) {
             if (e.response!.statusCode != null) {
@@ -128,7 +132,7 @@ class CalibreWS extends _$CalibreWS {
     List<Book> books = await ref.read(booksRepositoryProvider.notifier).getReadingList(lastConnected);
     List<JSONBook> jsonBooks = books.map((book) => book.toJSON()).toList();
 
-    status.addStatus('Updating Last Read statuses');
+    status.addStatus('Updating Last Read statuses.');
     calibre.updateBooks(jsonBooks);
     status.addStatus('Updated Last Read statuses.');
   }

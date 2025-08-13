@@ -37,7 +37,13 @@ class CalibreSyncButton extends ConsumerWidget {
       );
     }
     else {
-      return Text('Synchonisation is underway...', textAlign: TextAlign.center);
+      return syncData.status == 'Completed Synchronisation'
+      ? ElevatedButton(
+        onPressed: () => ref.read(calibreWSProvider.notifier).stopSynchronisation(),
+        style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
+        child: Text('Finish'),
+      )
+      : Text('Synchonisation is underway...', textAlign: TextAlign.center);
     }
   }
 }

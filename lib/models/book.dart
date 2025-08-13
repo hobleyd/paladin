@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:paladin/utils/application_path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -72,9 +73,9 @@ class Book extends Collection {
   static Future<String> getBookPath({ required List<Author> authors, required String uuid }) async {
     String path='';
 
+    // TODO: decide if this is the correct folder on Android; might need to sit in External Storage?
     if (!kIsWeb) {
-      Directory documentsDirectory = await getApplicationDocumentsDirectory();
-      path = documentsDirectory.path;
+      path = await getApplicationPath();
     }
     path = '$path/books/${authors[0].name[0]}/$uuid.epub';
 
@@ -102,12 +103,12 @@ class Book extends Collection {
       authors: authors,
       description: jsonBook.Blurb,
       lastModified: jsonBook.Last_modified ?? 0,
-      lastRead: jsonBook.Last_Read,
+      lastRead: jsonBook.Last_read,
       rating: jsonBook.Rating ?? 0,
       readStatus: jsonBook.Is_read ? 1 : 0,
       series: jsonBook.Series.isNotEmpty ? Series(series: jsonBook.Series, queryArgs: [jsonBook.Series]) : null,
       seriesIndex: jsonBook.Series.isNotEmpty ? jsonBook.Series_index : null,
-      tags: jsonBook.Tags!.map((element) => Tag(tag: element, queryArgs: [element])).toList(),
+      tags: jsonBook.Tags,
       title: jsonBook.Title,
       mimeType: 'application/epub+zip',
       path: await getBookPath(authors: authors, uuid: jsonBook.UUID),
@@ -150,7 +151,7 @@ class Book extends Collection {
         Blurb: description,
         Is_read: readStatus == 1 ? true : false,
         Last_modified: lastModified,
-        Last_Read: lastRead,
+        Last_read: lastRead,
         Rating: rating,
         Series: series?.series ?? "",
         Series_index: seriesIndex ?? 0,
