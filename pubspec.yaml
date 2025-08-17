@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   auto_size_text: ^3.0.0
+  bonsoir: ^6.0.1
   cupertino_icons: ^1.0.2
   dartlin: ^0.6.3
   dio: ^5.0.3
@@ -34,7 +35,7 @@ dependencies:
   retrofit: ^4.5.0
   riverpod_annotation: ^2.1.2
   sqflite_common_ffi: ^2.3.6
-  sqlite3_flutter_libs: ^0.5.37
+  #sqlite3_flutter_libs: ^0.5.37
   url_launcher: ^6.3.2
   visibility_detector: ^0.4.0+2
   epubx:
