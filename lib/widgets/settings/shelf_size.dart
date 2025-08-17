@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/shelf.dart';
 import '../../repositories/shelf_repository.dart';
-import '../../repositories/shelves_repository.dart';
 import '../home/fatal_error.dart';
 
 class ShelfSize extends ConsumerWidget {

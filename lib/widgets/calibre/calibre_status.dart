@@ -1,31 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
-import 'package:paladin/repositories/last_connected.dart';
-import 'package:paladin/widgets/home/fatal_error.dart';
+
+import '../../models/calibre_health.dart';
+import '../../providers/calibre_dio.dart';
+import 'calibre_count.dart';
 
 class CalibreStatus extends ConsumerWidget {
-  const CalibreStatus({super.key,});
+  final DateTime lastSyncDate;
+  const CalibreStatus({super.key, required this.lastSyncDate});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var lastSyncDateAsync = ref.watch(calibreLastConnectedDateProvider);
+    var calibre = ref.read(calibreDioProvider);
 
-    return lastSyncDateAsync.when(error: (error, stackTrace) {
-      return FatalError(error: error.toString(), trace: stackTrace);
-    }, loading: () {
-      return const Center(child: CircularProgressIndicator());
-    }, data: (DateTime syncDate) {
-      final String formattedText = syncDate.millisecondsSinceEpoch == 0
-            ? "We have no records of any prior synchronisation, sorry!"
-            : "You last synchronised your library on ${DateFormat('MMMM d, y: H:mm').format(syncDate)}";
-        return Column(
-        children: [
-          Text('$formattedText', style: const TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
-          const Text('Click the Sync button (below) to download your books!', style: TextStyle(fontWeight: FontWeight.bold)),
-        ],
-      );
-    });
+    return FutureBuilder(
+        future: calibre.getHealth(),
+        builder: (BuildContext ctx, AsyncSnapshot<CalibreHealth> snapshot) {
+          return snapshot.connectionState != ConnectionState.done
+              ? Text('Waiting for Calibre to respond...!', style: Theme.of(context).textTheme.bodyMedium)
+              : snapshot.error != null
+              ? Text('Error communicating with Calibre: ${snapshot.error}')
+              : Center(
+                  child: Row(
+                    children: [
+                      Spacer(),
+                      Text('Calibre status is: ${snapshot.data!.status}. There are ', style: Theme.of(context).textTheme.bodyMedium),
+                      CalibreCount(checkDate: lastSyncDate),
+                      Text('/', style: Theme.of(context).textTheme.bodyMedium),
+                      CalibreCount(checkDate: DateTime.fromMillisecondsSinceEpoch(0)),
+                      Text(' books to sync.', style: Theme.of(context).textTheme.bodyMedium),
+                      Spacer(),
+                    ],
+                  ),
+                );
+        },
+    );
   }
 }

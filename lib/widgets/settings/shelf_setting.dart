@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/shelf.dart';
-
 import 'shelf_name.dart';
 import 'shelf_size.dart';
 import 'shelf_type.dart';

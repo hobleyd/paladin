@@ -3,12 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paladin/repositories/shelf_repository.dart';
 import 'package:paladin/widgets/home/currently_reading_shelf.dart';
 
-import '../../models/book.dart';
 import '../../models/shelf.dart';
-import '../../repositories/shelf_books_repository.dart';
-import '../books/book_tile.dart';
 import 'fatal_error.dart';
-import 'initial_instructions.dart';
 
 class CurrentlyReading extends ConsumerWidget {
   final int shelfId;

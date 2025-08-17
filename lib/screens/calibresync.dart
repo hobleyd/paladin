@@ -9,7 +9,7 @@ import '../models/json_book.dart';
 import '../providers/calibre_ws.dart';
 import '../providers/calibre_book_provider.dart';
 import '../widgets/calibre/calibre_progress_bar.dart';
-import '../widgets/calibre/calibre_status.dart';
+import '../widgets/calibre/calibre_information.dart';
 import '../widgets/calibre/calibre_sync_button.dart';
 import '../widgets/calibre/calibre_book_list.dart';
 import '../widgets/calibre/sync_notifications.dart';
@@ -43,7 +43,7 @@ class CalibreSync extends ConsumerWidget {
                     ],
                   ),
                 )
-              : Expanded(child: Padding(padding: const EdgeInsets.only(top: 50, bottom: 50), child: CalibreStatus())),
+              : Expanded(child: Padding(padding: const EdgeInsets.only(top: 50, bottom: 50), child: CalibreInformation())),
           CalibreProgressBar(),
           CalibreSyncButton(),
         ],

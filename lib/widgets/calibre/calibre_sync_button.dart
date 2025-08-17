@@ -5,8 +5,6 @@ import 'package:paladin/providers/calibre_ws.dart';
 
 import '../../models/calibre_sync_data.dart';
 import '../../models/json_book.dart';
-import '../../providers/paladin_theme.dart';
-import '../../providers/status_provider.dart';
 
 class CalibreSyncButton extends ConsumerWidget {
   const CalibreSyncButton({super.key,});

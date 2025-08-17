@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/shelf.dart';
 import '../repositories/shelves_repository.dart';
 import '../widgets/home/fatal_error.dart';
 import '../widgets/settings/shelf_setting.dart';

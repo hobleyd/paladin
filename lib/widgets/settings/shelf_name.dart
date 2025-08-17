@@ -6,7 +6,6 @@ import 'package:paladin/repositories/shelf_repository.dart';
 
 import '../../models/collection.dart';
 import '../../models/shelf.dart';
-import '../../repositories/shelves_repository.dart';
 import '../home/fatal_error.dart';
 
 class ShelfName extends ConsumerWidget {
