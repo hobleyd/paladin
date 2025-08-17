@@ -6,7 +6,7 @@ import 'package:http_status_code/http_status_code.dart';
 
 import '../database/library_db.dart';
 import '../models/book.dart';
-import '../models/book_count.dart';
+import '../models/calibre_book_count.dart';
 import '../models/calibre_sync_data.dart';
 import '../models/json_book.dart';
 import '../repositories/books_repository.dart';
@@ -74,7 +74,7 @@ class CalibreWS extends _$CalibreWS {
     int lastConnected = ref.read(calibreLastConnectedDateProvider.notifier).lastConnected;
 
     const int size = 100;
-    BookCount bookCount = await calibre.getCount(lastConnected);
+    CalibreBookCount bookCount = await calibre.getCount(lastConnected);
     status.addStatus('Received ${bookCount.count} Books in the batch.');
 
     int offset = 0;
