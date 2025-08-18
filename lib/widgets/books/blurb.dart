@@ -23,6 +23,6 @@ class Blurb extends ConsumerWidget {
               ),
             ),
           )
-        : Text(label, style: Theme.of(context).textTheme.labelSmall);
+        : Text(label, style: Theme.of(context).textTheme.bodySmall);
   }
 }
