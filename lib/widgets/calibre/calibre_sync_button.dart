@@ -23,20 +23,22 @@ class CalibreSyncButton extends ConsumerWidget {
               ref.read(calibreWSProvider.notifier).setSyncReadStatuses(checked);
             },
             value: syncData.syncReadStatuses,
-          ),          const Spacer(),
-          const Text('From Epoch?'),
+          ),
+          const Spacer(),
+          ElevatedButton(
+            onPressed: () => ref.read(calibreWSProvider.notifier).synchroniseWithCalibre(),
+            style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
+            child: Text(errors.isEmpty ? 'Sync' : 'Re-Sync', textAlign: TextAlign.center),
+          ),
+          const Spacer(),
+          const Text('Sync from Epoch?'),
           Checkbox(
               onChanged: (bool? checked) {
                 ref.read(calibreWSProvider.notifier).setSyncFromEpoch(checked);
               },
               value: syncData.syncFromEpoch,
           ),
-          const SizedBox(),
-          ElevatedButton(
-            onPressed: () => ref.read(calibreWSProvider.notifier).synchroniseWithCalibre(),
-            style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
-            child: Text(errors.isEmpty ? 'Sync' : 'Re-Sync', textAlign: TextAlign.center),
-          ),
+
           const Spacer(),
         ],
       );
