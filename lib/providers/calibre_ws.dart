@@ -81,7 +81,7 @@ class CalibreWS extends _$CalibreWS {
   Future<void> _getUpdatedBooks() async {
     var status = ref.read(statusProvider.notifier);
     var calibre = ref.read(calibreDioProvider);
-    int lastConnected = ref.read(calibreLastConnectedDateProvider.notifier).lastConnected;
+    int lastConnected = state.syncFromEpoch ? 0 : ref.read(calibreLastConnectedDateProvider.notifier).lastConnected;
 
     const int size = 100;
     CalibreBookCount bookCount = await calibre.getCount(lastConnected);
@@ -89,19 +89,19 @@ class CalibreWS extends _$CalibreWS {
 
     int offset = 0;
     while (offset < bookCount.count) {
-      await _getBooksWithOffset(offset, size, bookCount.count);
+      await _getBooksWithOffset(lastConnected, offset, size, bookCount.count);
       offset += size;
     }
   }
 
-  Future<void> _getBooksWithOffset(int offset, int size, int total) async {
+  Future<void> _getBooksWithOffset(int lastConnected, int offset, int size, int total) async {
     LibraryDB library = ref.read(libraryDBProvider.notifier);
     var calibre = ref.read(calibreDioProvider);
     var status = ref.read(statusProvider.notifier);
 
     status.addStatus('Syncing ${total < size ? total : size} books ($offset/$total)');
 
-    List<JSONBook> books = await calibre.getBooks(ref.read(calibreLastConnectedDateProvider.notifier).lastConnected, offset, size);
+    List<JSONBook> books = await calibre.getBooks(lastConnected, offset, size);
     int index = offset;
     for (JSONBook element in books) {
       ref.read(calibreBookProvider(BooksType.processed).notifier).add(element);
