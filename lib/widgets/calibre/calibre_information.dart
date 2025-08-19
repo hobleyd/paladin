@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:paladin/providers/calibre_ws.dart';
+import 'package:paladin/widgets/calibre/calibre_books_to_download_count.dart';
 
 import '../../repositories/last_connected.dart';
 import '../home/fatal_error.dart';
 
+import 'calibre_read_status_update_count.dart';
 import 'calibre_status.dart';
 
 class CalibreInformation extends ConsumerWidget {
@@ -13,6 +16,7 @@ class CalibreInformation extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var lastSyncDateAsync = ref.watch(calibreLastConnectedDateProvider);
+    var syncData = ref.watch(calibreWSProvider);
 
     return lastSyncDateAsync.when(error: (error, stackTrace) {
       return FatalError(error: error.toString(), trace: stackTrace);
@@ -24,9 +28,15 @@ class CalibreInformation extends ConsumerWidget {
             : "Last synchronised on ${DateFormat('MMMM d, y: H:mm').format(lastSyncDate)}";
         return Column(
         children: [
-          CalibreStatus(lastSyncDate: lastSyncDate),
+          CalibreStatus(),
           const SizedBox(height: 10),
           Text(formattedText, style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 10),
+          if (syncData.syncReadStatuses) ...[
+            CalibreReadStatusUpdateCount(lastSyncDate: lastSyncDate),
+            const SizedBox(height: 10),
+          ],
+          CalibreBooksToDownloadCount(lastSyncDate: lastSyncDate,),
           const SizedBox(height: 10),
           Text('Click the Sync button (below) to download your books!', style: Theme.of(context).textTheme.bodyMedium),
         ],
