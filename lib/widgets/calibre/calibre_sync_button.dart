@@ -17,6 +17,13 @@ class CalibreSyncButton extends ConsumerWidget {
       return Row(
         children: [
           const Spacer(),
+          const Text('Update Read Statuses?'),
+          Checkbox(
+            onChanged: (bool? checked) {
+              ref.read(calibreWSProvider.notifier).setSyncReadStatuses(checked);
+            },
+            value: syncData.syncReadStatuses,
+          ),          const Spacer(),
           const Text('From Epoch?'),
           Checkbox(
               onChanged: (bool? checked) {

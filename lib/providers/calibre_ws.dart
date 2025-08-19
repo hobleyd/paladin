@@ -33,6 +33,14 @@ class CalibreWS extends _$CalibreWS {
     return;
   }
 
+  Future<void> setSyncReadStatuses(bool? syncReadStatuses) async {
+    if (syncReadStatuses != null) {
+      state = state.copyWith(syncReadStatuses: syncReadStatuses);
+    }
+
+    return;
+  }
+
   void stopSynchronisation() {
     state = state.copyWith(processing: false);
   }
@@ -43,7 +51,9 @@ class CalibreWS extends _$CalibreWS {
     state = state.copyWith(processing: true);
     status.addStatus('Initialising Sync...');
 
-    //await _updateReadStatuses();
+    if (state.syncReadStatuses) {
+      await _updateReadStatuses();
+    }
     await _getUpdatedBooks();
 
     ref.read(calibreLastConnectedDateProvider.notifier).setLastConnected();
