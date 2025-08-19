@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/providers/calibre_ws.dart';
 
 import '../../models/calibre_health.dart';
+import '../../models/calibre_sync_data.dart';
 import '../../providers/calibre_dio.dart';
 import 'calibre_count.dart';
 
@@ -12,6 +14,7 @@ class CalibreStatus extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var calibre = ref.read(calibreDioProvider);
+    CalibreSyncData syncData = ref.watch(calibreWSProvider);
 
     return FutureBuilder(
         future: calibre.getHealth(),
@@ -25,7 +28,7 @@ class CalibreStatus extends ConsumerWidget {
                     children: [
                       Spacer(),
                       Text('Calibre status is: ${snapshot.data!.status}. There are ', style: Theme.of(context).textTheme.bodyMedium),
-                      CalibreCount(checkDate: lastSyncDate),
+                      CalibreCount(checkDate: syncData.syncFromEpoch ? DateTime.fromMillisecondsSinceEpoch(0) : lastSyncDate),
                       Text('/', style: Theme.of(context).textTheme.bodyMedium),
                       CalibreCount(checkDate: DateTime.fromMillisecondsSinceEpoch(0)),
                       Text(' books to sync.', style: Theme.of(context).textTheme.bodyMedium),
