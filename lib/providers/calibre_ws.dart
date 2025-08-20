@@ -100,6 +100,7 @@ class CalibreWS extends _$CalibreWS {
     var status = ref.read(statusProvider.notifier);
 
     status.addStatus('Syncing ${total < size ? total : size} books ($offset/$total)');
+    ref.read(calibreBookProvider(BooksType.processed).notifier).clear();
 
     List<JSONBook> books = await calibre.getBooks(lastConnected, offset, size);
     int index = offset;
@@ -111,7 +112,6 @@ class CalibreWS extends _$CalibreWS {
         Book calibreBook = await Book.fromJSON(element);
         // Only download the Book if something has changed since last time!
         if (calibreBook.lastModified > await library.getLastModified(calibreBook)) {
-          status.addStatus('${calibreBook.title} ($index/$total) has changed; downloading...');
           await _downloadBook(calibreBook);
           await library.insertBook(calibreBook);
         }
