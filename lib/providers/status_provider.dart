@@ -11,7 +11,7 @@ class Status extends _$Status {
 
   void addStatus(String status) {
     List<String> messages = List.from(state);
-    messages.add(status);
+    messages.insert(0, status);
 
     state = messages;
   }
