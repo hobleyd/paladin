@@ -1,11 +1,12 @@
 import 'dart:io';
 
-import 'package:epubx/epubx.dart' hide Image;
+import 'package:epubx_kuebiko/epubx_kuebiko.dart' hide Image;
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as images;
 import 'package:paladin/utils/application_path.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../epub/epub_archive.dart';
 import '../models/book.dart';
 
 part 'cached_cover.g.dart';
@@ -33,8 +34,8 @@ class CachedCover extends _$CachedCover {
     File bookPath = File(book.path);
 
     if (bookPath.existsSync() && bookPath.statSync().size > 0) {
-      EpubBookRef bookRef = await EpubReader.openBook(bookPath.readAsBytes());
-      final images.Image? coverImage = await bookRef.readCover();
+      Epub().openBook(book.path);
+      final images.Image? coverImage = null;
 
       if (coverImage != null) {
         // TODO: need a better way of deciding the height we want to resize to.
