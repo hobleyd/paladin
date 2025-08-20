@@ -35,7 +35,7 @@ class CalibreSync extends ConsumerWidget {
                   child: Row(
                     children: [
                       Expanded(
-                        child: calibre.processing
+                        child: calibre.status != 'Completed Synchronisation'
                             ? CalibreBookList(bookType: BooksType.processed)
                             : CalibreBookList(bookType: BooksType.error),
                       ),
