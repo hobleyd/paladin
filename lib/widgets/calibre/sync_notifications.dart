@@ -10,31 +10,38 @@ class SyncNotifications extends ConsumerWidget {
     final ScrollController scrollController = ScrollController();
     List<String> updates = ref.watch(statusProvider);
 
-    return Container(
-      alignment: Alignment.topLeft,
-      margin: const EdgeInsets.all(15.0),
-      padding: const EdgeInsets.all(3.0),
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.black)
-      ),
-      child: SingleChildScrollView(
-        controller: scrollController,
-        child: ListView.builder(
-          itemCount: updates.length,
-          itemBuilder: (context, index) {
-            return Container(
-              color: index % 2 == 0 ? Colors.grey[50] : Colors.blue[50],
-              child: Text(
-                updates[index],
-                style: Theme.of(context).textTheme.bodySmall,
-                textAlign: TextAlign.left,
-              ),
-            );
-          },
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
+    return Column(
+      children: [
+        Text("Progress", style: Theme.of(context).textTheme.labelMedium),
+        Expanded(
+          child: Container(
+            alignment: Alignment.topLeft,
+            margin: const EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(3.0),
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.black)
+            ),
+            child: ListView.builder(
+              itemCount: updates.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  color: index % 2 == 0 ? Colors.grey[50] : Colors.blue[50],
+                  child: Text(
+                    updates[index],
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodySmall,
+                    textAlign: TextAlign.left,
+                  ),
+                );
+              },
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }

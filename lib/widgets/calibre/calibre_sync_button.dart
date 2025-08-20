@@ -46,11 +46,18 @@ class CalibreSyncButton extends ConsumerWidget {
     else {
       return syncData.status == 'Completed Synchronisation'
       ? ElevatedButton(
-        onPressed: () => ref.read(calibreWSProvider.notifier).stopSynchronisation(),
+        onPressed: () => _completeSynchronisation(ref),
         style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
         child: Text('Finish'),
       )
       : Text('Synchonisation is underway...', textAlign: TextAlign.center);
     }
+  }
+
+  void _completeSynchronisation(WidgetRef ref) {
+    ref.read(calibreWSProvider.notifier).setSyncFromEpoch(false);
+    ref.read(calibreWSProvider.notifier).stopSynchronisation();
+    ref.read(calibreBookProvider(BooksType.error).notifier).clear();
+    ref.read(calibreBookProvider(BooksType.processed).notifier).clear();
   }
 }
