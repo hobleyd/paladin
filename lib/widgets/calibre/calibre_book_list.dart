@@ -11,8 +11,6 @@ class CalibreBookList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ScrollController scrollController = ScrollController();
-
     List<JSONBook> books = ref.read(calibreBookProvider(bookType));
     return Column(
       children: [

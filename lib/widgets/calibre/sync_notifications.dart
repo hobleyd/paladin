@@ -7,7 +7,6 @@ class SyncNotifications extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ScrollController scrollController = ScrollController();
     List<String> updates = ref.watch(statusProvider);
 
     return Column(
