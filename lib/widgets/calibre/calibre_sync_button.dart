@@ -53,7 +53,7 @@ class CalibreSyncButton extends ConsumerWidget {
                   ElevatedButton(
                     onPressed: () => ref.read(calibreWSProvider.notifier).getBooks(errors),
                     style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
-                    child: Text('Finish', style: Theme.of(context).textTheme.bodyMedium),
+                    child: Text('Retry', style: Theme.of(context).textTheme.bodyMedium),
                   ),
                   Spacer(),
                 ],
