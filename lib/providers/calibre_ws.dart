@@ -78,6 +78,49 @@ class CalibreWS extends _$CalibreWS {
     ref.read(cachedCoverProvider(book).notifier).cacheCover();
   }
 
+  Future<void> getBooks(List<JSONBook> books) async {
+    var status = ref.read(statusProvider.notifier);
+
+    status.addStatus('Attempting to download ${books.length} from the server.');
+
+    int index = 0;
+    for (var book in books) {
+      _getBook(book);
+      state = state.copyWith(progress: index++ / books.length);
+    }
+  }
+
+  Future<void> _getBook(JSONBook book) async {
+    LibraryDB library = ref.read(libraryDBProvider.notifier);
+    var calibre = ref.read(calibreDioProvider);
+    var status = ref.read(statusProvider.notifier);
+
+    ref.read(calibreBookProvider(BooksType.processed).notifier).add(book);
+    try {
+      book.Tags = await calibre.getTags(book.UUID);
+
+      Book calibreBook = await Book.fromJSON(book);
+      // Only download the Book if something has changed since last time!
+      if (calibreBook.lastModified > await library.getLastModified(calibreBook)) {
+        await _downloadBook(calibreBook);
+        await library.insertBook(calibreBook);
+      }
+    } catch (e) {
+      ref.read(calibreBookProvider(BooksType.error).notifier).add(book);
+      String exception = 'Got exception processing "${book.Title}":';
+      if (e is DioException) {
+        if (e.response != null) {
+          if (e.response!.statusCode != null) {
+            exception = '$status ${getStatusMessage(e.response!.statusCode!)}';
+          } else {
+            exception = '$status $e';
+          }
+          status.addStatus(exception);
+        }
+      }
+    }
+  }
+
   Future<void> _getUpdatedBooks() async {
     var status = ref.read(statusProvider.notifier);
     var calibre = ref.read(calibreDioProvider);
@@ -95,41 +138,16 @@ class CalibreWS extends _$CalibreWS {
   }
 
   Future<void> _getBooksWithOffset(int lastConnected, int offset, int size, int total) async {
-    LibraryDB library = ref.read(libraryDBProvider.notifier);
     var calibre = ref.read(calibreDioProvider);
     var status = ref.read(statusProvider.notifier);
 
-    status.addStatus('Syncing ${total < size ? total : size} books ($offset/$total)');
+    status.addStatus('Syncing ${(offset + size) > total ? total - offset : size} books ($offset/$total)');
     ref.read(calibreBookProvider(BooksType.processed).notifier).clear();
 
     List<JSONBook> books = await calibre.getBooks(lastConnected, offset, size);
     int index = offset;
-    for (JSONBook element in books) {
-      ref.read(calibreBookProvider(BooksType.processed).notifier).add(element);
-      try {
-        element.Tags = await calibre.getTags(element.UUID);
-
-        Book calibreBook = await Book.fromJSON(element);
-        // Only download the Book if something has changed since last time!
-        if (calibreBook.lastModified > await library.getLastModified(calibreBook)) {
-          await _downloadBook(calibreBook);
-          await library.insertBook(calibreBook);
-        }
-      } catch (e) {
-        ref.read(calibreBookProvider(BooksType.error).notifier).add(element);
-        String exception = 'Got exception processing "${element.Title}":';
-        if (e is DioException) {
-          if (e.response != null) {
-            if (e.response!.statusCode != null) {
-              exception = '$status ${getStatusMessage(e.response!.statusCode!)}';
-            } else {
-              exception = '$status $e';
-            }
-            status.addStatus(exception);
-          }
-        }
-      }
-
+    for (JSONBook book in books) {
+      await _getBook(book);
       state = state.copyWith(progress: index++ / total);
     }
   }

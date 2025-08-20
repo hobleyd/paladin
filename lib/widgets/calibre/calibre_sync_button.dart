@@ -13,11 +13,10 @@ class CalibreSyncButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     CalibreSyncData syncData = ref.watch(calibreWSProvider);
     if (!syncData.processing) {
-      List<JSONBook> errors = ref.watch(calibreBookProvider(BooksType.error));
       return Row(
         children: [
           const Spacer(),
-          const Text('Update Read Statuses?'),
+          Text('Update Read Statuses?', style: Theme.of(context).textTheme.bodyMedium),
           Checkbox(
             onChanged: (bool? checked) {
               ref.read(calibreWSProvider.notifier).setSyncReadStatuses(checked);
@@ -28,10 +27,10 @@ class CalibreSyncButton extends ConsumerWidget {
           ElevatedButton(
             onPressed: () => ref.read(calibreWSProvider.notifier).synchroniseWithCalibre(),
             style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
-            child: Text(errors.isEmpty ? 'Sync' : 'Re-Sync', textAlign: TextAlign.center),
+            child: Text('Sync', style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
           ),
           const Spacer(),
-          const Text('Sync from Epoch?'),
+          Text('Sync from Epoch?', style: Theme.of(context).textTheme.bodyMedium),
           Checkbox(
               onChanged: (bool? checked) {
                 ref.read(calibreWSProvider.notifier).setSyncFromEpoch(checked);
@@ -44,13 +43,28 @@ class CalibreSyncButton extends ConsumerWidget {
       );
     }
     else {
+      List<JSONBook> errors = ref.watch(calibreBookProvider(BooksType.error));
+
       return syncData.status == 'Completed Synchronisation'
-      ? ElevatedButton(
-        onPressed: () => _completeSynchronisation(ref),
-        style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
-        child: Text('Finish'),
-      )
-      : Text('Synchonisation is underway...', textAlign: TextAlign.center);
+          ? Row(
+              children: [
+                const Spacer(),
+                if (errors.isNotEmpty) ...[
+                  ElevatedButton(
+                    onPressed: () => ref.read(calibreWSProvider.notifier).getBooks(errors),
+                    style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
+                    child: Text('Finish', style: Theme.of(context).textTheme.bodyMedium),
+                  ),
+                  Spacer(),
+                ],
+                ElevatedButton(
+                  onPressed: () => _completeSynchronisation(ref),
+                  style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
+                  child: Text('Finish', style: Theme.of(context).textTheme.bodyMedium),
+                ),
+                Spacer(),
+              ],)
+          : Text('Synchonisation is underway...', style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center);
     }
   }
 
