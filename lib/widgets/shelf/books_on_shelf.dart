@@ -11,6 +11,7 @@ import '../../providers/shelf_collection.dart';
 import '../../repositories/shelf_books_repository.dart';
 import '../../screens/backcover.dart';
 import '../../utils/iterable.dart';
+import '../books/book_cover.dart';
 import '../home/fatal_error.dart';
 
 class BooksOnShelf extends ConsumerStatefulWidget {
@@ -57,7 +58,6 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
                 itemBuilder: (context, index) {
                   Book book = bookShelf[index];
                   String title = book.title.split(':').first;
-                  var coverAsync = ref.watch(cachedCoverProvider(book));
 
                   return VisibilityDetector(
                     key: Key('${shelf.collection.getNameNormalised()}-$index'),
@@ -68,7 +68,7 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: [
-                            Expanded(child: coverAsync.value ?? Image.asset('assets/generic_book_cover.png', fit: BoxFit.cover)),
+                            Expanded(child: BookCover(book: book)),
                             const SizedBox(height: 3),
                             SizedBox(
                               width: 80,
