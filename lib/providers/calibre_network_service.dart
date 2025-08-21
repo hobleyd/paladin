@@ -12,13 +12,13 @@ class CalibreNetworkService extends _$CalibreNetworkService {
 
   @override
   String build() {
-    _discoverService();
-    return "https://calibrews.sharpblue.com.au";
+    //_discoverService();
+    return "";
   }
 
   Future<void> _discoverService() async {
     // Once defined, we can start the discovery :
-    _discovery = BonsoirDiscovery(type: _calibreService);
+    _discovery = BonsoirDiscovery(type: _calibreService, printLogs: kReleaseMode);
     await _discovery.initialize();
 
     _discovery.eventStream!.listen((event) {
@@ -33,6 +33,7 @@ class CalibreNetworkService extends _$CalibreNetworkService {
           updateState(event.service);
           break;
         case BonsoirDiscoveryServiceLostEvent():
+          // TODO: do something here
           debugPrint('Service lost : ${event.service.toJson()}');
           break;
         default:

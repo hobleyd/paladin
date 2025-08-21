@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:paladin/repositories/last_connected.dart';
+import 'package:paladin/repositories/calibre_server_repository.dart';
 import 'package:paladin/utils/application_path.dart';
 
 import 'package:path/path.dart' as path;
@@ -29,13 +29,13 @@ class LibraryDB extends _$LibraryDB {
 
     _paladin = await databaseFactoryFfi.openDatabase(await _getDatabasePath(),
         options: OpenDatabaseOptions(
-            version: 2,
+            version: 3,
             onConfigure: (db) {
               _paladin = db;
               _enableForeignKeys(db);
             },
             onCreate: (db, version) {
-              _createTables(db, 0, version);
+              _createTables(db, 2, version);
             },
             onOpen: (db) {
             },
@@ -83,7 +83,7 @@ class LibraryDB extends _$LibraryDB {
       db.execute(_bookauthors);
       db.execute(_tags);
       db.execute(_booktags);
-      db.execute(CalibreLastConnectedDate.calibre);
+      db.execute(CalibreServerRepository.calibre);
 
       db.execute(AuthorsRepository.indexAuthors);
       db.execute(BooksRepository.indexBooks);
@@ -100,6 +100,10 @@ class LibraryDB extends _$LibraryDB {
       db.execute(ShelvesRepository.shelves);
       _insertInitialShelves(db, 'Currently Reading', CollectionType.CURRENT.index, 15);
       _insertInitialShelves(db, 'Random Shelf',  CollectionType.RANDOM.index, 30);
+    }
+
+    if (oldVersion < 3) {
+      db.execute('ALTER TABLE calibre_library ADD COLUMN calibre_server text;');
     }
 
     return;

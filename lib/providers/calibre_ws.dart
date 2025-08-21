@@ -7,10 +7,11 @@ import 'package:http_status_code/http_status_code.dart';
 import '../database/library_db.dart';
 import '../models/book.dart';
 import '../models/calibre_book_count.dart';
+import '../models/calibre_server.dart';
 import '../models/calibre_sync_data.dart';
 import '../models/json_book.dart';
 import '../repositories/books_repository.dart';
-import '../repositories/last_connected.dart';
+import '../repositories/calibre_server_repository.dart';
 import 'cached_cover.dart';
 import 'calibre_book_provider.dart';
 import 'calibre_dio.dart';
@@ -56,7 +57,7 @@ class CalibreWS extends _$CalibreWS {
     }
     await _getUpdatedBooks();
 
-    ref.read(calibreLastConnectedDateProvider.notifier).setLastConnected();
+    ref.read(calibreServerRepositoryProvider.notifier).updateServerDetails(lastConnected: CalibreServer.secondsSinceEpoch);
 
     status.addStatus('Completed Synchronisation');
     state = state.copyWith(status: 'Completed Synchronisation', );
@@ -124,7 +125,7 @@ class CalibreWS extends _$CalibreWS {
   Future<void> _getUpdatedBooks() async {
     var status = ref.read(statusProvider.notifier);
     var calibre = ref.read(calibreDioProvider);
-    int lastConnected = state.syncFromEpoch ? 0 : ref.read(calibreLastConnectedDateProvider.notifier).lastConnected;
+    int lastConnected = state.syncFromEpoch ? 0 : ref.read(calibreServerRepositoryProvider).value!.lastConnected;
 
     const int size = 100;
     CalibreBookCount bookCount = await calibre.getCount(lastConnected);
@@ -155,7 +156,7 @@ class CalibreWS extends _$CalibreWS {
   Future<void> _updateReadStatuses() async {
     var status = ref.read(statusProvider.notifier);
     var calibre = ref.read(calibreDioProvider);
-    int lastConnected = ref.read(calibreLastConnectedDateProvider.notifier).lastConnected;
+    int lastConnected = ref.read(calibreServerRepositoryProvider).value!.lastConnected;
 
     List<Book> books = await ref.read(booksRepositoryProvider.notifier).getReadingList(lastConnected);
     List<JSONBook> jsonBooks = books.map((book) => book.toJSON()).toList();

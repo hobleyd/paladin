@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/widgets/settings/calibre_sync_server.dart';
 
 import '../repositories/shelves_repository.dart';
 import '../widgets/home/fatal_error.dart';
@@ -44,7 +45,7 @@ class _Settings extends ConsumerState<Settings> {
         appBar: AppBar(title: const Text('Settings')),
         body: Padding(
           padding: const EdgeInsets.only(top: 6, bottom: 6, left: 10, right: 10),
-          child: Column(children: [...settings, ...add]),
+          child: Column(children: [CalibreSyncServer(), ...settings, ...add]),
         ),
       );
     });

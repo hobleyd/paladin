@@ -21,7 +21,7 @@ class CachedCover extends _$CachedCover {
     _cover = File('$coverPath/covers/${book.authors![0].name[0]}/${book.uuid}.jpg');
 
     if (!_cover.existsSync()) {
-      await cacheCover();
+      cacheCover();
     }
 
     // Note that if the epub doesn't have a cover, we can't cache and we can still be left without one, here.
@@ -30,12 +30,10 @@ class CachedCover extends _$CachedCover {
         : Image.asset('assets/generic_book_cover.png', fit: BoxFit.cover);
   }
 
-  Future cacheCover() async {
+  void cacheCover() {
     File bookPath = File(book.path);
-
     if (bookPath.existsSync() && bookPath.statSync().size > 0) {
       Epub epubBook = Epub(bookName: book.title, bookPath: book.path);
-
       epubBook.openBook();
       final images.Image? coverImage = epubBook.getCover();
 
@@ -43,7 +41,7 @@ class CachedCover extends _$CachedCover {
         // TODO: need a better way of deciding the height we want to resize to.
         images.Image resizedCover = images.copyResize(coverImage, height: 200);
         _cover.createSync(recursive: true);
-        await _cover.writeAsBytes(images.encodeJpg(resizedCover));
+        _cover.writeAsBytesSync(images.encodeJpg(resizedCover));
       }
     }
   }
