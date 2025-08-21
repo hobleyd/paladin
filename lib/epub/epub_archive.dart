@@ -9,7 +9,9 @@ class Epub {
   final String bookUUID;
   late Archive bookArchive;
 
-  Epub({required this.bookName, required this.bookPath, required this.bookUUID});
+  Epub({required this.bookName, required this.bookPath, required this.bookUUID}) {
+    openBook();
+  }
 
   ArchiveFile? _findFileInArchive(String name, String opfPath) {
     ArchiveFile? archiveFile = bookArchive.find(name);

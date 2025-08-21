@@ -34,7 +34,6 @@ class CachedCover extends _$CachedCover {
     File bookPath = File(book.path);
     if (bookPath.existsSync() && bookPath.statSync().size > 0) {
       Epub epubBook = Epub(bookName: book.title, bookPath: book.path, bookUUID: book.uuid);
-      epubBook.openBook();
       final images.Image? coverImage = epubBook.getCover();
 
       if (coverImage != null) {
