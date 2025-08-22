@@ -1,4 +1,5 @@
 import 'package:archive/archive.dart';
+import 'package:dartlin/collections.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as images;
 import 'package:xml/xml.dart';
@@ -13,54 +14,77 @@ class Epub {
     openBook();
   }
 
-  ArchiveFile? _findFileInArchive(String name, String opfPath) {
-    ArchiveFile? archiveFile = bookArchive.find(name);
-    archiveFile ??= bookArchive.find('${opfPath.split('/').firstOrNull}/$name');
-
-    return archiveFile;
+  // Some (older, admittedly) epub archives don't have reliably consistent filenames in the archive; so look for the value
+  // ending in what we are looking for and this should catch everything I've seen; so far, at least.
+  ArchiveFile? _findFileInArchive(String name) {
+    try {
+      return bookArchive.files.firstWhere((file) => file.name.endsWith(name));
+    } catch (e) {
+      return null;
+    }
   }
 
-  String? _getCoverImageFromHtml(String coverName, String opfPath) {
-    ArchiveFile? xhtml = _findFileInArchive(coverName, opfPath);
+  String? _getCoverImageFromHtml(String coverName) {
+    ArchiveFile? xhtml = _findFileInArchive(coverName);
     if (xhtml == null) {
       debugPrint("Can't find $coverName in epub!");
       return null;
     }
 
     XmlDocument xhtmlDocument = XmlDocument.parse(xhtml.getContent()!.readString());
-    XmlElement? coverAttribute = xhtmlDocument.findAllElements('image').firstOrNull;
+    XmlElement? coverAttribute = xhtmlDocument.findAllElements('image').firstOrNull();
 
     if (coverAttribute != null) {
       return coverAttribute.getAttribute('xlink:href');
+    }
+
+    // Option 2: <figure data-type="cover" id="bookcover01"><img src="cover.jpg"/></figure>
+    coverAttribute = xhtmlDocument.findAllElements('figure')
+        .where((item) => item.getAttribute('data-type')?.toLowerCase() == 'cover')
+        .firstOrNull();
+    if (coverAttribute != null) {
+      coverAttribute = coverAttribute.findAllElements('img').firstOrNull();
+      if (coverAttribute != null) {
+        return coverAttribute.getAttribute('src');
+      }
+    }
+
+    coverAttribute = xhtmlDocument.findAllElements('img').firstOrNull();
+    if (coverAttribute != null) {
+      return coverAttribute.getAttribute('src');
     }
 
     debugPrint("Can't find an image tag in the html");
     return null;
   }
 
-  String? _getCoverImageFromXhtml(String coverName, String opfPath) {
-    ArchiveFile? xhtml = _findFileInArchive(coverName, opfPath);
+  String? _getCoverImageFromXhtml(String coverName) {
+    ArchiveFile? xhtml = _findFileInArchive(coverName);
     if (xhtml == null) {
       debugPrint("Can't find $coverName in epub!");
       return null;
     }
 
+    // Option 1: <section><img/></section>
     XmlDocument xhtmlDocument = XmlDocument.parse(xhtml.getContent()!.readString());
     XmlElement? coverAttribute = xhtmlDocument.findAllElements('section')
       .where((item) => item.getAttribute('epub:type')?.toLowerCase() == 'cover')
-      .firstOrNull;
+      .firstOrNull();
 
     if (coverAttribute != null) {
-      XmlElement? coverImage = coverAttribute.findAllElements('img').firstOrNull;
+      XmlElement? coverImage = coverAttribute.findAllElements('img').firstOrNull();
 
       if (coverImage != null) {
         return coverImage.getAttribute('src');
       }
     }
-    
+
+    // Option 2: <img epub-type="cover"/>
     coverAttribute = xhtmlDocument.findAllElements('img')
-      .where((item) => item.getAttribute('epub:type')?.toLowerCase() == 'cover')
-      .firstOrNull;
+      .where((item) => item.getAttribute('epub:type')?.toLowerCase() == 'cover'
+          || item.getAttribute('id')?.toLowerCase() == 'cover'
+          || item.getAttribute('alt')?.toLowerCase() == 'cover')
+      .firstOrNull();
 
     if (coverAttribute != null) {
       String? coverName = coverAttribute.getAttribute('src');
@@ -77,26 +101,40 @@ class Epub {
   }
 
   String? _getCoverName(XmlDocument opfContent) {
-    XmlElement? coverAttribute = opfContent.findAllElements('item')
-        .where((item) => item.getAttribute('id')?.toLowerCase() == 'cover'
-        || item.getAttribute('id')?.toLowerCase() == 'cover-image'
+    List<XmlElement> coverElements = opfContent.findAllElements('item')
+        .where((item) => item.getAttribute('id')?.toLowerCase() == 'cover-image'
         || item.getAttribute('id')?.toLowerCase() == 'my-cover-image'
+        || item.getAttribute('id')?.toLowerCase() == 'cover'
         || item.getAttribute('id')?.toLowerCase() == 'cover-page'
-        || item.getAttribute('properties')?.toLowerCase() == 'cover-image'
-        || item.getAttribute('media-type')?.toLowerCase() == 'image/jpeg' // Relying on the fact that the first image should be the cover page. This might be luck. Review The Victorious Opposition (2902785a-7bdc-4d62-95a4-539b1be966fa) if this becomes a problem!
-        || item.getAttribute('media-type')?.toLowerCase() == 'image/png') // Relying on the fact that the first image should be the cover page. This might be luck. Review Out of Phaze (82064c4a-e92a-4a4c-a1b4-fcf12f564273.epub) if this becomes a problem!
-        .firstOrNull;
+        || item.getAttribute('properties')?.toLowerCase() == 'cover-image').toList();
+        //|| item.getAttribute('media-type')?.toLowerCase() == 'image/jpeg' // Relying on the fact that the first image should be the cover page. This might be luck. Review The Victorious Opposition (2902785a-7bdc-4d62-95a4-539b1be966fa) if this becomes a problem!
+        //|| item.getAttribute('media-type')?.toLowerCase() == 'image/png').toList(); // Relying on the fact that the first image should be the cover page. This might be luck. Review Out of Phaze (82064c4a-e92a-4a4c-a1b4-fcf12f564273.epub) if this becomes a problem!
 
-    if (coverAttribute == null) {
-      debugPrint('$bookName ($bookUUID) does not have a cover attribute.');
-      return null;
+    if (coverElements.length == 1) {
+      return coverElements.first.getAttribute('href');
+    } else if (coverElements.length > 1) {
+      // TODO: Assume if there are multiples, there will always be an image.
+      return coverElements.firstWhere((element) {
+        return element.getAttribute('href')!.endsWith('jpg') || element.getAttribute('href')!.endsWith('png');
+      }).getAttribute('href');
+    } else {
+      // Try the hard way - get the first page in the Spine and assume that contains the cover.
+      XmlElement spine = opfContent.findAllElements('spine').first;
+      XmlElement firstPage = spine.findAllElements('itemref').first;
+      String pageRef = firstPage.getAttribute('idref')!;
+
+      XmlElement page = opfContent.findAllElements('item')
+          .where((item) => item.getAttribute('id')!.toLowerCase() == pageRef)
+          .first;
+
+      return page.getAttribute('href');
+      //debugPrint('$bookName ($bookUUID) does not have a cover attribute.');
+      //return null;
     }
-
-    return coverAttribute.getAttribute('href');
   }
 
   XmlDocument? _getOPFContent(String opfPath) {
-    InputStream? opf = bookArchive.find(opfPath)?.getContent();
+    InputStream? opf = _findFileInArchive(opfPath)?.getContent();
     if (opf == null) {
       debugPrint("$bookName: OPF file is empty!!!");
       return null;
@@ -106,14 +144,15 @@ class Epub {
   }
 
   String? _getOPFPath() {
-    InputStream? container = bookArchive.find('META-INF/container.xml')?.getContent();
-    if (container == null) {
+    ArchiveFile? container = _findFileInArchive('META-INF/container.xml');
+    InputStream? containerStream = container?.getContent();
+    if (containerStream == null) {
       debugPrint("$bookName ($bookUUID): Can't find container");
       return null;
     }
 
-    final XmlDocument document = XmlDocument.parse(container.readString());
-    XmlElement? rootfile = document.findAllElements('rootfile').firstOrNull;
+    final XmlDocument document = XmlDocument.parse(containerStream.readString());
+    XmlElement? rootfile = document.findAllElements('rootfile').firstOrNull();
     if (rootfile == null) {
       debugPrint("$bookName ($bookUUID): Can't find rootfile");
       return null;
@@ -123,6 +162,9 @@ class Epub {
   }
 
   images.Image? getCover() {
+    if (bookUUID == "5c8e1c9f-b6c8-42d4-83c3-3f33f2d2c897") {
+      debugPrint('here');
+    }
     String? opfPath = _getOPFPath();
     if (opfPath == null) {
       debugPrint("$bookName ($bookUUID): Can't find opfPath");
@@ -138,14 +180,14 @@ class Epub {
     String? coverName = _getCoverName(opfContent);
     if (coverName != null) {
       if (coverName.endsWith('.xhtml')) {
-        coverName = _getCoverImageFromXhtml(coverName, opfPath);
-      } else if (coverName.endsWith('.html')) {
-        coverName = _getCoverImageFromHtml(coverName, opfPath);
+        coverName = _getCoverImageFromXhtml(coverName);
+      } else if (coverName.endsWith('.html') || coverName.endsWith('.htm')) {
+        coverName = _getCoverImageFromHtml(coverName);
       }
     }
 
     if (coverName != null) {
-      ArchiveFile? coverFile = _findFileInArchive(coverName, opfPath);
+      ArchiveFile? coverFile = _findFileInArchive(coverName);
 
       Uint8List? coverBytes = coverFile?.readBytes();
       if (coverBytes == null) {
