@@ -26,7 +26,6 @@ class CalibreServerRepository extends _$CalibreServerRepository {
     var libraryDb = ref.read(libraryDBProvider.notifier);
 
     final List<Map<String, dynamic>> maps = await libraryDb.query(table: 'calibre_library', limit: 1);
-    debugPrint('$maps');
     return maps.isEmpty
       ? CalibreServer(calibreServer: "", lastConnected: 0)
         : CalibreServer(
