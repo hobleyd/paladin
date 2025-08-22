@@ -1,4 +1,3 @@
-// This is the type of service we're looking for :
 import 'package:bonsoir/bonsoir.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -12,7 +11,7 @@ class CalibreNetworkService extends _$CalibreNetworkService {
 
   @override
   String build() {
-    //_discoverService();
+    _discoverService();
     return "";
   }
 
@@ -33,8 +32,7 @@ class CalibreNetworkService extends _$CalibreNetworkService {
           updateState(event.service);
           break;
         case BonsoirDiscoveryServiceLostEvent():
-          // TODO: do something here
-          debugPrint('Service lost : ${event.service.toJson()}');
+          state = "";
           break;
         default:
           break;
