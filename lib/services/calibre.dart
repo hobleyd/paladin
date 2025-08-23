@@ -3,12 +3,13 @@ import 'package:retrofit/retrofit.dart';
 
 import '../models/calibre_book_count.dart';
 import '../models/calibre_health.dart';
+import '../models/calibre_update_response.dart';
 import '../models/json_book.dart';
 import '../models/tag.dart';
 
 part 'calibre.g.dart';
 
-@RestApi(baseUrl: 'https://calibrews.sharpblue.com.au/')
+@RestApi()
 abstract class Calibre {
   factory Calibre(Dio dio, {String baseUrl}) = _Calibre;
 
@@ -32,5 +33,5 @@ abstract class Calibre {
   @Headers(<String, dynamic>{
     "Content-Type" : "application/json",
   })
-  Future<List<JSONBook>> updateBooks(@Body() List<JSONBook> books);
+  Future<CalibreUpdateResponse> updateBooks(@Body() List<JSONBook> books);
 }
