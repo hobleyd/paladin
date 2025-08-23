@@ -12,6 +12,7 @@ import '../models/calibre_sync_data.dart';
 import '../models/json_book.dart';
 import '../repositories/books_repository.dart';
 import '../repositories/calibre_server_repository.dart';
+import '../services/calibre.dart';
 import 'cached_cover.dart';
 import 'calibre_book_provider.dart';
 import 'calibre_dio.dart';
@@ -22,6 +23,10 @@ part 'calibre_ws.g.dart';
 
 @Riverpod(keepAlive: true)
 class CalibreWS extends _$CalibreWS {
+  late LibraryDB _library;
+  late Calibre _calibre;
+  late Status _status;
+
   @override
   CalibreSyncData build() {
     var calibreServerAsync = ref.watch(calibreServerRepositoryProvider);
@@ -37,13 +42,15 @@ class CalibreWS extends _$CalibreWS {
   }
 
   Future<void> getBooks(List<JSONBook> books) async {
-    var status = ref.read(statusProvider.notifier);
+    _status = ref.read(statusProvider.notifier);
+    _library = ref.read(libraryDBProvider.notifier);
+    _calibre = ref.read(calibreDioProvider(state.calibreServer));
 
-    status.addStatus('Attempting to download ${books.length} from the server.');
+    _status.addStatus('Attempting to download ${books.length} from the server.');
 
     int index = 0;
     for (var book in books) {
-      _getBook(book);
+      await _getBook(book);
       state = state.copyWith(progress: index++ / books.length);
     }
   }
@@ -73,10 +80,12 @@ class CalibreWS extends _$CalibreWS {
   }
 
   Future<void> synchroniseWithCalibre() async {
-    var status = ref.read(statusProvider.notifier);
+    _status = ref.read(statusProvider.notifier);
+    _library = ref.read(libraryDBProvider.notifier);
+    _calibre = ref.read(calibreDioProvider(state.calibreServer));
 
     state = state.copyWith(processing: true);
-    status.addStatus('Initialising Sync...');
+    _status.addStatus('Initialising Sync...');
 
     if (state.syncReadStatuses) {
       await _updateReadStatuses();
@@ -85,7 +94,7 @@ class CalibreWS extends _$CalibreWS {
 
     ref.read(calibreServerRepositoryProvider.notifier).updateServerDetails(lastConnected: CalibreServer.secondsSinceEpoch);
 
-    status.addStatus('Completed Synchronisation');
+    _status.addStatus('Completed Synchronisation');
     state = state.copyWith(status: 'Completed Synchronisation', );
   }
 
@@ -106,44 +115,38 @@ class CalibreWS extends _$CalibreWS {
   }
 
   Future<void> _getBook(JSONBook book) async {
-    LibraryDB library = ref.read(libraryDBProvider.notifier);
-    var calibre = ref.read(calibreDioProvider(state.calibreServer));
-    var status = ref.read(statusProvider.notifier);
-
     ref.read(calibreBookProvider(BooksType.processed).notifier).add(book);
     try {
-      book.Tags = await calibre.getTags(book.UUID);
+      book.Tags = await _calibre.getTags(book.UUID);
 
       Book calibreBook = await Book.fromJSON(book);
       // Only download the Book if something has changed since last time!
-      if (calibreBook.lastModified > await library.getLastModified(calibreBook)) {
+      //if (calibreBook.lastModified > await library.getLastModified(calibreBook)) {
         await _downloadBook(calibreBook);
-        await library.insertBook(calibreBook);
-      }
+        await _library.insertBook(calibreBook);
+      //}
     } catch (e) {
       ref.read(calibreBookProvider(BooksType.error).notifier).add(book);
       String exception = 'Got exception processing "${book.Title}":';
       if (e is DioException) {
         if (e.response != null) {
           if (e.response!.statusCode != null) {
-            exception = '$status ${getStatusMessage(e.response!.statusCode!)}';
+            exception = '$_status ${getStatusMessage(e.response!.statusCode!)}';
           } else {
-            exception = '$status $e';
+            exception = '$_status $e';
           }
-          status.addStatus(exception);
+          _status.addStatus(exception);
         }
       }
     }
   }
 
   Future<void> _getUpdatedBooks() async {
-    var status = ref.read(statusProvider.notifier);
-    var calibre = ref.read(calibreDioProvider(state.calibreServer));
     int lastConnected = state.syncFromEpoch ? 0 : ref.read(calibreServerRepositoryProvider).value!.lastConnected;
 
     const int size = 100;
-    CalibreBookCount bookCount = await calibre.getCount(lastConnected);
-    status.addStatus('Received ${bookCount.count} Books in the batch.');
+    CalibreBookCount bookCount = await _calibre.getCount(lastConnected);
+    _status.addStatus('Received ${bookCount.count} Books in the batch.');
 
     int offset = 0;
     while (offset < bookCount.count) {
@@ -153,13 +156,10 @@ class CalibreWS extends _$CalibreWS {
   }
 
   Future<void> _getBooksWithOffset(int lastConnected, int offset, int size, int total) async {
-    var calibre = ref.read(calibreDioProvider(state.calibreServer));
-    var status = ref.read(statusProvider.notifier);
-
-    status.addStatus('Syncing ${(offset + size) > total ? total - offset : size} books ($offset/$total)');
+    _status.addStatus('Syncing ${(offset + size) > total ? total - offset : size} books ($offset/$total)');
     ref.read(calibreBookProvider(BooksType.processed).notifier).clear();
 
-    List<JSONBook> books = await calibre.getBooks(lastConnected, offset, size);
+    List<JSONBook> books = await _calibre.getBooks(lastConnected, offset, size);
     int index = offset;
     for (JSONBook book in books) {
       await _getBook(book);
@@ -168,15 +168,13 @@ class CalibreWS extends _$CalibreWS {
   }
 
   Future<void> _updateReadStatuses() async {
-    var status = ref.read(statusProvider.notifier);
-    var calibre = ref.read(calibreDioProvider(state.calibreServer));
     int lastConnected = ref.read(calibreServerRepositoryProvider).value!.lastConnected;
 
     List<Book> books = await ref.read(booksRepositoryProvider.notifier).getReadingList(lastConnected);
     List<JSONBook> jsonBooks = books.map((book) => book.toJSON()).toList();
 
-    status.addStatus('Updating Last Read statuses.');
-    calibre.updateBooks(jsonBooks);
-    status.addStatus('Updated Last Read statuses.');
+    _status.addStatus('Updating Last Read statuses.');
+    _calibre.updateBooks(jsonBooks);
+    _status.addStatus('Updated Last Read statuses.');
   }
 }
