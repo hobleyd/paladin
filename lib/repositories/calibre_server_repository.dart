@@ -29,7 +29,7 @@ class CalibreServerRepository extends _$CalibreServerRepository {
     return maps.isEmpty
       ? CalibreServer(calibreServer: "", lastConnected: 0)
         : CalibreServer(
-        calibreServer: maps.first['calibre_server'] ?? ref.watch(calibreNetworkServiceProvider),
+        calibreServer: maps.first['calibre_server'] ?? "",
         lastConnected: maps.first['last_connected'] as int ?? 0);
   }
 

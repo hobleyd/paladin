@@ -1,14 +1,19 @@
+import 'package:flutter/foundation.dart';
+
+@immutable
 class CalibreSyncData {
-  bool syncFromEpoch = false;
-  bool syncReadStatuses = true;
-  double progress = 0.0;
-  String status = "";
-  bool processing = false;
+  final String calibreServer;
+  final bool syncFromEpoch;
+  final bool syncReadStatuses;
+  final double progress;
+  final String status;
+  final bool processing;
 
-  CalibreSyncData({this.syncFromEpoch = false, this.syncReadStatuses = true, this.progress = 0.0, this.status = "", this.processing = false});
+  CalibreSyncData({this.calibreServer = "", this.syncFromEpoch = false, this.syncReadStatuses = true, this.progress = 0.0, this.status = "", this.processing = false});
 
-  CalibreSyncData copyWith({bool? syncFromEpoch, bool? syncReadStatuses, int? syncDate, double? progress, String? status, bool? processing}) {
+  CalibreSyncData copyWith({String? calibreServer, bool? syncFromEpoch, bool? syncReadStatuses, int? syncDate, double? progress, String? status, bool? processing}) {
     return CalibreSyncData(
+      calibreServer: calibreServer ?? this.calibreServer,
       syncFromEpoch: syncFromEpoch ?? this.syncFromEpoch,
       syncReadStatuses: syncReadStatuses ?? this.syncReadStatuses,
       progress: progress ?? this.progress,

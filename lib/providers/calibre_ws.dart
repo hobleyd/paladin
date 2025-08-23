@@ -15,6 +15,7 @@ import '../repositories/calibre_server_repository.dart';
 import 'cached_cover.dart';
 import 'calibre_book_provider.dart';
 import 'calibre_dio.dart';
+import 'calibre_network_service.dart';
 import 'status_provider.dart';
 
 part 'calibre_ws.g.dart';
@@ -23,7 +24,32 @@ part 'calibre_ws.g.dart';
 class CalibreWS extends _$CalibreWS {
   @override
   CalibreSyncData build() {
-    return CalibreSyncData();
+    var calibreServerAsync = ref.watch(calibreServerRepositoryProvider);
+    var networkService = ref.watch(calibreNetworkServiceProvider);
+
+    CalibreServer? server = calibreServerAsync.value;
+    String calibreUrl = "";
+    if (server != null) {
+      calibreUrl = server.calibreServer.isNotEmpty ? server.calibreServer : networkService;
+    }
+
+    return CalibreSyncData(calibreServer: calibreUrl);
+  }
+
+  Future<void> getBooks(List<JSONBook> books) async {
+    var status = ref.read(statusProvider.notifier);
+
+    status.addStatus('Attempting to download ${books.length} from the server.');
+
+    int index = 0;
+    for (var book in books) {
+      _getBook(book);
+      state = state.copyWith(progress: index++ / books.length);
+    }
+  }
+
+  void setCalibreServer(String calibreServer) {
+    state = state.copyWith(calibreServer: calibreServer);
   }
 
   Future<void> setSyncFromEpoch(bool? syncFrom) async {
@@ -69,7 +95,7 @@ class CalibreWS extends _$CalibreWS {
       file.createSync(recursive: true);
     }
 
-    final response = ref.read(calibreDioProvider).getBook(book.uuid, 4096);
+    final response = ref.read(calibreDioProvider(state.calibreServer)).getBook(book.uuid, 4096);
     final sink = file.openWrite();
     await for (final chunk in response) {
       sink.add(chunk);
@@ -79,21 +105,9 @@ class CalibreWS extends _$CalibreWS {
     ref.read(cachedCoverProvider(book).notifier).cacheCover();
   }
 
-  Future<void> getBooks(List<JSONBook> books) async {
-    var status = ref.read(statusProvider.notifier);
-
-    status.addStatus('Attempting to download ${books.length} from the server.');
-
-    int index = 0;
-    for (var book in books) {
-      _getBook(book);
-      state = state.copyWith(progress: index++ / books.length);
-    }
-  }
-
   Future<void> _getBook(JSONBook book) async {
     LibraryDB library = ref.read(libraryDBProvider.notifier);
-    var calibre = ref.read(calibreDioProvider);
+    var calibre = ref.read(calibreDioProvider(state.calibreServer));
     var status = ref.read(statusProvider.notifier);
 
     ref.read(calibreBookProvider(BooksType.processed).notifier).add(book);
@@ -124,7 +138,7 @@ class CalibreWS extends _$CalibreWS {
 
   Future<void> _getUpdatedBooks() async {
     var status = ref.read(statusProvider.notifier);
-    var calibre = ref.read(calibreDioProvider);
+    var calibre = ref.read(calibreDioProvider(state.calibreServer));
     int lastConnected = state.syncFromEpoch ? 0 : ref.read(calibreServerRepositoryProvider).value!.lastConnected;
 
     const int size = 100;
@@ -139,7 +153,7 @@ class CalibreWS extends _$CalibreWS {
   }
 
   Future<void> _getBooksWithOffset(int lastConnected, int offset, int size, int total) async {
-    var calibre = ref.read(calibreDioProvider);
+    var calibre = ref.read(calibreDioProvider(state.calibreServer));
     var status = ref.read(statusProvider.notifier);
 
     status.addStatus('Syncing ${(offset + size) > total ? total - offset : size} books ($offset/$total)');
@@ -155,7 +169,7 @@ class CalibreWS extends _$CalibreWS {
 
   Future<void> _updateReadStatuses() async {
     var status = ref.read(statusProvider.notifier);
-    var calibre = ref.read(calibreDioProvider);
+    var calibre = ref.read(calibreDioProvider(state.calibreServer));
     int lastConnected = ref.read(calibreServerRepositoryProvider).value!.lastConnected;
 
     List<Book> books = await ref.read(booksRepositoryProvider.notifier).getReadingList(lastConnected);

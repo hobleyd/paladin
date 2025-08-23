@@ -11,11 +11,11 @@ class CalibreReadStatusUpdateCount extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var calibreRepository = ref.read(libraryDBProvider.notifier);
+    var library = ref.read(libraryDBProvider.notifier);
     CalibreSyncData syncData = ref.watch(calibreWSProvider);
 
     return FutureBuilder(
-      future: calibreRepository.getCount('books',
+      future: library.getCount('books',
           where: 'lastRead > 0 and lastModified > ?',
           whereArgs: [syncData.syncFromEpoch ? 0 : lastSyncDate.millisecondsSinceEpoch / 1000]),
       builder: (BuildContext ctx, AsyncSnapshot<int> count) {

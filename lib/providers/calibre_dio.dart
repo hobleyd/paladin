@@ -14,9 +14,7 @@ part 'calibre_dio.g.dart';
 @Riverpod(keepAlive: true)
 class CalibreDio extends _$CalibreDio {
   @override
-  Calibre build() {
-    CalibreServer? calibreServer = ref.watch(calibreServerRepositoryProvider).value;
-    String baseUrl = calibreServer?.calibreServer ?? ref.watch(calibreNetworkServiceProvider);
+  Calibre build(String baseUrl) {
     final dio = Dio();
     dio.options = BaseOptions(
       baseUrl: baseUrl,
