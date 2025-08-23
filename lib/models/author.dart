@@ -50,6 +50,7 @@ class Author extends Collection {
     return Author(
       id: author['id'],
       name: author['name'],
+      count: author['count'],
       queryArgs: [author['name']],
     );
   }
