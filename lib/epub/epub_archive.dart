@@ -125,6 +125,7 @@ class Epub {
         || item.getAttribute('id')?.toLowerCase() == 'cover'
         || item.getAttribute('id')?.toLowerCase() == 'cover1'
         || item.getAttribute('id')?.toLowerCase() == 'cov'
+        || item.getAttribute('id')?.toLowerCase() == 'book-cover'
         || item.getAttribute('id')?.toLowerCase() == 'cover-jpg'
         || item.getAttribute('id')?.toLowerCase() == 'cover.jpg'
         || item.getAttribute('id')?.toLowerCase() == 'cover.jpeg'
@@ -142,16 +143,18 @@ class Epub {
       }).getAttribute('href');
     } else {
       // Try the hard way - get the first page in the Spine and assume that contains the cover.
-      XmlElement spine = opfContent.findAllElements('spine').first;
-      XmlElement firstPage = spine.findAllElements('itemref').first;
-      String pageRef = firstPage.getAttribute('idref')!;
+      XmlElement? spine = opfContent.findAllElements('spine').firstOrNull();
+      XmlElement? firstPage = spine?.findAllElements('itemref').firstOrNull();
+      String? pageRef = firstPage?.getAttribute('idref')!;
 
-      XmlElement? page = opfContent.findAllElements('item')
-          .where((item) => item.getAttribute('id')!.toLowerCase() == pageRef.toLowerCase())
-          .firstOrNull();
+      if (pageRef != null) {
+        XmlElement? page = opfContent.findAllElements('item')
+            .where((item) => item.getAttribute('id')!.toLowerCase() == pageRef.toLowerCase())
+            .firstOrNull();
 
-      if (page != null) {
-        return page.getAttribute('href');
+        if (page != null) {
+          return page.getAttribute('href');
+        }
       }
 
       debugPrint('$bookName ($bookUUID) does not have a cover attribute.');
