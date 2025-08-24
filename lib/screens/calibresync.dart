@@ -30,12 +30,12 @@ class CalibreSync extends ConsumerWidget {
       appBar: AppBar(title: const Text('Synchronise Library')),
       body: Column(
         children: [
-          calibre.processing || errors.isNotEmpty
+          calibre.syncState == CalibreSyncState.PROCESSING || calibre.syncState == CalibreSyncState.REVIEW
               ? Expanded(
                   child: Row(
                     children: [
                       Expanded(
-                        child: calibre.status != 'Completed Synchronisation'
+                        child: calibre.syncState == CalibreSyncState.PROCESSING
                             ? CalibreBookList(bookType: BooksType.processed)
                             : CalibreBookList(bookType: BooksType.error),
                       ),

@@ -19,6 +19,6 @@ class CalibreServer {
 
   @override
   String toString() {
-    return '$calibreServer: $lastConnected (${lastConnectedDateTime})';
+    return '$calibreServer: $lastConnected ($lastConnectedDateTime)';
   }
 }

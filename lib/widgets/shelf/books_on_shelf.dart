@@ -6,7 +6,6 @@ import 'package:visibility_detector/visibility_detector.dart';
 import '../../models/book.dart';
 import '../../models/collection.dart';
 import '../../models/shelf.dart';
-import '../../providers/cached_cover.dart';
 import '../../providers/shelf_collection.dart';
 import '../../repositories/shelf_books_repository.dart';
 import '../../screens/backcover.dart';

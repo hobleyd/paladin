@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/calibre_server.dart';
-import '../../providers/calibre_network_service.dart';
 import '../../providers/calibre_ws.dart';
 import '../../repositories/calibre_server_repository.dart';
 import '../home/fatal_error.dart';

@@ -35,7 +35,7 @@ class CalibreSyncServer extends ConsumerWidget {
           controller: textController,
           decoration: InputDecoration(border: OutlineInputBorder()),
           focusNode: textNode,
-          onSubmitted: (_) => ref.read(calibreServerRepositoryProvider.notifier).updateServerDetails(calibre_server: textController.text),
+          onSubmitted: (_) => ref.read(calibreServerRepositoryProvider.notifier).updateServerDetails(calibreServer: textController.text),
         ),
       );
     });

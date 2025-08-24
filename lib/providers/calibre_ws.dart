@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:http_status_code/http_status_code.dart';
 
@@ -21,6 +22,7 @@ import 'status_provider.dart';
 
 part 'calibre_ws.g.dart';
 
+// TODO: need to think about keeping "Future Reads" sync'd.
 @Riverpod(keepAlive: true)
 class CalibreWS extends _$CalibreWS {
   late LibraryDB _library;
@@ -51,32 +53,8 @@ class CalibreWS extends _$CalibreWS {
     int index = 0;
     for (var book in books) {
       await _getBook(book);
-      state = state.copyWith(progress: index++ / books.length);
+      updateState(progress: index++ / books.length);
     }
-  }
-
-  void setCalibreServer(String calibreServer) {
-    state = state.copyWith(calibreServer: calibreServer);
-  }
-
-  Future<void> setSyncFromEpoch(bool? syncFrom) async {
-    if (syncFrom != null) {
-      state = state.copyWith(syncFromEpoch: syncFrom);
-    }
-
-    return;
-  }
-
-  Future<void> setSyncReadStatuses(bool? syncReadStatuses) async {
-    if (syncReadStatuses != null) {
-      state = state.copyWith(syncReadStatuses: syncReadStatuses);
-    }
-
-    return;
-  }
-
-  void stopSynchronisation() {
-    state = state.copyWith(processing: false);
   }
 
   Future<void> synchroniseWithCalibre() async {
@@ -84,7 +62,7 @@ class CalibreWS extends _$CalibreWS {
     _library = ref.read(libraryDBProvider.notifier);
     _calibre = ref.read(calibreDioProvider(state.calibreServer));
 
-    state = state.copyWith(processing: true);
+    updateState(syncState: CalibreSyncState.PROCESSING);
     _status.addStatus('Initialising Sync...');
 
     if (state.syncReadStatuses) {
@@ -92,10 +70,18 @@ class CalibreWS extends _$CalibreWS {
     }
     await _getUpdatedBooks();
 
-    ref.read(calibreServerRepositoryProvider.notifier).updateServerDetails(lastConnected: CalibreServer.secondsSinceEpoch);
+    _status.addStatus('Completed Synchronisation; please review errors (if any)');
+    updateState(syncState: CalibreSyncState.REVIEW,);
+  }
 
-    _status.addStatus('Completed Synchronisation');
-    state = state.copyWith(status: 'Completed Synchronisation', );
+  void updateState({String? calibreServer, bool? syncFromEpoch, bool? syncReadStatuses, int? syncDate, double? progress, CalibreSyncState? syncState}) {
+    state = state.copyWith(
+      calibreServer: calibreServer,
+      syncFromEpoch: syncFromEpoch,
+      syncReadStatuses: syncReadStatuses,
+      progress: progress,
+      syncState: syncState,
+    );
   }
 
   Future<void> _downloadBook(Book book) async {
@@ -128,6 +114,7 @@ class CalibreWS extends _$CalibreWS {
     } catch (e) {
       ref.read(calibreBookProvider(BooksType.error).notifier).add(book);
       String exception = 'Got exception processing "${book.Title}":';
+      debugPrint('Exception: $e');
       if (e is DioException) {
         if (e.response != null) {
           if (e.response!.statusCode != null) {
@@ -163,7 +150,7 @@ class CalibreWS extends _$CalibreWS {
     int index = offset;
     for (JSONBook book in books) {
       await _getBook(book);
-      state = state.copyWith(progress: index++ / total);
+      updateState(progress: index++ / total);
     }
   }
 

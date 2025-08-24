@@ -1,9 +1,8 @@
-import 'package:flutter/foundation.dart';
-import 'package:paladin/database/library_db.dart';
-import 'package:paladin/models/calibre_server.dart';
-import 'package:paladin/providers/calibre_network_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
+import '../../database/library_db.dart';
+import '../../models/calibre_server.dart';
 
 part 'calibre_server_repository.g.dart';
 
@@ -27,15 +26,13 @@ class CalibreServerRepository extends _$CalibreServerRepository {
 
     final List<Map<String, dynamic>> maps = await libraryDb.query(table: 'calibre_library', limit: 1);
     return maps.isEmpty
-      ? CalibreServer(calibreServer: "", lastConnected: 0)
-        : CalibreServer(
-        calibreServer: maps.first['calibre_server'] ?? "",
-        lastConnected: maps.first['last_connected'] as int ?? 0);
+        ? CalibreServer(calibreServer: "", lastConnected: 0)
+        : CalibreServer(calibreServer: maps.first['calibre_server'] ?? "", lastConnected: maps.first['last_connected'] as int);
   }
 
-  Future<void> updateServerDetails({String? calibre_server, int? lastConnected}) async {
+  Future<void> updateServerDetails({String? calibreServer, int? lastConnected}) async {
     CalibreServer server = state.value!;
-    CalibreServer updatedServer = server.copyWith(calibreServer: calibre_server, lastConnected: lastConnected);
+    CalibreServer updatedServer = server.copyWith(calibreServer: calibreServer, lastConnected: lastConnected);
 
     var libraryDb = ref.read(libraryDBProvider.notifier);
     await libraryDb.insert(

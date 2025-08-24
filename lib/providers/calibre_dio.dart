@@ -2,11 +2,8 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
-import 'package:paladin/repositories/calibre_server_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../models/calibre_server.dart';
-import '../providers/calibre_network_service.dart';
 import '../services/calibre.dart';
 
 part 'calibre_dio.g.dart';
