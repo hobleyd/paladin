@@ -27,7 +27,7 @@ class Epub {
   String? _getCoverImageFromHtml(String coverName) {
     ArchiveFile? xhtml = _findFileInArchive(coverName);
     if (xhtml == null) {
-      debugPrint("Can't find $coverName in epub!");
+      debugPrint("$bookName ($bookUUID): Can't find $coverName in epub!");
       return null;
     }
 
@@ -54,14 +54,14 @@ class Epub {
       return coverAttribute.getAttribute('src');
     }
 
-    debugPrint("Can't find an image tag in the html");
+    debugPrint("$bookName ($bookUUID): Can't find an image tag in the html");
     return null;
   }
 
   String? _getCoverImageFromXhtml(String coverName) {
     ArchiveFile? xhtml = _findFileInArchive(coverName);
     if (xhtml == null) {
-      debugPrint("Can't find $coverName in epub!");
+      debugPrint("$bookName ($bookUUID): Can't find $coverName in epub!");
       return null;
     }
 
@@ -96,7 +96,25 @@ class Epub {
       return coverName;
     }
 
-    debugPrint("Can't find an image tag in the xhtml");
+    // Option 3. <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    //             <image width="600" height="800" xlink:href="cover.jpeg"/>
+    //         </svg>
+    coverAttribute = xhtmlDocument.findAllElements('svg').firstOrNull();
+    if (coverAttribute != null) {
+      XmlElement? coverImage = coverAttribute.findAllElements('image').firstOrNull();
+      coverImage ??= coverAttribute.findAllElements('img').firstOrNull();
+
+      if (coverImage != null) {
+        String? coverFile = coverImage.getAttribute('xlink:href');
+        coverFile ??= coverImage.getAttribute('href');
+
+        if (coverFile != null) {
+          return coverFile;
+        }
+      }
+    }
+
+    debugPrint("$bookName ($bookUUID): Can't find an image tag in the xhtml");
     return null;
   }
 
@@ -105,6 +123,7 @@ class Epub {
         .where((item) => item.getAttribute('id')?.toLowerCase() == 'cover-image'
         || item.getAttribute('id')?.toLowerCase() == 'my-cover-image'
         || item.getAttribute('id')?.toLowerCase() == 'cover'
+        || item.getAttribute('id')?.toLowerCase() == 'cover1'
         || item.getAttribute('id')?.toLowerCase() == 'cov'
         || item.getAttribute('id')?.toLowerCase() == 'cover-jpg'
         || item.getAttribute('id')?.toLowerCase() == 'cover.jpg'
@@ -113,8 +132,6 @@ class Epub {
         || item.getAttribute('id')?.toLowerCase() == 'coverimagestandard'
         || item.getAttribute('id')?.toLowerCase() == 'cover-page'
         || item.getAttribute('properties')?.toLowerCase() == 'cover-image').toList();
-        //|| item.getAttribute('media-type')?.toLowerCase() == 'image/jpeg' // Relying on the fact that the first image should be the cover page. This might be luck. Review The Victorious Opposition (2902785a-7bdc-4d62-95a4-539b1be966fa) if this becomes a problem!
-        //|| item.getAttribute('media-type')?.toLowerCase() == 'image/png').toList(); // Relying on the fact that the first image should be the cover page. This might be luck. Review Out of Phaze (82064c4a-e92a-4a4c-a1b4-fcf12f564273.epub) if this becomes a problem!
 
     if (coverElements.length == 1) {
       return coverElements.first.getAttribute('href');
@@ -145,7 +162,7 @@ class Epub {
   XmlDocument? _getOPFContent(String opfPath) {
     InputStream? opf = _findFileInArchive(opfPath)?.getContent();
     if (opf == null) {
-      debugPrint("$bookName: OPF file is empty!!!");
+      debugPrint("$bookName ($bookUUID): OPF file is empty!!!");
       return null;
     }
 
@@ -176,9 +193,6 @@ class Epub {
   }
 
   images.Image? getCover() {
-    if (bookUUID == "00a3950a-a1a6-4dc3-83b2-9e08572d8bab") {
-      debugPrint('here');
-    }
     String? opfPath = _getOPFPath();
     if (opfPath == null) {
       debugPrint("$bookName ($bookUUID): Can't find opfPath");
@@ -187,7 +201,7 @@ class Epub {
 
     final XmlDocument? opfContent = _getOPFContent(opfPath);
     if (opfContent == null) {
-      debugPrint("Couldn't parse OPF content");
+      debugPrint("$bookName ($bookUUID): Couldn't parse OPF content");
       return null;
     }
 
@@ -209,7 +223,7 @@ class Epub {
 
       Uint8List? coverBytes = coverFile?.readBytes();
       if (coverBytes == null) {
-        debugPrint("$bookName: Cover image ($coverName) doesn't exist!");
+        debugPrint("$bookName ($bookUUID): Cover image ($coverName) doesn't exist!");
         return null;
       }
 
