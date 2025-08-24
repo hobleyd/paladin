@@ -18,7 +18,7 @@ class Epub {
   // ending in what we are looking for and this should catch everything I've seen; so far, at least.
   ArchiveFile? _findFileInArchive(String name) {
     try {
-      return bookArchive.files.firstWhere((file) => file.name.endsWith(name));
+      return bookArchive.files.firstWhere((file) => file.name.endsWith(Uri.decodeFull(name)));
     } catch (e) {
       return null;
     }
@@ -105,6 +105,12 @@ class Epub {
         .where((item) => item.getAttribute('id')?.toLowerCase() == 'cover-image'
         || item.getAttribute('id')?.toLowerCase() == 'my-cover-image'
         || item.getAttribute('id')?.toLowerCase() == 'cover'
+        || item.getAttribute('id')?.toLowerCase() == 'cov'
+        || item.getAttribute('id')?.toLowerCase() == 'cover-jpg'
+        || item.getAttribute('id')?.toLowerCase() == 'cover.jpg'
+        || item.getAttribute('id')?.toLowerCase() == 'cover.jpeg'
+        || item.getAttribute('id')?.toLowerCase() == 'img_cover'
+        || item.getAttribute('id')?.toLowerCase() == 'coverimagestandard'
         || item.getAttribute('id')?.toLowerCase() == 'cover-page'
         || item.getAttribute('properties')?.toLowerCase() == 'cover-image').toList();
         //|| item.getAttribute('media-type')?.toLowerCase() == 'image/jpeg' // Relying on the fact that the first image should be the cover page. This might be luck. Review The Victorious Opposition (2902785a-7bdc-4d62-95a4-539b1be966fa) if this becomes a problem!
@@ -123,13 +129,16 @@ class Epub {
       XmlElement firstPage = spine.findAllElements('itemref').first;
       String pageRef = firstPage.getAttribute('idref')!;
 
-      XmlElement page = opfContent.findAllElements('item')
-          .where((item) => item.getAttribute('id')!.toLowerCase() == pageRef)
-          .first;
+      XmlElement? page = opfContent.findAllElements('item')
+          .where((item) => item.getAttribute('id')!.toLowerCase() == pageRef.toLowerCase())
+          .firstOrNull();
 
-      return page.getAttribute('href');
-      //debugPrint('$bookName ($bookUUID) does not have a cover attribute.');
-      //return null;
+      if (page != null) {
+        return page.getAttribute('href');
+      }
+
+      debugPrint('$bookName ($bookUUID) does not have a cover attribute.');
+      return null;
     }
   }
 
@@ -144,7 +153,12 @@ class Epub {
   }
 
   String? _getOPFPath() {
-    ArchiveFile? container = _findFileInArchive('META-INF/container.xml');
+    // We need to check twice, because while most epubs have a single container.xml in the root of the Archive,
+    // some have it in a sub folder and so _findFileInArchive is required. We can't just search for it that way though
+    // because other archives have multiple containers and we need to preference the top level one.
+    ArchiveFile? container = bookArchive.find('META-INF/container.xml');
+    container ??= _findFileInArchive('META-INF/container.xml');
+
     InputStream? containerStream = container?.getContent();
     if (containerStream == null) {
       debugPrint("$bookName ($bookUUID): Can't find container");
@@ -162,7 +176,7 @@ class Epub {
   }
 
   images.Image? getCover() {
-    if (bookUUID == "5c8e1c9f-b6c8-42d4-83c3-3f33f2d2c897") {
+    if (bookUUID == "00a3950a-a1a6-4dc3-83b2-9e08572d8bab") {
       debugPrint('here');
     }
     String? opfPath = _getOPFPath();
@@ -187,6 +201,10 @@ class Epub {
     }
 
     if (coverName != null) {
+      if (coverName.startsWith('../')) {
+        // TODO: I should normalise pathnames, but I suspect this will be enough given _findFileInArchive uses endsWith instead of ==
+        coverName = coverName.replaceAll('../', '');
+      }
       ArchiveFile? coverFile = _findFileInArchive(coverName);
 
       Uint8List? coverBytes = coverFile?.readBytes();
