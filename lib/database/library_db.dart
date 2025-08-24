@@ -188,11 +188,10 @@ class LibraryDB extends _$LibraryDB {
       }
 
       // Insert the many-many relationship into book_tags.
+      // Delete all tags before we start to ensure we are up to date with Calibre.
+      await _paladin.delete('book_tags', where: 'bookId = ?', whereArgs: [book.uuid]);
       for (var tag in tags) {
-        List<Map> result = await _paladin.query('book_tags', columns: ['tagId'], where: 'tagId = ? and bookId = ?', whereArgs: [tag.id, book.uuid]);
-        if (result.isEmpty) {
-          _paladin.insert('book_tags', { 'tagId': tag.id, 'bookId': book.uuid});
-        }
+        _paladin.insert('book_tags', { 'tagId': tag.id, 'bookId': book.uuid});
       }
     }
   }

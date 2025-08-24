@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:paladin/models/tag.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:http_status_code/http_status_code.dart';
 
@@ -68,7 +69,9 @@ class CalibreWS extends _$CalibreWS {
     if (state.syncReadStatuses) {
       await _updateReadStatuses();
     }
+
     await _getUpdatedBooks();
+    // TODO: await _deleteBooksRemovedFromCalibre();
 
     _status.addStatus('Completed Synchronisation; please review errors (if any)');
     updateState(syncState: CalibreSyncState.REVIEW,);
@@ -157,11 +160,13 @@ class CalibreWS extends _$CalibreWS {
   Future<void> _updateReadStatuses() async {
     int lastConnected = ref.read(calibreServerRepositoryProvider).value!.lastConnected;
 
+    _status.addStatus('Updating Last Read statuses.');
+
     List<Book> books = await ref.read(booksRepositoryProvider.notifier).getReadingList(lastConnected);
     List<JSONBook> jsonBooks = books.map((book) => book.toJSON()).toList();
 
-    _status.addStatus('Updating Last Read statuses.');
     _calibre.updateBooks(jsonBooks);
+
     _status.addStatus('Updated Last Read statuses.');
   }
 }

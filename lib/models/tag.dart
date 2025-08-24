@@ -10,6 +10,7 @@ part 'tag.g.dart';
 @JsonSerializable()
 class Tag extends Collection {
   static const String tagsQuery = 'select tags.id, tags.tag, count(book_tags.tagId) as count from tags left join book_tags on tags.id = book_tags.tagId where tags.tag like ? group by tags.id order by tags.tag';
+  static const String futureReads = 'Future Reads';
 
   final int? id;
   final String tag;
