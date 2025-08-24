@@ -16,4 +16,9 @@ class CalibreServer {
       lastConnected: lastConnected ?? this.lastConnected,
     );
   }
+
+  @override
+  String toString() {
+    return '$calibreServer: $lastConnected (${lastConnectedDateTime})';
+  }
 }

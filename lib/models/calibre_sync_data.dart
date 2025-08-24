@@ -21,4 +21,9 @@ class CalibreSyncData {
       processing: processing ?? this.processing,
     );
   }
+
+  @override
+  String toString() {
+    return "$calibreServer ($processing): $progress, $status";
+  }
 }
