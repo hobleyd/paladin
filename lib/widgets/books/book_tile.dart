@@ -39,7 +39,7 @@ class BookTile extends ConsumerWidget {
           children: [
             Container(
               padding: const EdgeInsets.only(left: 6.0, right: 8.0, top: 4.0, bottom: 2.0),
-              child: coverAsync.value,
+              child: cover,
             ),
             Expanded(
               child: Stack(
