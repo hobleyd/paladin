@@ -36,7 +36,7 @@ dependencies:
   retrofit: ^4.7.2
   riverpod_annotation: ^2.1.2
   sqflite_common_ffi: ^2.3.6
-  #sqlite3_flutter_libs: ^0.5.39
+  sqlite3_flutter_libs: ^0.5.39
   url_launcher: ^6.3.2
   visibility_detector: ^0.4.0+2
   xml: ^6.6.1
