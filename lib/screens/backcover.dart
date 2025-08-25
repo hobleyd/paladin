@@ -5,6 +5,7 @@ import '../models/book.dart';
 import '../providers/cached_cover.dart';
 import '../widgets/books/authors.dart';
 import '../widgets/books/blurb.dart';
+import '../widgets/books/book_cover.dart';
 import '../widgets/books/book_rating.dart';
 import '../widgets/books/book_series.dart';
 import '../widgets/books/book_tags.dart';
@@ -24,7 +25,7 @@ class BackCover extends ConsumerWidget {
             IntrinsicHeight(
               child: Row(
                 children: [
-                  ref.watch(cachedCoverProvider(book)).value ?? Image.asset('assets/generic_book_cover.png', fit: BoxFit.cover),
+                  BookCover(book: book),
                   Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
