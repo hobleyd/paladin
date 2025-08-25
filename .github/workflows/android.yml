@@ -26,6 +26,6 @@ jobs:
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/app/outputs/flutter-apk/paladin-release.apk"
+          artifacts: "build/app/outputs/flutter-apk/paladin-${{ env.VERSION }}-release.apk"
           tag: v${{ env.VERSION }}
           #token: ${{ secrets.TOKEN }}
