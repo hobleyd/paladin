@@ -29,13 +29,13 @@ class LibraryDB extends _$LibraryDB {
 
     _paladin = await databaseFactoryFfi.openDatabase(await _getDatabasePath(),
         options: OpenDatabaseOptions(
-            version: 3,
+            version: 1,
             onConfigure: (db) {
               _paladin = db;
               _enableForeignKeys(db);
             },
             onCreate: (db, version) {
-              _createTables(db, 2, version);
+              _createTables(db, 0, version);
             },
             onOpen: (db) {
             },
@@ -80,6 +80,8 @@ class LibraryDB extends _$LibraryDB {
       db.execute(AuthorsRepository.authors);
       db.execute(BooksRepository.books);
       db.execute(SeriesRepository.series);
+      db.execute(ShelvesRepository.shelves);
+
       db.execute(_bookauthors);
       db.execute(_tags);
       db.execute(_booktags);
@@ -94,16 +96,9 @@ class LibraryDB extends _$LibraryDB {
 
       db.execute(_indexLastread);
       db.execute(_indexAddeddate);
-    }
 
-    if (oldVersion < 2) {
-      db.execute(ShelvesRepository.shelves);
       _insertInitialShelves(db, 'Currently Reading', CollectionType.CURRENT.index, 15);
       _insertInitialShelves(db, 'Random Shelf',  CollectionType.RANDOM.index, 30);
-    }
-
-    if (oldVersion < 3) {
-      db.execute('ALTER TABLE calibre_library ADD COLUMN calibre_server text;');
     }
 
     return;
