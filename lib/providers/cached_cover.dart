@@ -22,7 +22,7 @@ class CachedCover extends _$CachedCover {
     // Note that if the epub doesn't have a cover, we can't cache and we can still be left without one, here.
     return cover.existsSync()
         ? Image.file(cover, fit: BoxFit.cover)
-        : Image.asset('assets/generic_book_cover.png', fit: BoxFit.cover);
+        : Image.asset('assets/generic_book_cover.png', fit: BoxFit.cover, height: 200);
   }
 
   Future<void> cacheCover() async {
