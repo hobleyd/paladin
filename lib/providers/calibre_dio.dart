@@ -15,7 +15,7 @@ class CalibreDio extends _$CalibreDio {
     final dio = Dio();
     dio.options = BaseOptions(
       baseUrl: baseUrl,
-      connectTimeout: const Duration(seconds: 15),
+      connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 900),
       contentType: 'application/json',);
 
