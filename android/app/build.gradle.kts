@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -5,6 +8,10 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = Properties().apply {
+    load(FileInputStream(keystorePropertiesFile))
+}
 android {
     namespace = "au.com.sharpblue.paladin"
     compileSdk = flutter.compileSdkVersion
@@ -32,11 +39,20 @@ android {
         setProperty("archivesBaseName", "paladin-$versionName")
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            keyAlias = keystoreProperties["keyAlias"] as String
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs["release"]
         }
     }
 }
