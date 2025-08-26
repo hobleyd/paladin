@@ -31,7 +31,7 @@ jobs:
           echo "storeFile=keystore.jks" >> android/key.properties
       - name: Decode Keystore
         env:
-          ENCODED_STRING: ${{ secrets.KEYSTORE_BASE_64 }}
+          ENCODED_STRING: ${{ secrets.KEY_BASE_64 }}
         run: |
           echo $ENCODED_STRING | base64 -d -i - -o android/app/keystore.jks
       - run: flutter build apk --release --no-tree-shake-icons
