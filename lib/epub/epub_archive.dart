@@ -199,6 +199,7 @@ class Epub {
     String? opfPath = _getOPFPath();
     if (opfPath == null) {
       debugPrint("$bookName ($bookUUID): Can't find opfPath");
+
       return null;
     }
 
@@ -239,5 +240,6 @@ class Epub {
   void openBook() {
     final inputStream = InputFileStream(bookPath);
     bookArchive = ZipDecoder().decodeStream(inputStream);
+    inputStream.closeSync();
   }
 }
