@@ -26,7 +26,7 @@ class CalibreStatus extends ConsumerWidget {
               ? calibreUrl.isEmpty
                 ? Text("Can't find Calibre running on local network; are you running the server?", style: Theme.of(context).textTheme.bodyMedium)
                 : Text('Error communicating with Calibre on $calibreUrl', style: Theme.of(context).textTheme.bodyMedium)
-              : child != null
+              : child == null
                 ? Text('Calibre is: ${snapshot.data!.status} on $calibreUrl.', style: Theme.of(context).textTheme.bodyMedium)
                 : child!;
       },
