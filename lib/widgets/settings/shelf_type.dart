@@ -20,7 +20,7 @@ class ShelfType extends ConsumerWidget {
     return const Center(child: CircularProgressIndicator());
     }, data: (Shelf shelf) {
       return SizedBox(
-        width: 150,
+        width: 170,
         child: InputDecorator(
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
