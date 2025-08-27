@@ -58,6 +58,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/generic_book_cover.png
+    - assets/new.png
     - assets/paladin.png
     - assets/sharpblue.png
     - assets/google_fonts/
