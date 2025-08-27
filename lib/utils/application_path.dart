@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 Future<String> getApplicationPath() async {
   String dir = "";
   if (!kIsWeb) {
-    if (Platform.isAndroid || Platform.isMacOS) {
+    if (Platform.isAndroid || Platform.isMacOS || Platform.isIOS) {
       Directory documentsDirectory = await getApplicationDocumentsDirectory();
       dir = documentsDirectory.path;
     } else if (Platform.isWindows) {
