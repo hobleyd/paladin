@@ -22,7 +22,15 @@ class BookCover extends ConsumerWidget {
           return const Text('');
         },
         data: (Image cover) {
-          return cover;
+          return book.lastRead != null && book.lastRead! > 0
+              ? cover
+              : Stack(
+                  alignment: AlignmentGeometry.topRight,
+                  children: [
+                    cover,
+                    Image.asset('assets/new.png', fit: BoxFit.cover, height: 15),
+                  ],
+          );
         });
   }
 }
