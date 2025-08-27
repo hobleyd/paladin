@@ -45,11 +45,16 @@ class CalibreNetworkService extends _$CalibreNetworkService {
 
   void updateState(BonsoirService service) {
     if (service.name == "calibre-service") {
-      String host = service.host!;
-      if (host.endsWith('.')) {
-        host = host.substring(0, host.length - 1);
+      if (service.attributes != null) {
+        String? host = service.attributes['server'];
+        String? port = service.attributes['port'];
+        if (host != null && port != null) {
+          if (host.endsWith('.')) {
+            host = host.substring(0, host.length - 1);
+          }
+          state = 'https://$host:$port';
+        }
       }
-      state = 'https://$host:${service.port}';
     }
   }
 
