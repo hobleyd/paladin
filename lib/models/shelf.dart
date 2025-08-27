@@ -11,7 +11,7 @@ class Shelf {
 
   static const shelfQuery = {
     CollectionType.AUTHOR  : 'select * from books where uuid in (select bookId from book_authors, authors where authors.id = book_authors.authorId and authors.name = ?)',
-    CollectionType.SERIES  : 'select * from books where series = (select id from series where series = ?);',
+    CollectionType.SERIES  : 'select * from books where series = (select id from series where series = ?) order by seriesIndex ASC;',
     CollectionType.TAG     : 'select * from books where uuid in (select bookId from book_tags, tags where tags.id = book_tags.tagId and tags.tag = ?) order by random() limit ?',
     CollectionType.CURRENT : 'select * from books where lastRead > 0 order by lastRead DESC limit ?',
     CollectionType.RANDOM  : 'select * from books where lastRead = 0 order by random() limit ?',
