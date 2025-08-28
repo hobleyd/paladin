@@ -62,7 +62,7 @@ class ShelfRepository extends _$ShelfRepository {
     }
 
     List<dynamic> queryArgs = [if (Shelf.shelfNeedsName(collectionType)) name, if (Shelf.shelfNeedsSize(collectionType)) size];
-    current = current.copyWith(collection: current.collection.copyWith(type: collectionType, query: Shelf.shelfQuery[collectionType]!, queryArgs: queryArgs),);
+    current = current.copyWith(name: name, collection: current.collection.copyWith(type: collectionType, query: Shelf.shelfQuery[collectionType]!, queryArgs: queryArgs),);
 
     updateState(current);
   }
