@@ -1,4 +1,5 @@
 
+import 'package:paladin/repositories/shelf_repository.dart';
 import 'package:paladin/utils/iterable.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -38,7 +39,12 @@ class ShelvesRepository extends _$ShelvesRepository {
 
     current.remove(current.last);
     state = AsyncValue.data(current);
+  }
 
+  Future<void> updateShelves() async {
+    List<int> current = state.value!;
+
+    current.map((shelf) => ref.read(shelfRepositoryProvider(shelf).notifier).updateShelf());
   }
 
   Future<List<int>> _getShelves() async {

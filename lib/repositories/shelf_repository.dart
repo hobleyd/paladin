@@ -46,6 +46,10 @@ class ShelfRepository extends _$ShelfRepository {
     return shelf;
   }
 
+  Future<void> updateShelf() async {
+    state = AsyncValue.data(await _getShelf(shelfId));
+  }
+
   Future<void> updateShelfType(CollectionType collectionType) async {
     Shelf current = state.value!;
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paladin/providers/calibre_book_provider.dart';
 import 'package:paladin/providers/calibre_ws.dart';
+import 'package:paladin/repositories/shelves_repository.dart';
 
 import '../../models/calibre_server.dart';
 import '../../models/calibre_sync_data.dart';
@@ -28,7 +29,7 @@ class CalibreSyncButton extends ConsumerWidget {
           ),
           const Spacer(),
           ElevatedButton(
-            onPressed: () => ref.read(calibreWSProvider.notifier).synchroniseWithCalibre(),
+            onPressed: () => _synchronise(ref),
             style: ElevatedButton.styleFrom(disabledBackgroundColor: Colors.white, disabledForegroundColor: Colors.black),
             child: Text('Sync', style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
           ),
@@ -76,5 +77,10 @@ class CalibreSyncButton extends ConsumerWidget {
     ref.read(calibreBookProvider(BooksType.processed).notifier).clear();
     ref.read(calibreWSProvider.notifier).updateState(syncFromEpoch: false, syncState: CalibreSyncState.COMPLETED);
     ref.read(calibreServerRepositoryProvider.notifier).updateServerDetails(lastConnected: CalibreServer.secondsSinceEpoch);
+  }
+
+  Future<void> _synchronise(WidgetRef ref) async {
+    await ref.read(calibreWSProvider.notifier).synchroniseWithCalibre();
+    ref.read(shelvesRepositoryProvider.notifier).updateShelves();
   }
 }
