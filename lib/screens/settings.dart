@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/widgets/settings/calibre_sync_server.dart';
 
 import '../repositories/shelves_repository.dart';
 import '../widgets/home/fatal_error.dart';
+import '../widgets/settings/calibre_sync_server.dart';
 import '../widgets/settings/shelf_setting.dart';
 
 class Settings extends ConsumerStatefulWidget {
