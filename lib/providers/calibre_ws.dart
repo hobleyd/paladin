@@ -100,7 +100,8 @@ class CalibreWS extends _$CalibreWS {
     }
     await sink.flush();
     await sink.close();
-    ref.read(cachedCoverProvider(book).notifier).cacheCover();
+
+    ref.read(cachedCoverProvider(book)); // As a side effect, this will cache the cover for us.
   }
 
   Future<void> _getBook(JSONBook book) async {
