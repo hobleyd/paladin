@@ -19,12 +19,15 @@ class CalibreDio extends _$CalibreDio {
       receiveTimeout: const Duration(seconds: 900),
       contentType: 'application/json',);
 
-    // allow self-signed certificate
-    (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
-      final client = HttpClient();
-      client.badCertificateCallback = (cert, host, port) => true;
-      return client;
-    };
+    // allow self-signed certificate and limit open connections.
+    dio.httpClientAdapter = IOHttpClientAdapter(
+        createHttpClient: () {
+          final client = HttpClient();
+          client.badCertificateCallback = (cert, host, port) => true;
+          client.maxConnectionsPerHost = 100;
+          return client;
+        }
+    );
 
     return Calibre(dio, baseUrl: baseUrl);
   }
