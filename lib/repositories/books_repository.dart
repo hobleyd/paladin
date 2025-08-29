@@ -1,3 +1,4 @@
+import 'package:paladin/repositories/shelf_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../database/library_db.dart';
@@ -62,8 +63,8 @@ class BooksRepository extends _$BooksRepository {
     var libraryDb = ref.read(libraryDBProvider.notifier);
     await libraryDb.updateTable(table: 'books', values: { 'lastRead' : lastRead, 'lastModified' : lastModified }, where: 'uuid = ?', whereArgs: [ book.uuid]);
 
-    // TODO: Update Currently Reading Shelf!
-    //await _getCurrentlyReading(_paladin, Collection(type: CollectionType.CURRENT));
+    // Ensure Currently Reading Shelf is updated.
+    ref.read(shelfRepositoryProvider(1).notifier).updateShelf();
   }
 
   Future<int> _getBooksCount() async {
