@@ -4,6 +4,8 @@ import 'package:paladin/utils/iterable.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../database/library_db.dart';
+import '../models/collection.dart';
+import '../models/shelf.dart';
 
 part 'shelves_repository.g.dart';
 
@@ -25,9 +27,21 @@ class ShelvesRepository extends _$ShelvesRepository {
 
   Future<void> addShelf() async {
     List<int> current = List.from(state.value!);
-    current.add(current.max+1);
+    int newShelfId = current.max+1;
+    current.add(newShelfId);
 
-    // We don't update the DB here as the Shelf will need to be populated with valid content, first.
+    ref.read(shelfRepositoryProvider(newShelfId).notifier).updateState(
+        Shelf(
+            shelfId: newShelfId,
+            name: Collection.collectionType(CollectionType.RANDOM),
+            collection: Collection(
+              type: CollectionType.RANDOM,
+              query: Shelf.shelfQuery[CollectionType.RANDOM]!,
+              queryArgs: [10],
+            ),
+            size: 10)
+    );
+
     state = AsyncValue.data(current);
   }
 
