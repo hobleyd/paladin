@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/book.dart';
-import '../providers/cached_cover.dart';
 import '../widgets/books/authors.dart';
 import '../widgets/books/blurb.dart';
 import '../widgets/books/book_cover.dart';
