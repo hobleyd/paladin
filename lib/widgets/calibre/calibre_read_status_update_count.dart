@@ -16,7 +16,7 @@ class CalibreReadStatusUpdateCount extends ConsumerWidget {
 
     return FutureBuilder(
       future: library.getCount('books',
-          where: 'lastRead > 0 and lastModified > ?',
+          where: 'lastRead > ?',
           whereArgs: [syncData.syncFromEpoch ? 0 : lastSyncDate.millisecondsSinceEpoch / 1000]),
       builder: (BuildContext ctx, AsyncSnapshot<int> count) {
         return Text('There are ${count.data} book(s) you have read since the last update!', style: Theme.of(context).textTheme.bodyMedium);
