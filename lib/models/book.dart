@@ -129,7 +129,7 @@ class Book extends Collection {
       uuid:         bookMap['uuid'],
       added:        bookMap['added'],
       authors:      authors,
-      description:  bookMap['description'],
+      description:  bookMap['description'] ?? "",
       path:         bookMap['path'],
       lastModified: bookMap['lastModified'],
       lastRead:     bookMap['lastRead'],
