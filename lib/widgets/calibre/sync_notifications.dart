@@ -27,15 +27,12 @@ class SyncNotifications extends ConsumerWidget {
                   color: index % 2 == 0 ? Colors.grey[50] : Colors.blue[50],
                   child: Text(
                     updates[index],
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodySmall,
+                    style: Theme.of(context).textTheme.bodySmall,
                     textAlign: TextAlign.left,
                   ),
                 );
               },
-              physics: const NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.vertical,
               shrinkWrap: true,
             ),
           ),
