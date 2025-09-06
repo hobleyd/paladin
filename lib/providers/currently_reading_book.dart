@@ -12,6 +12,7 @@ part 'currently_reading_book.g.dart';
 
 @riverpod
 class CurrentlyReadingBook extends _$CurrentlyReadingBook {
+  @override
   Future<Book?> build() {
     return _getCurrentlyReading();
   }
@@ -21,7 +22,7 @@ class CurrentlyReadingBook extends _$CurrentlyReadingBook {
     int lastModified = book.lastRead!;
 
     var libraryDb = ref.read(libraryDBProvider.notifier);
-    await libraryDb.updateTable(table: 'books', values: { 'lastRead' : lastRead, 'lastModified' : lastModified }, where: 'uuid = ?', whereArgs: [ book.uuid]);
+    await libraryDb.updateTable(table: 'books', values: { 'lastRead' : lastRead, 'lastModified' : lastModified, 'readStatus' : 1}, where: 'uuid = ?', whereArgs: [ book.uuid]);
 
     // Ensure Currently Reading Shelf is updated.
     ref.read(shelfRepositoryProvider(1).notifier).updateShelf();

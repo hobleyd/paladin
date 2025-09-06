@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
 
 import '../models/calibre_sync_data.dart';
-import '../models/json_book.dart';
 import '../providers/calibre_ws.dart';
 import '../providers/calibre_book_provider.dart';
 import '../widgets/calibre/calibre_progress_bar.dart';
@@ -24,8 +23,6 @@ class CalibreSync extends ConsumerWidget {
     }
 
     CalibreSyncData calibre = ref.watch(calibreWSProvider);
-    List<JSONBook> errors = ref.watch(calibreBookProvider(BooksType.error));
-
     return Scaffold(
       appBar: AppBar(title: const Text('Synchronise Library')),
       body: Column(

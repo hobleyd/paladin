@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:paladin/models/tag.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:http_status_code/http_status_code.dart';
 

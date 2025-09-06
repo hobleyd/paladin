@@ -5,6 +5,7 @@ part 'navigator_stack.g.dart';
 
 @Riverpod(keepAlive: true)
 class NavigatorStack extends _$NavigatorStack {
+  @override
   List<String> build() {
     return ["home_screen"];
   }

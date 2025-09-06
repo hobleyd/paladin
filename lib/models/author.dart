@@ -64,6 +64,6 @@ class Author extends Collection {
 
   @override
   String toString() {
-    return '$name [$count]';
+    return count == null ? name : '$name [$count]';
   }
 }

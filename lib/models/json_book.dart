@@ -25,6 +25,7 @@ class JSONBook {
     this.Rating,
     this.Last_modified,
     this.Last_read,
+    this.mimeType,
     required this.Is_read,
     required this.Series,
     required this.Series_index,

@@ -152,7 +152,7 @@ class Epub {
           return element.getAttribute('href')!.endsWith('jpg') || element.getAttribute('href')!.endsWith('jpeg') || element.getAttribute('href')!.endsWith('png');
         }).getAttribute('href');
       } on StateError {
-        // Return null, below.
+        return null;
       }
     } else {
       // Try the hard way - get the first page in the Spine and assume that contains the cover.

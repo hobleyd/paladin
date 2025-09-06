@@ -1,5 +1,3 @@
-import 'package:paladin/providers/currently_reading_book.dart';
-import 'package:paladin/repositories/shelf_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../database/library_db.dart';

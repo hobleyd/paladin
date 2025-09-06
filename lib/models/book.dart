@@ -1,14 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:paladin/utils/application_path.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../database/library_db.dart';
 import '../repositories/books_repository.dart';
+import '../utils/application_path.dart';
 import 'author.dart';
 import 'collection.dart';
 import 'json_book.dart';
@@ -141,10 +136,13 @@ class Book extends Collection {
         Is_read: readStatus == 1 ? true : false,
         Last_modified: lastModified,
         Last_read: lastRead,
+        mimeType: mimeType,
         Rating: rating,
         Series: series?.series ?? "",
         Series_index: seriesIndex ?? 0,
-        Title: title);
+        Title: title,
+        Tags: tags,
+    );
   }
 
   Map<String, dynamic> toMap() {
