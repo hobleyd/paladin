@@ -81,16 +81,6 @@ class Book extends Collection {
     return path;
   }
 
-  Future readBook(BuildContext context, WidgetRef ref) async {
-    ref.read(booksRepositoryProvider.notifier).updateBookLastReadDate(this);
-
-    if (Platform.isAndroid || Platform.isIOS) {
-      OpenFilex.open(path, type: mimeType);
-    } else {
-      launchUrl(Uri.file(path));
-    }
-  }
-
   Future setRating(WidgetRef ref, int rating) async {
     ref.read(booksRepositoryProvider.notifier).setRating(this, rating);
   }

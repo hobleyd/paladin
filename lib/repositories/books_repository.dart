@@ -1,3 +1,4 @@
+import 'package:paladin/providers/currently_reading_book.dart';
 import 'package:paladin/repositories/shelf_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -48,23 +49,14 @@ class BooksRepository extends _$BooksRepository {
   }
 
   Future setRating(Book book, int newRating) async {
+    int lastModified = (DateTime.now().millisecondsSinceEpoch / 1000).round();
+
     var libraryDb = ref.read(libraryDBProvider.notifier);
-    libraryDb.updateTable(table: booksTable, values: { 'rating' : newRating }, where: 'uuid = ?', whereArgs: [book.uuid]);
+    libraryDb.updateTable(table: booksTable, values: { 'rating' : newRating, 'lastModified' : lastModified }, where: 'uuid = ?', whereArgs: [book.uuid]);
   }
 
   Future<void> updateBooksCount() async {
     state = AsyncValue.data(await _getBooksCount());
-  }
-
-  Future updateBookLastReadDate(Book book) async {
-    int lastRead = (DateTime.now().millisecondsSinceEpoch / 1000).round();
-    int lastModified = book.lastRead!;
-
-    var libraryDb = ref.read(libraryDBProvider.notifier);
-    await libraryDb.updateTable(table: 'books', values: { 'lastRead' : lastRead, 'lastModified' : lastModified }, where: 'uuid = ?', whereArgs: [ book.uuid]);
-
-    // Ensure Currently Reading Shelf is updated.
-    ref.read(shelfRepositoryProvider(1).notifier).updateShelf();
   }
 
   Future<int> _getBooksCount() async {
