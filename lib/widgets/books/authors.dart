@@ -2,6 +2,7 @@ import 'package:dartlin/collections.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/providers/navigator_stack.dart';
 
 import '../../models/author.dart';
 import '../../models/book.dart';
@@ -24,20 +25,20 @@ class Authors extends ConsumerWidget {
                 TextSpan(
                     text: '${e.getNameNormalised()}${i < book.authors!.length - 1 && i < book.authors!.length ? ', ' : ''}',
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () => _showAuthorBooks(context, e)
+                      ..onTap = () => _showAuthorBooks(context, ref, e)
                 ),
                 ).toList() ?? [],
         ),
     );
   }
 
-  void _showAuthorBooks(BuildContext context, Author author) {
+  void _showAuthorBooks(BuildContext context, WidgetRef ref, Author author) {
     final Collection authorBooks = Collection(
       type: CollectionType.BOOK,
       query: Shelf.shelfQuery[CollectionType.AUTHOR]!,
       queryArgs: [author.name],
     );
 
-    Navigator.push(context, MaterialPageRoute(builder: (context) => BookList(collection: authorBooks)),);
+    ref.read(navigatorStackProvider.notifier).push(context, "books_by_author", MaterialPageRoute(builder: (context) => BookList(collection: authorBooks)),);
   }
 }

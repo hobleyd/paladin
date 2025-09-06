@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/providers/navigator_stack.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../models/collection.dart';
@@ -25,16 +26,17 @@ class PaladinMenu extends ConsumerWidget {
         PopupMenuItem<String>(value: 'sync',     child: Text('Synchronise Library', style: Theme.of(context).textTheme.bodyMedium),),
         if (Platform.isAndroid) PopupMenuItem<String>(value: 'settings', child: Text('System Settings', style: Theme.of(context).textTheme.bodyMedium),),
       ],
-      onSelected: (String? item) => _selectMenuItem(context, item),
+      onSelected: (String? item) => _selectMenuItem(context, ref, item),
     );
   }
 
-  void _selectMenuItem(BuildContext context, String? item) {
+  void _selectMenuItem(BuildContext context, WidgetRef ref, String? item) {
     if (item != null) {
       switch (item) {
         case 'future':
-          Navigator.push(
+          ref.read(navigatorStackProvider.notifier).push(
             context,
+            "future_reads",
             MaterialPageRoute(
               builder: (context) => BookList(
                 collection: Collection(
@@ -47,8 +49,9 @@ class PaladinMenu extends ConsumerWidget {
           );
           break;
         case 'history':
-          Navigator.push(
+          ref.read(navigatorStackProvider.notifier).push(
             context,
+            "reading_history",
             MaterialPageRoute(
               builder: (context) => BookList(
                 collection: Collection(
@@ -64,7 +67,7 @@ class PaladinMenu extends ConsumerWidget {
           openAppSettings();
           break;
         case 'sync':
-          Navigator.push(context, MaterialPageRoute(builder: (context) => CalibreSync()));
+          ref.read(navigatorStackProvider.notifier).push(context, "calibre_sync", MaterialPageRoute(builder: (context) => CalibreSync()));
           break;
       }
     }

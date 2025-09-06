@@ -2,6 +2,7 @@ import 'package:dartlin/collections.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/providers/navigator_stack.dart';
 
 import '../../models/book.dart';
 import '../../screens/book_list.dart';
@@ -22,7 +23,7 @@ class BookTags extends ConsumerWidget {
                       text: '${e.tag}${i < book.tags!.length - 1 && i < book.tags!.length ? ', ' : ''}',
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => BookList(collection: e)),);
+                        ref.read(navigatorStackProvider.notifier).push(context, "tags", MaterialPageRoute(builder: (context) => BookList(collection: e)),);
                         },
                     ),
                   ).toList() ?? []

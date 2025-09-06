@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/providers/navigator_stack.dart';
 import 'package:paladin/repositories/collection_list_repository.dart';
 import 'package:paladin/widgets/home/fatal_error.dart';
 
@@ -25,7 +26,7 @@ class CollectionTileList extends ConsumerWidget {
               itemCount: collectionList.length,
               itemBuilder: (context, index) {
                 return InkWell(
-                  onTap: () => _navigateToCollection(context, collectionList[index]),
+                  onTap: () => _navigateToCollection(context, ref, collectionList[index]),
                   child: Container(
                     color: index % 2 == 0 ? Colors.grey[50] : Colors.white,
                     padding: const EdgeInsets.only(left: 8.0, top: 2.0, bottom: 2.0),
@@ -38,14 +39,14 @@ class CollectionTileList extends ConsumerWidget {
     });
   }
 
-  Future _navigateToCollection(BuildContext context, Collection collection) async {
+  Future _navigateToCollection(BuildContext context, WidgetRef ref, Collection collection) async {
     final Collection collectionQuery = Collection(
         type: CollectionType.BOOK,
         query: Shelf.shelfQuery[collection.type]!,
         queryArgs: [...?collection.queryArgs, if (Shelf.shelfNeedsSize(collection.type)) maxInt],
     );
 
-    Navigator.push(context, MaterialPageRoute(builder: (context) => BookList(collection: collectionQuery)));
+    ref.read(navigatorStackProvider.notifier).push(context, "books_by_collections", MaterialPageRoute(builder: (context) => BookList(collection: collectionQuery)));
 
     return null;
   }

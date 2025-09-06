@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/providers/currently_reading_book.dart';
+import 'package:paladin/providers/navigator_stack.dart';
 import 'package:paladin/widgets/books/book_cover.dart';
 
 import '../../models/book.dart';
-import '../../providers/cached_cover.dart';
 import '../../screens/backcover.dart';
-import '../home/fatal_error.dart';
 import '../menu/paladin_menu.dart';
 import 'authors.dart';
 import 'blurb.dart';
@@ -24,9 +24,9 @@ class BookTile extends ConsumerWidget {
     return InkWell(
       onTap: () {
         if (showMenu) {
-          book.readBook(context, ref);
+          ref.read(currentlyReadingBookProvider.notifier).readBook(book);
         } else {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => BackCover(book: book)));
+          ref.read(navigatorStackProvider.notifier).push(context, "back_cover", MaterialPageRoute(builder: (context) => BackCover(book: book), settings: RouteSettings(name: "/home")));
         }
       },
       child: Row(

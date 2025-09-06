@@ -1,11 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/providers/currently_reading_book.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../models/book.dart';
 import '../../models/collection.dart';
 import '../../models/shelf.dart';
+import '../../providers/navigator_stack.dart';
 import '../../providers/shelf_collection.dart';
 import '../../repositories/shelf_books_repository.dart';
 import '../../screens/backcover.dart';
@@ -97,9 +99,9 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
 
   void _openBook(Book book) {
     if (shelf.collection.type == CollectionType.CURRENT) {
-      book.readBook(context, ref);
+      ref.read(currentlyReadingBookProvider.notifier).readBook(book);
     } else {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => BackCover(book: book)));
+      ref.read(navigatorStackProvider.notifier).push(context, "back_cover", MaterialPageRoute(builder: (context) => BackCover(book: book), settings: RouteSettings(name: "/home")));
     }
   }
 

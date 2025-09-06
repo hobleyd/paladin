@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/providers/currently_reading_book.dart';
+import 'package:paladin/providers/navigator_stack.dart';
 
 import '../models/book.dart';
 import '../widgets/books/authors.dart';
@@ -43,10 +45,15 @@ class BackCover extends ConsumerWidget {
             const Divider(color: Colors.black, thickness: 1),
             Blurb(book: book),
             const Divider(color: Colors.black, thickness: 1),
-            ElevatedButton(onPressed: () => book.readBook(context, ref), child: const Text('Read Book')),
+            ElevatedButton(onPressed: () => _readBook(context, ref), child: const Text('Read Book')),
           ],
         ),
       ),
     );
+  }
+
+  void _readBook(BuildContext context, WidgetRef ref) {
+    ref.read(currentlyReadingBookProvider.notifier).readBook(book);
+    ref.read(navigatorStackProvider.notifier).popUntil(context, "home_screen");
   }
 }
