@@ -22,7 +22,6 @@ import 'status_provider.dart';
 
 part 'calibre_ws.g.dart';
 
-// TODO: need to think about keeping "Future Reads" sync'd.
 @Riverpod(keepAlive: true)
 class CalibreWS extends _$CalibreWS {
   late LibraryDB _library;
