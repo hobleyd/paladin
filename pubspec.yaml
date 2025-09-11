@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  android_package_installer: ^0.0.3
   archive: ^4.0.7
   auto_size_text: ^3.0.0
   bonsoir: ^6.0.1
@@ -38,6 +39,7 @@ dependencies:
   sqflite_common_ffi: ^2.3.6
   sqlite3_flutter_libs: ^0.5.39
   url_launcher: ^6.3.2
+  version: ^3.0.2
   visibility_detector: ^0.4.0+2
   xml: ^6.6.1
 
@@ -62,6 +64,7 @@ flutter:
     - assets/paladin.png
     - assets/sharpblue.png
     - assets/google_fonts/
+    - pubspec.yaml
 
 flutter_launcher_icons:
   image_path: 'assets/paladin.png'
