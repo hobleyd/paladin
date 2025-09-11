@@ -1,6 +1,9 @@
 
 import 'package:flutter/foundation.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:paladin/utils/normalised.dart';
+
+part 'collection.g.dart';
 
 enum CollectionType { AUTHOR, BOOK, SERIES, TAG, CURRENT, RANDOM, SETTINGS, APPS}
 
@@ -12,9 +15,13 @@ enum CollectionType { AUTHOR, BOOK, SERIES, TAG, CURRENT, RANDOM, SETTINGS, APPS
  */
 
 @immutable
+@JsonSerializable()
 class Collection {
+  @JsonKey(includeToJson: false)
   final CollectionType type;
+  @JsonKey(includeToJson: false)
   final String query;
+  @JsonKey(includeToJson: false)
   final List<dynamic>? queryArgs;
 
   static String collectionType(CollectionType type) => switch (type) {

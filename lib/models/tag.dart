@@ -12,14 +12,16 @@ class Tag extends Collection {
   static const String tagsQuery = 'select tags.id, tags.tag, count(book_tags.tagId) as count from tags left join book_tags on tags.id = book_tags.tagId where tags.tag like ? group by tags.id order by tags.tag';
   static const String futureReads = 'Future Reads';
 
+  @JsonKey(includeToJson: false)
   final int? id;
-  final String tag;
+  @JsonKey(includeToJson: false)
   final int? count;
+  final String tag;
 
   const Tag({
     this.id,
-    required this.tag,
     this.count,
+    required this.tag,
     super.type = CollectionType.TAG,
     super.query = Tag.tagsQuery,
     super.queryArgs,
