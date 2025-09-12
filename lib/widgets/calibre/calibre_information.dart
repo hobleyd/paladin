@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:paladin/widgets/books/book_tile_list.dart';
 
 import '../../models/calibre_server.dart';
+import '../../models/collection.dart';
+import '../../models/shelf.dart';
 import '../../providers/calibre_ws.dart';
 import '../../repositories/calibre_server_repository.dart';
+import '../books/book_list.dart';
 import '../home/fatal_error.dart';
 
 import 'calibre_books_to_download_count.dart';
@@ -40,7 +44,21 @@ class CalibreInformation extends ConsumerWidget {
           ],
           CalibreBooksToDownloadCount(calibreUrl: syncData.calibreServer, lastSyncDate: calibre.lastConnectedDateTime,),
           const SizedBox(height: 10),
-          Text('Click the Sync button (below) to download your books!', style: Theme.of(context).textTheme.bodyMedium),
+          Text('Click the Sync button (below) to synchronise your library!', style: Theme.of(context).textTheme.bodyMedium),
+          if (syncData.syncReadStatuses) ...[
+            const SizedBox(height: 30),
+            Text('Books read since last update', style: Theme.of(context).textTheme.labelMedium),
+            const Divider(color: Colors.black, thickness: 1),
+            Expanded(
+              child: BookList(
+                collection: Collection(
+                  type: CollectionType.BOOK,
+                  query: 'select * from books where lastRead > ? order by lastRead DESC',
+                  queryArgs: [calibre.lastConnected],
+                ),
+              ),
+            ),
+          ],
         ],
       );
     });
