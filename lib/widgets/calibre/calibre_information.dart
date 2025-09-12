@@ -49,13 +49,11 @@ class CalibreInformation extends ConsumerWidget {
             const SizedBox(height: 30),
             Text('Books read since last update', style: Theme.of(context).textTheme.labelMedium),
             const Divider(color: Colors.black, thickness: 1),
-            Expanded(
-              child: BookTable(
-                collection: Collection(
-                  type: CollectionType.BOOK,
-                  query: 'select * from books where lastRead > ? order by lastRead DESC',
-                  queryArgs: [calibre.lastConnected],
-                ),
+            BookTable(
+              collection: Collection(
+                type: CollectionType.BOOK,
+                query: 'select * from books where lastRead > ? order by lastRead DESC',
+                queryArgs: [calibre.lastConnected],
               ),
             ),
           ],

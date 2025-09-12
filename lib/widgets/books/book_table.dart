@@ -23,7 +23,7 @@ class BookTable extends ConsumerWidget {
     }, loading: () {
       return const Center(child: CircularProgressIndicator());
     }, data: (List<Collection> bookList) {
-      return Padding(padding: EdgeInsetsGeometry.only(left: 10, right: 10), child: Table(
+      return Padding(padding: EdgeInsetsGeometry.only(left: 60, right: 60), child: Table(
         children: [
           for (var collection in bookList) TableRow(
             decoration: BoxDecoration(color: bookList.indexOf(collection) % 2 == 0 ? Colors.grey.shade300 : Colors.grey.shade200,),
