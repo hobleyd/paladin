@@ -16,12 +16,12 @@ dependencies:
   bonsoir: ^6.0.1
   cupertino_icons: ^1.0.2
   dartlin: ^0.6.3
-  dio: ^5.0.3
+  dio: ^5.9.0
   flutter_rating_bar: ^4.0.1
   flutter_riverpod: ^2.3.7
   flutter_typeahead: ^5.2.0
   flutter_widget_from_html_core: ^0.17.0
-  google_fonts: ^6.1.0
+  google_fonts: ^6.3.1
   http_status_code: ^0.0.2
   image: ^4.5.4
   intersperse: ^2.0.0
