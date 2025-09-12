@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 
 import 'config/provider_logger.dart';
 import 'paladin_app.dart';
@@ -12,6 +13,8 @@ void main() {
     final license = await rootBundle.loadString('google_fonts/OFL.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
+
+  Logger.level = Level.warning;
 
   runApp(ProviderScope(
       observers: [ProviderLogger()],
