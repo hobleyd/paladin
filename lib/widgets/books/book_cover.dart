@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:color_filter_extension/color_filter_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paladin/providers/book_provider.dart';
@@ -13,6 +16,7 @@ class BookCover extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final ColorFilter brightnessFilter = ColorFilterExt.brightness(Platform.isAndroid ? 0.5 : 0.1);
     Book? book = ref.watch(bookProviderProvider(bookUuid));
 
     if (book == null) {
@@ -28,7 +32,9 @@ class BookCover extends ConsumerWidget {
           return const Text('');
         },
         data: (Image cover) {
-          return book.lastRead != null && book.lastRead! > 0
+          return ColorFiltered(
+            colorFilter: brightnessFilter,
+            child: book.lastRead != null && book.lastRead! > 0
               ? cover
               : Stack(
                   alignment: AlignmentGeometry.topRight,
@@ -36,6 +42,7 @@ class BookCover extends ConsumerWidget {
                     cover,
                     Image.asset('assets/new.png', fit: BoxFit.cover, height: 15),
                   ],
+          ),
           );
         });
   }
