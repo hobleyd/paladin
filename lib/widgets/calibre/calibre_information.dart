@@ -8,7 +8,7 @@ import '../../models/collection.dart';
 import '../../models/shelf.dart';
 import '../../providers/calibre_ws.dart';
 import '../../repositories/calibre_server_repository.dart';
-import '../books/book_list.dart';
+import '../books/book_table.dart';
 import '../home/fatal_error.dart';
 
 import 'calibre_books_to_download_count.dart';
@@ -50,7 +50,7 @@ class CalibreInformation extends ConsumerWidget {
             Text('Books read since last update', style: Theme.of(context).textTheme.labelMedium),
             const Divider(color: Colors.black, thickness: 1),
             Expanded(
-              child: BookList(
+              child: BookTable(
                 collection: Collection(
                   type: CollectionType.BOOK,
                   query: 'select * from books where lastRead > ? order by lastRead DESC',

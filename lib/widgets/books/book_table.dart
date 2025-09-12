@@ -10,10 +10,10 @@ import '../../models/book.dart';
 import '../../models/collection.dart';
 import 'book_tile.dart';
 
-class BookList extends ConsumerWidget {
+class BookTable extends ConsumerWidget {
   final Collection collection;
 
-  const BookList({super.key, required this.collection});
+  const BookTable({super.key, required this.collection});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
