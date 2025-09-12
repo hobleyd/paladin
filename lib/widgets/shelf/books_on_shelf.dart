@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/providers/book_provider.dart';
 import 'package:paladin/providers/currently_reading_book.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -41,7 +42,7 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
       loading: () {
         return const Text('');
       },
-      data: (List<Book> bookShelf) {
+      data: (List<String> bookShelf) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -57,19 +58,25 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
               child: ListView.builder(
                 itemCount: bookShelf.length,
                 itemBuilder: (context, index) {
-                  Book book = bookShelf[index];
+                  Book? book = ref.watch(bookProviderProvider(bookShelf[index]));
+                  if (book == null) {
+                    // We are using the bookProvider here to get the Book and the first time through, it will always be null.
+                    // Returning an 'X' here as it could also be null if the provider is disposed of. Shouldn't be a problem
+                    // from my understanding, but this will be a visual indication if it is. TODO: Remove after testing.
+                    return const Text('X');
+                  }
                   String title = book.title.split(':').first;
 
                   return VisibilityDetector(
                     key: Key('${shelf.collection.getNameNormalised()}-$index'),
                     onVisibilityChanged: (visibility) => _updateVisibility(index + 1, visibility.visibleFraction > 0.5),
                     child: InkWell(
-                      onTap: () => _openBook(book),
+                      onTap: () => _openBook(bookShelf[index]),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: [
-                            Expanded(child: BookCover(book: book)),
+                            Expanded(child: BookCover(bookUuid: bookShelf[index])),
                             const SizedBox(height: 3),
                             SizedBox(
                               width: 80,
@@ -97,11 +104,11 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
     );
   }
 
-  void _openBook(Book book) {
+  void _openBook(String bookUuid) {
     if (shelf.collection.type == CollectionType.CURRENT) {
-      ref.read(currentlyReadingBookProvider.notifier).readBook(book);
+      ref.read(bookProviderProvider(bookUuid).notifier).readBook();
     } else {
-      ref.read(navigatorStackProvider.notifier).push(context, "back_cover", MaterialPageRoute(builder: (context) => BackCover(book: book), settings: RouteSettings(name: "/home")));
+      ref.read(navigatorStackProvider.notifier).push(context, "back_cover", MaterialPageRoute(builder: (context) => BackCover(bookUuid: bookUuid), settings: RouteSettings(name: "/home")));
     }
   }
 

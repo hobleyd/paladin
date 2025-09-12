@@ -29,7 +29,7 @@ class BookTileList extends ConsumerWidget {
                       SizedBox(
                           height: MediaQuery.of(context).size.height / 6,
                           child: BookTile(
-                            book: bookList[index] as Book,
+                            bookUuid: (bookList[index] as Book).uuid,
                             showMenu: false,
                           )),
                       const Divider(color: Colors.black, thickness: 1),

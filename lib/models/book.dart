@@ -76,10 +76,6 @@ class Book extends Collection {
     return path;
   }
 
-  Future setRating(WidgetRef ref, int rating) async {
-    ref.read(booksRepositoryProvider.notifier).setRating(this, rating);
-  }
-
   static Future<Book> fromJSON(JSONBook jsonBook) async {
     List<Author> authors = [Author(name: jsonBook.Author, queryArgs: [jsonBook.Author])];
     Book book = Book(

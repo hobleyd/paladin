@@ -2,6 +2,7 @@ import 'package:dartlin/collections.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/providers/book_provider.dart';
 import 'package:paladin/providers/navigator_stack.dart';
 
 import '../../models/author.dart';
@@ -11,12 +12,17 @@ import '../../models/shelf.dart';
 import '../../screens/book_list.dart';
 
 class Authors extends ConsumerWidget {
-  final Book book;
+  final String bookUuid;
 
-  const Authors({super.key, required this.book});
+  const Authors({super.key, required this.bookUuid});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    Book? book = ref.watch(bookProviderProvider(bookUuid));
+    if (book == null) {
+      return const Text('');
+    }
+
     return RichText(
         text: TextSpan(
             style: Theme.of(context).textTheme.bodySmall,

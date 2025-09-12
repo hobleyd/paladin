@@ -6,15 +6,21 @@ import 'package:paladin/providers/navigator_stack.dart';
 import '../../models/book.dart';
 import '../../models/collection.dart';
 import '../../models/shelf.dart';
+import '../../providers/book_provider.dart';
 import '../../screens/book_list.dart';
 
 class BookSeries extends ConsumerWidget {
-  final Book book;
+  final String bookUuid;
 
-  const BookSeries({super.key, required this.book});
+  const BookSeries({super.key, required this.bookUuid});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    Book? book = ref.watch(bookProviderProvider(bookUuid));
+    if (book == null) {
+      return const Text('');
+    }
+
     return book.series != null
         ? RichText(
             text: TextSpan(
@@ -39,6 +45,6 @@ class BookSeries extends ConsumerWidget {
               ],
             ),
           )
-        : const Text('');
+        : const SizedBox(height: 0);
   }
 }

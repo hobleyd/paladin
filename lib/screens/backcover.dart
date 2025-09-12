@@ -4,19 +4,23 @@ import 'package:paladin/providers/currently_reading_book.dart';
 import 'package:paladin/providers/navigator_stack.dart';
 
 import '../models/book.dart';
+import '../providers/book_provider.dart';
 import '../widgets/books/authors.dart';
 import '../widgets/books/blurb.dart';
 import '../widgets/books/book_cover.dart';
 import '../widgets/books/book_rating.dart';
 import '../widgets/books/book_series.dart';
 import '../widgets/books/book_tags.dart';
+import '../widgets/books/book_title.dart';
 
 class BackCover extends ConsumerWidget {
-  final Book book;
-  const BackCover({super.key, required this.book});
+  final String bookUuid;
+  const BackCover({super.key, required this.bookUuid});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    Book? book = ref.watch(bookProviderProvider(bookUuid));
+
     return Scaffold(
       appBar: AppBar(title: Text('')),
       body: Padding(
@@ -26,16 +30,16 @@ class BackCover extends ConsumerWidget {
             IntrinsicHeight(
               child: Row(
                 children: [
-                  BookCover(book: book),
+                  BookCover(bookUuid: bookUuid),
                   Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text(book.title, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        if (book.series != null )BookSeries(book: book),
-                        Authors(book: book),
-                        BookTags(book: book),
-                        BookRating(book: book),
+                        BookTitle(bookUuid: bookUuid),
+                        if (book?.series != null) BookSeries(bookUuid: bookUuid),
+                        Authors(bookUuid: bookUuid),
+                        BookTags(bookUuid: bookUuid),
+                        BookRating(bookUuid: bookUuid),
                       ],
                     ),
                   ),
@@ -43,7 +47,7 @@ class BackCover extends ConsumerWidget {
               ),
             ),
             const Divider(color: Colors.black, thickness: 1),
-            Blurb(book: book),
+            Blurb(bookUuid: bookUuid),
             const Divider(color: Colors.black, thickness: 1),
             ElevatedButton(onPressed: () => _readBook(context, ref), child: const Text('Read Book')),
           ],
@@ -53,7 +57,7 @@ class BackCover extends ConsumerWidget {
   }
 
   void _readBook(BuildContext context, WidgetRef ref) {
-    ref.read(currentlyReadingBookProvider.notifier).readBook(book);
+    ref.read(bookProviderProvider(bookUuid).notifier).readBook();
     ref.read(navigatorStackProvider.notifier).popUntil(context, "home_screen");
   }
 }

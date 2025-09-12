@@ -3,14 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/book.dart';
+import '../../providers/book_provider.dart';
 
 class LastRead extends ConsumerWidget {
-  final Book book;
+  final String bookUuid;
 
-  const LastRead({super.key, required this.book});
+  const LastRead({super.key, required this.bookUuid});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    Book? book = ref.watch(bookProviderProvider(bookUuid));
+    if (book == null) {
+      return const Text('');
+    }
+
     if (book.lastRead != null && book.lastRead! > 0) {
       final DateTime lastRead = DateTime.fromMillisecondsSinceEpoch(book.lastRead! * 1000);
       final String formattedDate = DateFormat('MMMM d, y').format(lastRead);

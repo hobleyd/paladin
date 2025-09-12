@@ -6,21 +6,13 @@ import '../../models/shelf.dart';
 import '../home/fatal_error.dart';
 import 'books_on_shelf.dart';
 
-class BookShelf extends ConsumerStatefulWidget {
+class BookShelf extends ConsumerWidget {
   final int shelfId;
 
   const BookShelf({super.key, required this.shelfId});
 
   @override
-  ConsumerState<BookShelf> createState() => _BookShelf();
-}
-
-class _BookShelf extends ConsumerState<BookShelf> {
-  int get shelfId => widget.shelfId;
-  Set<int> visibleBooks = {};
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     var bookListAsync = ref.watch(shelfRepositoryProvider(shelfId));
 
     return bookListAsync.when(

@@ -1,4 +1,5 @@
 import 'package:paladin/database/library_db.dart';
+import 'package:paladin/providers/book_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/book.dart';
@@ -9,7 +10,7 @@ part 'shelf_books_repository.g.dart';
 @riverpod
 class ShelfBooksRepository extends _$ShelfBooksRepository {
   @override
-  Future<List<Book>> build(Collection collection) async {
+  Future<List<String>> build(Collection collection) async {
     return _getCollection(collection);
   }
 
@@ -17,7 +18,7 @@ class ShelfBooksRepository extends _$ShelfBooksRepository {
     state = AsyncValue.data(await _getCollection(coll));
   }
 
-  Future<List<Book>> _getCollection(Collection coll) async {
+  Future<List<String>> _getCollection(Collection coll) async {
     var libraryDb = ref.read(libraryDBProvider.notifier);
 
     List<Map<String, dynamic>> results = await libraryDb.rawQuery(sql: coll.query, args: coll.queryArgs);
@@ -25,6 +26,10 @@ class ShelfBooksRepository extends _$ShelfBooksRepository {
       return [];
     }
 
-    return Future.wait(results.map((element) async => await Book.fromMap(libraryDb, element)).toList());
+    List<Book> books = await Future.wait(results.map((element) async => await Book.fromMap(libraryDb, element)).toList());
+    for (var book in books) {
+      ref.watch(bookProviderProvider(book.uuid).notifier).setBook(book);
+    }
+    return books.map((book) => book.uuid).toList();
   }
 }

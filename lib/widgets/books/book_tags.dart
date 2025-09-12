@@ -5,15 +5,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paladin/providers/navigator_stack.dart';
 
 import '../../models/book.dart';
+import '../../providers/book_provider.dart';
 import '../../screens/book_list.dart';
 
 class BookTags extends ConsumerWidget {
-  final Book book;
+  final String bookUuid;
 
-  const BookTags({super.key, required this.book});
+  const BookTags({super.key, required this.bookUuid});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    Book? book = ref.watch(bookProviderProvider(bookUuid));
+    if (book == null) {
+      return const Text('');
+    }
+
     return RichText(
       text: TextSpan(
           style: Theme.of(context).textTheme.bodySmall,

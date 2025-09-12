@@ -24,7 +24,7 @@ class CurrentlyReading extends ConsumerWidget {
       return book != null
           ? Expanded(
               child: BookTile(
-                book: book,
+                bookUuid: book.uuid,
                 showMenu: true,
               ),
             )

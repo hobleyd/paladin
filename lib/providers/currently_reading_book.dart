@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:open_filex/open_filex.dart';
 import 'package:paladin/database/library_db.dart';
+import 'package:paladin/providers/book_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,28 +18,6 @@ class CurrentlyReadingBook extends _$CurrentlyReadingBook {
     return _getCurrentlyReading();
   }
 
-  Future updateLastReadDate(Book book) async {
-    int lastRead = (DateTime.now().millisecondsSinceEpoch / 1000).round();
-    int lastModified = book.lastRead!;
-
-    var libraryDb = ref.read(libraryDBProvider.notifier);
-    await libraryDb.updateTable(table: 'books', values: { 'lastRead' : lastRead, 'lastModified' : lastModified, 'readStatus' : 1}, where: 'uuid = ?', whereArgs: [ book.uuid]);
-
-    // Ensure Currently Reading Shelf is updated.
-    ref.read(shelfRepositoryProvider(1).notifier).updateShelf();
-    state = AsyncValue.data(book);
-  }
-
-  Future readBook(Book book) async {
-    updateLastReadDate(book);
-
-    if (Platform.isAndroid || Platform.isIOS) {
-      OpenFilex.open(book.path, type: book.mimeType);
-    } else {
-      launchUrl(Uri.file(book.path));
-    }
-  }
-
   Future<Book?> _getCurrentlyReading() async {
     var libraryDb = ref.read(libraryDBProvider.notifier);
     List<Map<String, dynamic>> results = await libraryDb.query(
@@ -48,8 +27,12 @@ class CurrentlyReadingBook extends _$CurrentlyReadingBook {
         orderBy: "lastRead DESC",
         limit: 1);
 
-    return results.length == 1
-        ? Book.fromMap(libraryDb, results.first)
-        : null;
+    if (results.length == 1) {
+      Book book = await Book.fromMap(libraryDb, results.first);
+      ref.read(bookProviderProvider(book.uuid).notifier).setBook(book);
+
+      return book;
+    }
+    return null;
   }
 }

@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/providers/book_provider.dart';
 
 import '../../models/book.dart';
 import '../../providers/cached_cover.dart';
 import '../home/fatal_error.dart';
 
 class BookCover extends ConsumerWidget {
-  final Book book;
+  final String bookUuid;
 
-  const BookCover({super.key, required this.book});
+  const BookCover({super.key, required this.bookUuid});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var coverAsync = ref.watch(cachedCoverProvider(book));
+    Book? book = ref.watch(bookProviderProvider(bookUuid));
 
+    if (book == null) {
+      return const Text('');
+    }
+
+    var coverAsync = ref.watch(cachedCoverProvider(book));
     return coverAsync.when(
         error: (error, stackTrace) {
           return FatalError(error: error.toString(), trace: stackTrace);
