@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../database/library_db.dart';
-import '../repositories/books_repository.dart';
 import '../utils/application_path.dart';
 import 'author.dart';
 import 'collection.dart';

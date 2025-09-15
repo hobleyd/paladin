@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:android_package_installer/android_package_installer.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';

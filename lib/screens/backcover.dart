@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/providers/currently_reading_book.dart';
-import 'package:paladin/providers/navigator_stack.dart';
 
 import '../models/book.dart';
 import '../providers/book_provider.dart';
+import '../providers/navigator_stack.dart';
 import '../widgets/books/authors.dart';
 import '../widgets/books/blurb.dart';
 import '../widgets/books/book_cover.dart';

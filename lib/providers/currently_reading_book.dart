@@ -1,13 +1,8 @@
-import 'dart:io';
-
-import 'package:open_filex/open_filex.dart';
-import 'package:paladin/database/library_db.dart';
-import 'package:paladin/providers/book_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+import '../database/library_db.dart';
 import '../models/book.dart';
-import '../repositories/shelf_repository.dart';
+import '../providers/book_provider.dart';
 
 part 'currently_reading_book.g.dart';
 

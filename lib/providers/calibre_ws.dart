@@ -134,7 +134,7 @@ class CalibreWS extends _$CalibreWS {
     int lastConnected = state.syncFromEpoch ? 0 : ref.read(calibreServerRepositoryProvider).value!.lastConnected;
 
     const int size = 100;
-    CalibreBookCount bookCount = await _calibre.getCount(lastConnected);
+    CalibreBookCount bookCount = await _calibre.getCount(lastConnected, 1);
     _status.addStatus('Received ${bookCount.count} Books in the batch.');
 
     int offset = 0;

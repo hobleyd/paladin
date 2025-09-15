@@ -1,13 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/providers/book_provider.dart';
-import 'package:paladin/providers/currently_reading_book.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../models/book.dart';
 import '../../models/collection.dart';
 import '../../models/shelf.dart';
+import '../../providers/book_provider.dart';
 import '../../providers/navigator_stack.dart';
 import '../../providers/shelf_collection.dart';
 import '../../repositories/shelf_books_repository.dart';

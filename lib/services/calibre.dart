@@ -20,8 +20,8 @@ abstract class Calibre {
   @GET("/books")
   Future<List<JSONBook>> getBooks(@Query("last_modified") int last_modified, @Query('offset') int offset, @Query('limit') int limit);
   
-  @GET("/count/{last_modified}")
-  Future<CalibreBookCount> getCount(@Path('last_modified') int last_modified);
+  @GET("/count/{last_modified}/{limit}")
+  Future<CalibreBookCount> getCount(@Path('last_modified') int last_modified, @Path('limit') int limit);
 
   @GET("/health")
   Future<CalibreHealth> getHealth();
