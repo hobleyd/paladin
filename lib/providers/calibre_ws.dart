@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:http_status_code/http_status_code.dart';
 
@@ -10,7 +9,6 @@ import '../models/book.dart';
 import '../models/calibre_book_count.dart';
 import '../models/calibre_server.dart';
 import '../models/calibre_sync_data.dart';
-import '../models/json_book.dart';
 import '../repositories/books_repository.dart';
 import '../repositories/calibre_server_repository.dart';
 import '../services/calibre.dart';
@@ -42,7 +40,7 @@ class CalibreWS extends _$CalibreWS {
     return CalibreSyncData(calibreServer: calibreUrl);
   }
 
-  Future<void> getBooks(List<JSONBook> books) async {
+  Future<void> getBooks(List<Book> books) async {
     _status = ref.read(statusProvider.notifier);
     _library = ref.read(libraryDBProvider.notifier);
     _calibre = ref.read(calibreDioProvider(state.calibreServer));
@@ -102,27 +100,23 @@ class CalibreWS extends _$CalibreWS {
     ref.read(cachedCoverProvider(book)); // As a side effect, this will cache the cover for us.
   }
 
-  Future<void> _getBook(JSONBook book) async {
+  Future<void> _getBook(Book book) async {
     ref.read(calibreBookProvider(BooksType.processed).notifier).add(book);
     try {
-      book.Tags = await _calibre.getTags(book.UUID);
-
-      Book calibreBook = await Book.fromJSON(book);
       // Only download the Book if something has changed since last time!
-      //if (calibreBook.lastModified > await library.getLastModified(calibreBook)) {
-        await _downloadBook(calibreBook);
-        await _library.insertBook(calibreBook);
-      //}
+      if (book.lastModified > await ref.read(libraryDBProvider.notifier).getLastModified(book)) {
+        await _downloadBook(book);
+        await _library.insertBook(book);
+      }
     } catch (e) {
       ref.read(calibreBookProvider(BooksType.error).notifier).add(book);
-      String exception = 'Got exception processing "${book.Title}":';
-      debugPrint('Exception: $e');
+      String exception = 'Got exception processing "${book.title}":';
       if (e is DioException) {
         if (e.response != null) {
           if (e.response!.statusCode != null) {
-            exception = '$_status ${getStatusMessage(e.response!.statusCode!)}';
+            exception = '$exception ${getStatusMessage(e.response!.statusCode!)}';
           } else {
-            exception = '$_status $e';
+            exception = '$exception $e';
           }
           _status.addStatus(exception);
         }
@@ -148,9 +142,9 @@ class CalibreWS extends _$CalibreWS {
     _status.addStatus('Syncing ${(offset + size) > total ? total - offset : size} books ($offset/$total)');
     ref.read(calibreBookProvider(BooksType.processed).notifier).clear();
 
-    List<JSONBook> books = await _calibre.getBooks(lastConnected, offset, size);
+    List<Book> books = await _calibre.getBooks(lastConnected, offset, size);
     int index = offset;
-    for (JSONBook book in books) {
+    for (Book book in books) {
       await _getBook(book);
       updateState(progress: index++ / total);
     }
@@ -162,9 +156,7 @@ class CalibreWS extends _$CalibreWS {
     _status.addStatus('Updating Last Read statuses.');
 
     List<Book> books = await ref.read(booksRepositoryProvider.notifier).getReadingList(lastConnected);
-    List<JSONBook> jsonBooks = books.map((book) => book.toJSON()).toList();
-
-    _calibre.updateBooks(jsonBooks);
+    _calibre.updateBooks(books);
 
     _status.addStatus('Updated Last Read statuses.');
   }

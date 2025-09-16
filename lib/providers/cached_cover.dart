@@ -43,6 +43,6 @@ class CachedCover extends _$CachedCover {
 
   Future<File> _getCoverPath() async {
     String coverPath = await getApplicationPath();
-    return File('$coverPath/covers/${book.authors![0].name[0]}/${book.uuid}.jpg');
+    return File('$coverPath/covers/${book.authors[0].name[0]}/${book.uuid}.jpg');
   }
 }

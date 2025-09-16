@@ -154,7 +154,7 @@ class LibraryDB extends _$LibraryDB {
 
     // Insert all the Authors, updating the id for the next foreign key
     List<Author> authors = [];
-    for (Author author in book.authors!) {
+    for (Author author in book.authors) {
       List<Map> result = await _paladin.query('authors', columns: ['id'], where: 'name = ?', whereArgs: [author.name]);
 
       authors.add(author.copyAuthorWith(id: result.isNotEmpty
@@ -172,15 +172,13 @@ class LibraryDB extends _$LibraryDB {
     }
 
     // Insert all the Tags, updating the id for the next foreign key
-    if (book.tags != null) {
-      List<Tag> tags = [];
-      for (var tag in book.tags!) {
-        List<Map> result = await _paladin.query('tags', columns: ['id'], where: 'tag = ?', whereArgs: [tag.tag]);
-        tags.add(tag.copyTagWith(id: result.isNotEmpty
+    List<Tag> tags = [];
+    for (var tag in book.tags) {
+      List<Map> result = await _paladin.query('tags', columns: ['id'], where: 'tag = ?', whereArgs: [tag.tag]);
+      tags.add(tag.copyTagWith(id: result.isNotEmpty
           ? result.first['id'] as int
           : await _paladin.insert('tags', tag.toMap())
-        ));
-      }
+      ));
 
       // Insert the many-many relationship into book_tags.
       // Delete all tags before we start to ensure we are up to date with Calibre.

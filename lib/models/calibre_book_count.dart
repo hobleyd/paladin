@@ -7,6 +7,8 @@ part 'calibre_book_count.g.dart';
 @JsonSerializable()
 class CalibreBookCount {
   int count;
+
+  @JsonKey(defaultValue: <CalibreUpdateList>[])
   List<CalibreUpdateList> books;
 
   CalibreBookCount({

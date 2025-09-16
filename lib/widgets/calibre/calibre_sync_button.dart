@@ -5,9 +5,9 @@ import 'package:paladin/providers/calibre_ws.dart';
 import 'package:paladin/providers/navigator_stack.dart';
 import 'package:paladin/repositories/shelves_repository.dart';
 
+import '../../models/book.dart';
 import '../../models/calibre_server.dart';
 import '../../models/calibre_sync_data.dart';
-import '../../models/json_book.dart';
 import '../../repositories/calibre_server_repository.dart';
 
 class CalibreSyncButton extends ConsumerWidget {
@@ -48,7 +48,7 @@ class CalibreSyncButton extends ConsumerWidget {
       );
     }
     else {
-      List<JSONBook> errors = ref.watch(calibreBookProvider(BooksType.error));
+      List<Book> errors = ref.watch(calibreBookProvider(BooksType.error));
 
       return syncData.syncState == CalibreSyncState.REVIEW
           ? Row(

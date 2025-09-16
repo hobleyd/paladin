@@ -1,15 +1,23 @@
 import 'package:flutter/foundation.dart';
-import 'package:paladin/database/library_db.dart';
-import 'package:paladin/utils/normalised.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+import '../database/library_db.dart';
+import '../utils/normalised.dart';
 import 'collection.dart';
 
+part 'author.g.dart';
+
 @immutable
+@JsonSerializable()
 class Author extends Collection {
   static const String authorsQuery = 'select authors.id, authors.name, count(book_authors.bookId) as count from authors left join book_authors on authors.id = book_authors.authorId where authors.name like ? group by authors.id order by authors.name';
 
+  @JsonKey(includeToJson: false)
   final int? id;
+
   final String name;
+
+  @JsonKey(includeToJson: false)
   final int? count;
 
   const Author({
@@ -17,9 +25,13 @@ class Author extends Collection {
     required this.name,
     this.count,
     super.type = CollectionType.AUTHOR,
-    super.query = authorsQuery,
+    super.query = Author.authorsQuery,
     required super.queryArgs,
   });
+
+  factory Author.fromJson(Map<String, dynamic> json) => _$AuthorFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AuthorToJson(this);
 
   Author copyAuthorWith({int? id, String? name}) {
     return Author(

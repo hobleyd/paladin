@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/json_book.dart';
+import '../../models/book.dart';
 import '../../providers/calibre_book_provider.dart';
 
 class CalibreBookList extends ConsumerWidget {
@@ -11,7 +11,7 @@ class CalibreBookList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<JSONBook> books = ref.read(calibreBookProvider(bookType));
+    List<Book> books = ref.read(calibreBookProvider(bookType));
     return Column(
       children: [
         Text(bookType == BooksType.processed ? "Processed" : "Errors", style: Theme.of(context).textTheme.labelMedium),
@@ -30,8 +30,8 @@ class CalibreBookList extends ConsumerWidget {
                   color: index % 2 == 0 ? Colors.grey[50] : Colors.white,
                   padding: const EdgeInsets.only(left: 8.0, top: 2.0, bottom: 2.0),
                   child: ListTile(
-                    subtitle: Text(books[index].Author),
-                    title: Text(books[index].Title),
+                    subtitle: Text(books[index].authorNames),
+                    title: Text(books[index].title),
                   ),
                 );
               },

@@ -27,13 +27,13 @@ class Authors extends ConsumerWidget {
         text: TextSpan(
             style: Theme.of(context).textTheme.bodySmall,
             children: book.authors
-                ?.mapIndexed((i, e) =>
+                .mapIndexed((i, e) =>
                 TextSpan(
-                    text: '${e.getNameNormalised()}${i < book.authors!.length - 1 && i < book.authors!.length ? ', ' : ''}',
+                    text: '${e.getNameNormalised()}${i < book.authors.length - 1 && i < book.authors.length ? ', ' : ''}',
                     recognizer: TapGestureRecognizer()
                       ..onTap = () => _showAuthorBooks(context, ref, e)
                 ),
-                ).toList() ?? [],
+                ).toList(),
         ),
     );
   }

@@ -6,15 +6,17 @@ part 'calibre_update_list.g.dart';
 class CalibreUpdateList {
   String title;
   String author;
-  int last_modified;
+
+  @JsonKey(name: 'last_modified')
+  int lastModified;
 
   CalibreUpdateList({
-    required this.title, required this.author, required this.last_modified,
+    required this.title, required this.author, required this.lastModified,
   });
 
-  /// Connect the generated [_$CalibreHealthFromJson] function to the `fromJson` factory.
+  /// Connect the generated [_$CalibreUpdateListFromJson] function to the `fromJson` factory.
   factory CalibreUpdateList.fromJson(Map<String, dynamic> json) => _$CalibreUpdateListFromJson(json);
 
-  /// Connect the generated [_$CalibreHealthToJson] function to the `toJson` method.
+  /// Connect the generated [_$CalibreUpdateListToJson] function to the `toJson` method.
   Map<String, dynamic> toJson() => _$CalibreUpdateListToJson(this);
 }

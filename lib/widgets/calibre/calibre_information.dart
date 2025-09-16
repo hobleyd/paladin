@@ -83,7 +83,7 @@ class CalibreInformation extends ConsumerWidget {
         CalibreUpdateList(
           title: row['title'],
           author: row['author'],
-          last_modified: row['lastRead'],
+          lastModified: row['lastRead'],
         )
       ],
     );

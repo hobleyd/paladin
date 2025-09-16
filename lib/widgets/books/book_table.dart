@@ -27,7 +27,7 @@ class BookTable extends ConsumerWidget {
                     children: [
                       TableCell(child: Text(book.title, style: Theme.of(context).textTheme.bodySmall)),
                       TableCell(child: Text(book.author, style: Theme.of(context).textTheme.bodySmall)),
-                      TableCell(child: Text(getFormattedDateTime(book.last_modified), style: Theme.of(context).textTheme.bodySmall)),
+                      TableCell(child: Text(getFormattedDateTime(book.lastModified), style: Theme.of(context).textTheme.bodySmall)),
                     ],
                   ),
                 ],

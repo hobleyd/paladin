@@ -24,15 +24,15 @@ class BookTags extends ConsumerWidget {
       text: TextSpan(
           style: Theme.of(context).textTheme.bodySmall,
           children: book.tags
-                  ?.mapIndexed(
+                  .mapIndexed(
                     (i, e) => TextSpan(
-                      text: '${e.tag}${i < book.tags!.length - 1 && i < book.tags!.length ? ', ' : ''}',
+                      text: '${e.tag}${i < book.tags.length - 1 && i < book.tags.length ? ', ' : ''}',
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                         ref.read(navigatorStackProvider.notifier).push(context, "tags", MaterialPageRoute(builder: (context) => BookList(collection: e)),);
                         },
                     ),
-                  ).toList() ?? []
+                  ).toList()
       ),
     );
   }
