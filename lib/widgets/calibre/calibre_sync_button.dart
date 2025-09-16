@@ -78,7 +78,7 @@ class CalibreSyncButton extends ConsumerWidget {
     ref.read(calibreBookProvider(BooksType.processed).notifier).clear();
     ref.read(calibreWSProvider.notifier).updateState(syncFromEpoch: false, syncState: CalibreSyncState.COMPLETED);
     ref.read(calibreServerRepositoryProvider.notifier).updateServerDetails(lastConnected: CalibreServer.secondsSinceEpoch);
-    ref.read(navigatorStackProvider.notifier).popUntil(context, "home-screen");
+    ref.read(navigatorStackProvider.notifier).popUntil(context, NavigatorStack.homeScreen);
   }
 
   Future<void> _synchronise(WidgetRef ref) async {

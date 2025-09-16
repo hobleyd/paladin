@@ -57,6 +57,6 @@ class BackCover extends ConsumerWidget {
 
   void _readBook(BuildContext context, WidgetRef ref) {
     ref.read(bookProviderProvider(bookUuid).notifier).readBook();
-    ref.read(navigatorStackProvider.notifier).popUntil(context, "home_screen");
+    ref.read(navigatorStackProvider.notifier).popUntil(context, NavigatorStack.homeScreen);
   }
 }
