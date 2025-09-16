@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:paladin/models/json_book.dart';
+import 'package:paladin/models/book.dart';
 import 'package:paladin/services/calibre.dart';
 
 import 'mock_calibre.mocks.dart';
@@ -27,9 +27,9 @@ void main() {
     final mockCalibre = Calibre(mockDio);
 
     test('test getBooks', () async {
-      List<JSONBook> books = await mockCalibre.getBooks(1672577852, 0, 10);
+      List<Book> books = await mockCalibre.getBooks(1672577852, 0, 10);
       expect(books.length, equals(1));
-      expect(books[0].Title, equals('A Book'));
+      expect(books[0].title, equals('A Book'));
     });
   });
 }
