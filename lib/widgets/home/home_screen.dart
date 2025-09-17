@@ -37,13 +37,7 @@ class HomeScreen extends ConsumerWidget {
   List<Widget> _getShelves(List<int> shelfIds) {
     return intersperse(
         const Divider(thickness: 1, height: 3, color: Colors.black),
-        shelfIds.map(
-              (shelfId) =>
-              Expanded(
-                child: BookShelf(
-                  shelfId: shelfId,
-                ),
-              ),
-        )).toList();
+        shelfIds.map((shelfId) => Expanded(child: BookShelf(shelfId: shelfId)))
+    ).toList();
   }
 }

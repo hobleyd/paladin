@@ -23,6 +23,7 @@ class BookTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     Book? book = ref.watch(bookProviderProvider(bookUuid));
     if (book == null) {
+      ref.read(bookProviderProvider(bookUuid).notifier).getBook();
       return const Text('');
     }
 

@@ -27,9 +27,6 @@ class ShelfBooksRepository extends _$ShelfBooksRepository {
     }
 
     List<Book> books = await Future.wait(results.map((element) async => await Book.fromMap(libraryDb, element)).toList());
-    for (var book in books) {
-      ref.watch(bookProviderProvider(book.uuid).notifier).setBook(book);
-    }
     return books.map((book) => book.uuid).toList();
   }
 }

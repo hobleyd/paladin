@@ -28,7 +28,6 @@ class CurrentlyReadingBook extends _$CurrentlyReadingBook {
 
     if (results.length == 1) {
       Book book = await Book.fromMap(libraryDb, results.first);
-      ref.read(bookProviderProvider(book.uuid).notifier).setBook(book);
 
       return book;
     }

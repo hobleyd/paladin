@@ -17,10 +17,24 @@ part 'book_provider.g.dart';
 class BookProvider extends _$BookProvider {
   @override
   Book? build(String uuid) {
+    getBook();
     return null;
   }
 
-  Future readBook() async {
+  Future<void> getBook() async {
+    var libraryDb = ref.read(libraryDBProvider.notifier);
+
+    List<Map<String, dynamic>> results = await libraryDb.query(
+        table: "books",
+        columns: ["uuid", "mimeType", "added", "description", "lastModified", "lastRead", "rating", "readStatus", "series", "seriesIndex", "title"],
+        where: "uuid == ?",
+        whereArgs: [uuid],
+        orderBy: "lastRead ASC");
+
+    state = await Book.fromMap(libraryDb, results.first);
+  }
+
+  Future<void> readBook() async {
     updateLastReadDate();
 
     if (Platform.isAndroid || Platform.isIOS) {
@@ -28,10 +42,6 @@ class BookProvider extends _$BookProvider {
     } else {
       launchUrl(Uri.file(await state!.path));
     }
-  }
-
-  void setBook(Book book) {
-    state = book;
   }
 
   Future setRating(int newRating) async {
