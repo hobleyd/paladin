@@ -4,18 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../repositories/shelves_repository.dart';
 import '../widgets/home/fatal_error.dart';
 import '../widgets/settings/calibre_sync_server.dart';
+import '../widgets/settings/paladin_update.dart';
 import '../widgets/settings/shelf_setting.dart';
 
-class Settings extends ConsumerStatefulWidget {
+class Settings extends ConsumerWidget {
   const Settings({super.key});
 
   @override
-  ConsumerState<Settings> createState() => _Settings();
-}
-
-class _Settings extends ConsumerState<Settings> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     var shelves = ref.watch(shelvesRepositoryProvider);
 
     return shelves.when(error: (error, stackTrace) {
@@ -34,9 +30,9 @@ class _Settings extends ConsumerState<Settings> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(padding: const EdgeInsets.only(top: 10), child: IconButton(icon: const Icon(Icons.remove), onPressed: () => shelfIds.length > 1 ? _removeShelf() : null)),
+            Padding(padding: const EdgeInsets.only(top: 10), child: IconButton(icon: const Icon(Icons.remove), onPressed: () => shelfIds.length > 1 ? _removeShelf(ref) : null)),
             const SizedBox(width: 10),
-            Padding(padding: const EdgeInsets.only(top: 10), child: IconButton(icon: const Icon(Icons.add), onPressed: () => _addShelf())),
+            Padding(padding: const EdgeInsets.only(top: 10), child: IconButton(icon: const Icon(Icons.add), onPressed: () => _addShelf(ref))),
           ],
         ),
       ];
@@ -45,17 +41,17 @@ class _Settings extends ConsumerState<Settings> {
         appBar: AppBar(title: const Text('Settings')),
         body: Padding(
           padding: const EdgeInsets.only(top: 6, bottom: 6, left: 10, right: 10),
-          child: Column(children: [CalibreSyncServer(), ...settings, ...add]),
+          child: Column(children: [CalibreSyncServer(), ...settings, ...add, PaladinUpdate()]),
         ),
       );
     });
   }
 
-  void _addShelf() {
+  void _addShelf(WidgetRef ref) {
     ref.read(shelvesRepositoryProvider.notifier).addShelf();
   }
 
-  void _removeShelf() {
+  void _removeShelf(WidgetRef ref) {
     ref.read(shelvesRepositoryProvider.notifier).removeShelf();
   }
 }

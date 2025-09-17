@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:paladin/providers/update.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'navigator_stack.g.dart';
@@ -29,6 +30,11 @@ class NavigatorStack extends _$NavigatorStack {
         Navigator.pop(context);
       }
     }
+
+    // Check for new versions whenever we transition back to the home-screen. I don't want to schedule this on a portable device,
+    // so this feels like a happy compromise.
+    ref.read(updateProvider.notifier).checkVersion();
+
     state = newStack;
   }
 
