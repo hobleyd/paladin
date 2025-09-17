@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:paladin/providers/currently_reading_book.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -50,6 +51,7 @@ class BookProvider extends _$BookProvider {
 
     // Ensure Currently Reading Shelf is updated.
     ref.read(shelfRepositoryProvider(1).notifier).updateShelf();
+    ref.read(currentlyReadingBookProvider.notifier).updateCurrentReading();
     state = state!.copyBookWith(lastRead: lastRead);
   }
 }

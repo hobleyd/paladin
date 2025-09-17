@@ -13,6 +13,10 @@ class CurrentlyReadingBook extends _$CurrentlyReadingBook {
     return _getCurrentlyReading();
   }
 
+  Future<void> updateCurrentReading() async {
+    state = AsyncValue.data(await _getCurrentlyReading());
+  }
+
   Future<Book?> _getCurrentlyReading() async {
     var libraryDb = ref.read(libraryDBProvider.notifier);
     List<Map<String, dynamic>> results = await libraryDb.query(
