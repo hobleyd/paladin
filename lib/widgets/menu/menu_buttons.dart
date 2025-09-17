@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paladin/repositories/authors_repository.dart';
+import 'package:paladin/repositories/shelves_repository.dart';
 
 import '../../models/author.dart';
 import '../../models/book.dart';
@@ -21,6 +22,7 @@ class MenuButtons extends ConsumerWidget {
     final int booksCount = ref.watch(booksRepositoryProvider).value ?? 0;
     final int seriesCount = ref.watch(seriesRepositoryProvider).value ?? 0;
     final int tagsCount = ref.watch(tagsRepositoryProvider).value ?? 0;
+    final int settingsCount = 1 + (ref.watch(shelvesRepositoryProvider).value?.length ?? 0);
       return Ink(
           child: IntrinsicHeight(
               child: Row(
@@ -34,7 +36,7 @@ class MenuButtons extends ConsumerWidget {
                     const VerticalDivider(color: Colors.black, thickness: 1),
                     MenuButton(label: 'Tags', count: tagsCount, collection: Collection(type: CollectionType.TAG, query: Tag.tagsQuery, queryArgs: ['%', tagsCount])),
                     const VerticalDivider(color: Colors.black, thickness: 1),
-                    MenuButton(label: 'Settings', count: 4, collection: Collection(type: CollectionType.SETTINGS, query: "",)),
+                    MenuButton(label: 'Settings', count: settingsCount, collection: Collection(type: CollectionType.SETTINGS, query: "",)),
                   ],
               ),
           ),
