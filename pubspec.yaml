@@ -28,7 +28,7 @@ dependencies:
   intersperse: ^2.0.0
   intl: ^0.20.2
   json_annotation: ^4.9.0
-  keep_screen_on: ^4.0.0
+  keep_screen_on: ^5.0.0
   logger: ^2.6.1
   mockito: ^5.4.6
   open_filex: ^4.3.2
