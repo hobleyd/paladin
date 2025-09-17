@@ -14,7 +14,7 @@ void main() {
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
 
-  Logger.level = Level.warning;
+  Logger.level = Level.error;
 
   runApp(ProviderScope(
       observers: [ProviderLogger()],
