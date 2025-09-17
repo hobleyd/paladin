@@ -84,7 +84,7 @@ class CalibreWS extends _$CalibreWS {
   }
 
   Future<void> _downloadBook(Book book) async {
-    final file = File(book.path);
+    final file = File(await book.path);
     if (!file.existsSync()) {
       file.createSync(recursive: true);
     }

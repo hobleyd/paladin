@@ -13,7 +13,6 @@ class BooksRepository extends _$BooksRepository {
         create table if not exists $booksTable(
           uuid text primary key,
           description text,
-          path text not null,
           mimeType text not null,
           added integer not null,
           lastModified integer,
@@ -38,7 +37,7 @@ class BooksRepository extends _$BooksRepository {
     var libraryDb = ref.read(libraryDBProvider.notifier);
     List<Map<String, dynamic>> results = await libraryDb.query(
         table: "books",
-        columns: ["uuid", "path", "mimeType", "added", "lastModified", "lastRead", "rating", "readStatus", "series", "seriesIndex", "title"],
+        columns: ["uuid", "mimeType", "added", "lastModified", "lastRead", "rating", "readStatus", "series", "seriesIndex", "title"],
         where: "lastRead > ?",
         whereArgs: [lastConnected],
         orderBy: "lastRead ASC");

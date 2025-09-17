@@ -14,8 +14,10 @@ class Tag extends Collection {
 
   @JsonKey(includeToJson: false)
   final int? id;
+
   @JsonKey(includeToJson: false)
   final int? count;
+
   final String tag;
 
   const Tag({

@@ -17,9 +17,6 @@ class CalibreStatus extends ConsumerWidget {
     return FutureBuilder(
       future: calibreWS.getHealth(),
       builder: (BuildContext ctx, AsyncSnapshot<CalibreHealth> snapshot) {
-        if (snapshot.error != null) {
-          debugPrint('Error communicating with Calibre:\n${snapshot.error}');
-        }
         return snapshot.connectionState != ConnectionState.done
             ? Text('Waiting for Calibre to respond...!', style: Theme.of(context).textTheme.bodyMedium)
             : snapshot.error != null

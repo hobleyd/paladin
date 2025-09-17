@@ -26,9 +26,9 @@ class CachedCover extends _$CachedCover {
   }
 
   Future<void> cacheCover() async {
-    File bookPath = File(book.path);
+    File bookPath = File(await book.path);
     if (bookPath.existsSync() && bookPath.statSync().size > 0) {
-      Epub epubBook = Epub(bookName: book.title, bookPath: book.path, bookUUID: book.uuid, ref: ref);
+      Epub epubBook = Epub(bookName: book.title, bookPath: await book.path, bookUUID: book.uuid, ref: ref);
       final images.Image? coverImage = epubBook.getCover();
 
       if (coverImage != null) {

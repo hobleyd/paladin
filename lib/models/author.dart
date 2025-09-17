@@ -12,12 +12,12 @@ part 'author.g.dart';
 class Author extends Collection {
   static const String authorsQuery = 'select authors.id, authors.name, count(book_authors.bookId) as count from authors left join book_authors on authors.id = book_authors.authorId where authors.name like ? group by authors.id order by authors.name';
 
-  @JsonKey(includeToJson: false)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final int? id;
 
   final String name;
 
-  @JsonKey(includeToJson: false)
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final int? count;
 
   const Author({
@@ -26,7 +26,7 @@ class Author extends Collection {
     this.count,
     super.type = CollectionType.AUTHOR,
     super.query = Author.authorsQuery,
-    required super.queryArgs,
+    super.queryArgs,
   });
 
   factory Author.fromJson(Map<String, dynamic> json) => _$AuthorFromJson(json);

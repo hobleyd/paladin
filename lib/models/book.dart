@@ -30,9 +30,6 @@ class Book extends Collection {
   @JsonKey(includeFromJson: false, includeToJson: false)
   final String mimeType = 'application/epub+zip';
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  final String path;
-
   @JsonKey(name: 'Last_modified')
   final int lastModified;
 
@@ -43,7 +40,7 @@ class Book extends Collection {
   final int rating;
 
   @JsonKey(name: 'Is_read')
-  final int readStatus;
+  final bool readStatus;
 
   @JsonKey(name: 'Series')
   final Series? series;
@@ -58,6 +55,7 @@ class Book extends Collection {
   final String title;
 
   String get authorNames => authors.join();
+  Future<String> get path => getBookPath();
 
   const Book({
     required this.uuid,
@@ -66,7 +64,6 @@ class Book extends Collection {
     required this.description,
     required this.lastModified,
     this.lastRead,
-    this.path = '',
     required this.rating,
     required this.readStatus,
     this.series,
@@ -78,13 +75,12 @@ class Book extends Collection {
 
   Map<String, dynamic> toJson() => _$BookToJson(this);
 
-  Book copyBookWith({String? uuid, int? added, int? lastRead, int? rating, int? readStatus, Series? series}) {
+  Book copyBookWith({String? uuid, int? added, int? lastRead, int? rating, bool? readStatus, Series? series}) {
     return Book(
       uuid:         uuid ?? this.uuid,
       added:        added ?? this.added,
       authors:      authors,
       description:  description,
-      path:         path,
       lastModified: lastModified,
       lastRead:     lastRead ?? this.lastRead,
       rating:       rating ?? this.rating,
@@ -96,7 +92,7 @@ class Book extends Collection {
     );
   }
 
-  static Future<String> getBookPath({ required List<Author> authors, required String uuid }) async {
+  Future<String> getBookPath() async {
     String path='';
 
     // TODO: decide if this is the correct folder on Android; might need to sit in External Storage?
@@ -122,11 +118,10 @@ class Book extends Collection {
       added:        bookMap['added'],
       authors:      authors,
       description:  bookMap['description'] ?? "",
-      path:         bookMap['path'],
       lastModified: bookMap['lastModified'],
       lastRead:     bookMap['lastRead'],
       rating:       bookMap['rating'],
-      readStatus:   bookMap['readStatus'],
+      readStatus:   bookMap['readStatus'] == 1,
       series:       series,
       seriesIndex:  bookMap['seriesIndex'],
       tags:         tags,
@@ -139,12 +134,11 @@ class Book extends Collection {
       'uuid': uuid,
       'added': added,
       'description': description,
-      'path': path,
       'mimeType': mimeType,
       'lastModified': lastModified,
       'lastRead': lastRead,
       'rating': rating,
-      'readStatus': readStatus,
+      'readStatus': readStatus ? 1 : 0,
       'series': series?.id,
       'seriesIndex': seriesIndex,
       'title': title,

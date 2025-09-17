@@ -23,9 +23,9 @@ class BookProvider extends _$BookProvider {
     updateLastReadDate();
 
     if (Platform.isAndroid || Platform.isIOS) {
-      OpenFilex.open(state!.path, type: state!.mimeType);
+      OpenFilex.open(await state!.path, type: state!.mimeType);
     } else {
-      launchUrl(Uri.file(state!.path));
+      launchUrl(Uri.file(await state!.path));
     }
   }
 

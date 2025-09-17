@@ -33,6 +33,5 @@ abstract class Calibre {
   @Headers(<String, dynamic>{
     "Content-Type" : "application/json",
   })
-
   Future<CalibreUpdateResponse> updateBooks(@Body() List<Book> books);
 }

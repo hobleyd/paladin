@@ -17,7 +17,7 @@ class CurrentlyReadingBook extends _$CurrentlyReadingBook {
     var libraryDb = ref.read(libraryDBProvider.notifier);
     List<Map<String, dynamic>> results = await libraryDb.query(
         table: "books",
-        columns: ["uuid", "path", "mimeType", "added", "description", "lastModified", "lastRead", "rating", "readStatus", "series", "seriesIndex", "title"],
+        columns: ["uuid", "mimeType", "added", "description", "lastModified", "lastRead", "rating", "readStatus", "series", "seriesIndex", "title"],
         where: "lastRead > 0",
         orderBy: "lastRead DESC",
         limit: 1);
