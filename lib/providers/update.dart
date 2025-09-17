@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:paladin/models/version_check.dart';
@@ -18,19 +20,21 @@ class Update extends _$Update {
   }
 
   Future<VersionCheck?> _checkGithub() async {
-    try {
-      final response = await Dio().get('https://api.github.com/repos/hobleyd/paladin/releases/latest');
-      if (response.statusCode == 200) {
-        final Version githubVersion = Version.parse(response.data['tag_name']);
-        final String url = response.data['assets'].first['browser_download_url'];
+    if (Platform.isAndroid) {
+      try {
+        final response = await Dio().get('https://api.github.com/repos/hobleyd/paladin/releases/latest');
+        if (response.statusCode == 200) {
+          final Version githubVersion = Version.parse(response.data['tag_name']);
+          final String url = response.data['assets'].first['browser_download_url'];
 
-        final pubspec = await rootBundle.loadString("pubspec.yaml");
-        final Version buildVersion = Version.parse(pubspec.split("version: ")[1].split("\n")[0]);
+          final pubspec = await rootBundle.loadString("pubspec.yaml");
+          final Version buildVersion = Version.parse(pubspec.split("version: ")[1].split("\n")[0]);
 
-        return VersionCheck(currentVersion: buildVersion, newVersion: githubVersion, downloadUrl: url, downloadPackage: response.data['assets'].first['name']);
+          return VersionCheck(currentVersion: buildVersion, newVersion: githubVersion, downloadUrl: url, downloadPackage: response.data['assets'].first['name']);
+        }
+      } catch (e) {
+        return null;
       }
-    } catch (e) {
-      return null;
     }
 
     return null;
