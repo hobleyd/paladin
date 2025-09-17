@@ -69,7 +69,7 @@ class CalibreSyncButton extends ConsumerWidget {
                 ),
                 Spacer(),
               ],)
-          : Text('Synchonisation is underway...', style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center);
+          : Text('Synchronisation is underway...', style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center);
     }
   }
 
