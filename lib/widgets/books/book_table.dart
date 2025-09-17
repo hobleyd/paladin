@@ -23,7 +23,7 @@ class BookTable extends ConsumerWidget {
             Table(
               children: [
                 // TODO: I'd prefer this to be scrollable, but I can't figure that out! So manage it manually.
-                for (int i = 0; i < (count > 25 ? 25 : count); i++)
+                for (int i = 0; i < (count > 20 ? 20 : count); i++)
                   TableRow(
                     decoration: BoxDecoration(color: i % 2 == 0 ? Colors.grey.shade300 : Colors.grey.shade200,),
                     children: [
