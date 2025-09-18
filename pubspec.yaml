@@ -22,6 +22,7 @@ dependencies:
   flutter_riverpod: ^2.3.7
   flutter_typeahead: ^5.2.0
   flutter_widget_from_html_core: ^0.17.0
+  freezed: 3.1.0
   freezed_annotation: ^3.1.0
   google_fonts: ^6.3.1
   http_status_code: ^0.0.2
