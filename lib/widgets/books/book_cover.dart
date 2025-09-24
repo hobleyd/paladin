@@ -16,7 +16,7 @@ class BookCover extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ColorFilter brightnessFilter = ColorFilterExt.brightness(Platform.isAndroid ? 0.5 : 0.1);
+    final ColorFilter brightnessFilter = ColorFilterExt.brightness(Platform.isAndroid ? 0.7 : 0.3);
     Book? book = ref.watch(bookProviderProvider(bookUuid));
 
     if (book == null) {
