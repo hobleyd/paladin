@@ -64,7 +64,7 @@ class PaladinMenu extends ConsumerWidget {
           );
           break;
         case 'settings':
-          AppSettings.openAppSettings();
+          AppSettings.openAppSettings(type: AppSettingsType.generalSettings);
           break;
         case 'sync':
           ref.read(navigatorStackProvider.notifier).push(context, "calibre_sync", MaterialPageRoute(builder: (context) => CalibreSync()));
