@@ -30,7 +30,7 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
 
   @override
   Widget build(BuildContext context) {
-    var shelfCollection = ref.watch(ShelfCollectionProvider(shelf.shelfId));
+    var shelfCollection = ref.watch(shelfCollectionProvider(shelf.shelfId));
     var bookListAsync = ref.watch(shelfBooksRepositoryProvider(shelfCollection!));
     AutoSizeGroup shelfTitleGroup = AutoSizeGroup();
 
