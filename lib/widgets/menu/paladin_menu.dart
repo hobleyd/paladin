@@ -1,9 +1,9 @@
 import 'dart:io';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paladin/providers/navigator_stack.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../models/collection.dart';
 import '../../models/shelf.dart';
@@ -64,7 +64,7 @@ class PaladinMenu extends ConsumerWidget {
           );
           break;
         case 'settings':
-          openAppSettings();
+          AppSettings.openAppSettings();
           break;
         case 'sync':
           ref.read(navigatorStackProvider.notifier).push(context, "calibre_sync", MaterialPageRoute(builder: (context) => CalibreSync()));
