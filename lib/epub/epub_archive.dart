@@ -60,11 +60,15 @@ class Epub {
         return coverAttribute.getAttribute('src');
       }
     } on XmlTagException {
-      ref.read(statusProvider.notifier).addStatus('$bookName ($bookUUID): Invalid XML in the epub. Try to fix with Sigil');
+      if (ref.mounted) {
+        ref.read(statusProvider.notifier).addStatus('$bookName ($bookUUID): Invalid XML in the epub. Try to fix with Sigil');
+      }
       return null;
     }
 
-    ref.read(statusProvider.notifier).addStatus("$bookName ($bookUUID): Can't find an image tag in the html");
+    if (ref.mounted) {
+      ref.read(statusProvider.notifier).addStatus("$bookName ($bookUUID): Can't find an image tag in the html");
+    }
     return null;
   }
 
@@ -124,7 +128,9 @@ class Epub {
       }
     }
 
-    ref.read(statusProvider.notifier).addStatus("$bookName ($bookUUID): Can't find an image tag in the xhtml");
+    if (ref.mounted) {
+      ref.read(statusProvider.notifier).addStatus("$bookName ($bookUUID): Can't find an image tag in the xhtml");
+    }
     return null;
   }
 
