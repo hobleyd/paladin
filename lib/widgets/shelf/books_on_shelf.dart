@@ -6,7 +6,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 import '../../models/book.dart';
 import '../../models/collection.dart';
 import '../../models/shelf.dart';
-import '../../providers/book_provider.dart';
+import '../../providers/book_details.dart';
 import '../../providers/navigator_stack.dart';
 import '../../providers/shelf_collection.dart';
 import '../../repositories/shelf_books_repository.dart';
@@ -57,7 +57,7 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
               child: ListView.builder(
                 itemCount: bookShelf.length,
                 itemBuilder: (context, index) {
-                  Book? book = ref.watch(bookProviderProvider(bookShelf[index]));
+                  Book? book = ref.watch(bookDetailsProvider(bookShelf[index]));
                   if (book == null) {
                     // We are using the bookProvider here to get the Book and the first time through, it will always be null.
                     // Returning an 'X' here as it could also be null if the provider is disposed of. Shouldn't be a problem
@@ -105,7 +105,7 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
 
   void _openBook(String bookUuid) {
     if (shelf.collection.type == CollectionType.CURRENT) {
-      ref.read(bookProviderProvider(bookUuid).notifier).readBook();
+      ref.read(bookDetailsProvider(bookUuid).notifier).readBook();
     } else {
       ref.read(navigatorStackProvider.notifier).push(context, "back_cover", MaterialPageRoute(builder: (context) => BackCover(bookUuid: bookUuid), settings: RouteSettings(name: "/home")));
     }

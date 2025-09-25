@@ -2,7 +2,7 @@ import 'package:dartlin/collections.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/providers/book_provider.dart';
+import 'package:paladin/providers/book_details.dart';
 import 'package:paladin/providers/navigator_stack.dart';
 
 import '../../models/author.dart';
@@ -18,7 +18,7 @@ class Authors extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    Book? book = ref.watch(bookProviderProvider(bookUuid));
+    Book? book = ref.watch(bookDetailsProvider(bookUuid));
     if (book == null) {
       return const Text('');
     }

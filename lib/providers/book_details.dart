@@ -11,10 +11,10 @@ import '../models/book.dart';
 import '../repositories/books_repository.dart';
 import '../repositories/shelf_repository.dart';
 
-part 'book_provider.g.dart';
+part 'book_details.g.dart';
 
 @riverpod
-class BookProvider extends _$BookProvider {
+class BookDetails extends _$BookDetails {
   @override
   Book? build(String uuid) {
     getBook();

@@ -1,5 +1,5 @@
 import 'package:paladin/database/library_db.dart';
-import 'package:paladin/providers/book_provider.dart';
+import 'package:paladin/providers/book_details.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/book.dart';

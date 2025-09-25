@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/book.dart';
-import '../../providers/book_provider.dart';
+import '../../providers/book_details.dart';
 import '../../providers/cached_cover.dart';
 import '../home/fatal_error.dart';
 
@@ -17,7 +17,7 @@ class BookCover extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ColorFilter brightnessFilter = ColorFilterExt.brightness(Platform.isAndroid ? 0.7 : 0.3);
-    Book? book = ref.watch(bookProviderProvider(bookUuid));
+    Book? book = ref.watch(bookDetailsProvider(bookUuid));
 
     if (book == null) {
       return const Text('');

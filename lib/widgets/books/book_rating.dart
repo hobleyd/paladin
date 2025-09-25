@@ -3,7 +3,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/book.dart';
-import '../../providers/book_provider.dart';
+import '../../providers/book_details.dart';
 
 class BookRating extends ConsumerWidget {
   final String bookUuid;
@@ -12,7 +12,7 @@ class BookRating extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    Book? book = ref.watch(bookProviderProvider(bookUuid));
+    Book? book = ref.watch(bookDetailsProvider(bookUuid));
     if (book == null) {
       return const Text('');
     }
@@ -29,7 +29,7 @@ class BookRating extends ConsumerWidget {
       itemSize: 24,
       tapOnlyMode: true,
       onRatingUpdate: (rating) {
-        ref.read(bookProviderProvider(book.uuid).notifier).setRating(rating.floor());
+        ref.read(bookDetailsProvider(book.uuid).notifier).setRating(rating.floor());
       },
     );
   }

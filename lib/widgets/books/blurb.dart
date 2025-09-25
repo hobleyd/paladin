@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 
 import '../../models/book.dart';
-import '../../providers/book_provider.dart';
+import '../../providers/book_details.dart';
 
 class Blurb extends ConsumerWidget {
   final String bookUuid;
@@ -15,7 +15,7 @@ class Blurb extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     const String label = "I know you might expect a back-cover description, but it's a mystery; perhaps you need to read the book to find out what it's about!";
 
-    Book? book = ref.watch(bookProviderProvider(bookUuid));
+    Book? book = ref.watch(bookDetailsProvider(bookUuid));
     if (book == null) {
       return const Text(label);
     }

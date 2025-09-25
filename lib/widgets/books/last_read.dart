@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/book.dart';
-import '../../providers/book_provider.dart';
+import '../../providers/book_details.dart';
 
 class LastRead extends ConsumerWidget {
   final String bookUuid;
@@ -12,7 +12,7 @@ class LastRead extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    Book? book = ref.watch(bookProviderProvider(bookUuid));
+    Book? book = ref.watch(bookDetailsProvider(bookUuid));
     if (book == null) {
       return const Text('');
     }

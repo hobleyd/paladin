@@ -2,7 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../database/library_db.dart';
 import '../models/book.dart';
-import '../providers/book_provider.dart';
+import '../providers/book_details.dart';
 
 part 'currently_reading_book.g.dart';
 

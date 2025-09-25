@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/book.dart';
-import '../providers/book_provider.dart';
+import '../providers/book_details.dart';
 import '../providers/navigator_stack.dart';
 import '../widgets/books/authors.dart';
 import '../widgets/books/blurb.dart';
@@ -18,7 +18,7 @@ class BackCover extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    Book? book = ref.watch(bookProviderProvider(bookUuid));
+    Book? book = ref.watch(bookDetailsProvider(bookUuid));
 
     return Scaffold(
       appBar: AppBar(title: Text('')),
@@ -56,7 +56,7 @@ class BackCover extends ConsumerWidget {
   }
 
   void _readBook(BuildContext context, WidgetRef ref) {
-    ref.read(bookProviderProvider(bookUuid).notifier).readBook();
+    ref.read(bookDetailsProvider(bookUuid).notifier).readBook();
     ref.read(navigatorStackProvider.notifier).popUntil(context, NavigatorStack.homeScreen);
   }
 }

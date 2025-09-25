@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paladin/providers/navigator_stack.dart';
 
 import '../../models/book.dart';
-import '../../providers/book_provider.dart';
+import '../../providers/book_details.dart';
 import '../../screens/book_list.dart';
 
 class BookTags extends ConsumerWidget {
@@ -15,7 +15,7 @@ class BookTags extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    Book? book = ref.watch(bookProviderProvider(bookUuid));
+    Book? book = ref.watch(bookDetailsProvider(bookUuid));
     if (book == null) {
       return const Text('');
     }
