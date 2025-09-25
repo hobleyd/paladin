@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:color_filter_extension/color_filter_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/providers/book_provider.dart';
 
 import '../../models/book.dart';
+import '../../providers/book_provider.dart';
 import '../../providers/cached_cover.dart';
 import '../home/fatal_error.dart';
 
