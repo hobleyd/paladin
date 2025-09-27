@@ -9,6 +9,7 @@ import '../../models/book.dart';
 import '../../models/collection.dart';
 import '../../models/series.dart';
 import '../../models/tag.dart';
+import '../../models/uuid.dart';
 import '../../providers/update.dart';
 import '../../repositories/books_repository.dart';
 import '../../repositories/series_repository.dart';
@@ -39,7 +40,7 @@ class MenuButtons extends ConsumerWidget {
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  MenuButton(label: 'Books', count: booksCount, collection: Collection(type: CollectionType.BOOK, query: Book.booksQuery, queryArgs: ['%'])),
+                  MenuButton(label: 'Books', count: booksCount, collection: Collection(type: CollectionType.BOOK, query: Uuid.uuidQuery, queryArgs: ['%'])),
                   const VerticalDivider(color: Colors.black, thickness: 1),
                   MenuButton(label: 'Authors', count: authorCount, collection: Collection(type: CollectionType.AUTHOR, query: Author.authorsQuery, queryArgs: ['%'])),
                   const VerticalDivider(color: Colors.black, thickness: 1),

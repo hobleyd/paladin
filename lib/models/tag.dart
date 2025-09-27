@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:paladin/database/library_db.dart';
 
+import '../database/library_db.dart';
 import 'collection.dart';
 
 part 'tag.g.dart';

@@ -5,6 +5,7 @@ import 'package:paladin/widgets/home/fatal_error.dart';
 
 import '../../models/book.dart';
 import '../../models/collection.dart';
+import '../../models/uuid.dart';
 import 'book_tile.dart';
 
 class BookTileList extends ConsumerWidget {
@@ -29,7 +30,7 @@ class BookTileList extends ConsumerWidget {
                       SizedBox(
                           height: MediaQuery.of(context).size.height / 6,
                           child: BookTile(
-                            bookUuid: (bookList[index] as Book).uuid,
+                            bookUuid: (bookList[index] as Uuid).uuid,
                             showMenu: false,
                           )),
                       const Divider(color: Colors.black, thickness: 1),

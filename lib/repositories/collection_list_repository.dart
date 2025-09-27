@@ -6,6 +6,7 @@ import '../models/book.dart';
 import '../models/collection.dart';
 import '../models/series.dart';
 import '../models/tag.dart';
+import '../models/uuid.dart';
 
 part 'collection_list_repository.g.dart';
 
@@ -26,7 +27,7 @@ class CollectionListRepository extends _$CollectionListRepository {
 
     return await Future.wait(results.map((element) async => switch (collection.type) {
       CollectionType.AUTHOR => Author.fromMap(element),
-      CollectionType.BOOK   => Book.fromMap(libraryDb, element),
+      CollectionType.BOOK   => Uuid.fromMap(element),
       CollectionType.SERIES => Series.fromMap(element),
       CollectionType.TAG    => Tag.fromMap(element),
       _ => throw UnimplementedError(),
