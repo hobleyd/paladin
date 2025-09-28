@@ -25,7 +25,13 @@ class _PaladinUpdate extends ConsumerState<PaladinUpdate> {
     return downloading == true
         ? CircularProgressIndicator()
         : versions == null
-          ? Padding(padding: EdgeInsetsGeometry.only(top: 30), child: Text(noUpdateLabel, style: Theme.of(context).textTheme.labelMedium))
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(padding: EdgeInsetsGeometry.only(top: 30), child: Text(noUpdateLabel, style: Theme.of(context).textTheme.labelMedium)),
+                IconButton(icon: const Icon(Icons.refresh), onPressed: () => ref.read(updateProvider.notifier).checkVersion()),
+              ],
+            )
           : Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -34,9 +40,6 @@ class _PaladinUpdate extends ConsumerState<PaladinUpdate> {
                 if (versions.hasUpdate)
                   Padding(padding: const EdgeInsets.only(top: 10),
                       child: IconButton(icon: const Icon(Icons.download), onPressed: () => _download(ref, versions.downloadUrl, versions.downloadPackage))),
-                if (!versions.hasUpdate)
-                  Padding(padding: const EdgeInsets.only(top: 10),
-                      child: IconButton(icon: const Icon(Icons.refresh), onPressed: () => ref.read(updateProvider.notifier).checkVersion())),
               ]
             );
   }
