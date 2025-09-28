@@ -1,5 +1,4 @@
 
-import 'package:flutter/foundation.dart';
 import 'package:paladin/repositories/shelf_repository.dart';
 import 'package:paladin/utils/iterable.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -60,7 +59,6 @@ class ShelvesRepository extends _$ShelvesRepository {
     List<int> current = state.value!;
 
     for (int shelf in current) {
-      debugPrint('updating $shelf');
       ref.read(shelfRepositoryProvider(shelf).notifier).updateShelf();
     }
   }
