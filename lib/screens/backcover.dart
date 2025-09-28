@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/book.dart';
+import '../models/calibre_sync_data.dart';
 import '../providers/book_details.dart';
+import '../providers/calibre_ws.dart';
 import '../providers/navigator_stack.dart';
 import '../widgets/books/authors.dart';
 import '../widgets/books/blurb.dart';
@@ -19,6 +21,7 @@ class BackCover extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Book? book = ref.watch(bookDetailsProvider(bookUuid));
+    CalibreSyncData calibre = ref.watch(calibreWSProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text('')),
@@ -47,6 +50,7 @@ class BackCover extends ConsumerWidget {
             ),
             const Divider(color: Colors.black, thickness: 1),
             Blurb(bookUuid: bookUuid),
+            Align(alignment: AlignmentGeometry.bottomRight, child: ElevatedButton(onPressed: () => _refresh(ref), child: Icon(Icons.refresh))),
             const Divider(color: Colors.black, thickness: 1),
             ElevatedButton(onPressed: () => _readBook(context, ref), child: const Text('Read Book')),
           ],
@@ -58,5 +62,9 @@ class BackCover extends ConsumerWidget {
   void _readBook(BuildContext context, WidgetRef ref) {
     ref.read(bookDetailsProvider(bookUuid).notifier).readBook();
     ref.read(navigatorStackProvider.notifier).popUntil(context, NavigatorStack.homeScreen);
+  }
+
+  Future<void> _refresh(WidgetRef ref) async {
+    ref.read(calibreWSProvider.notifier).getBookByUuid(bookUuid);
   }
 }

@@ -17,6 +17,9 @@ abstract class Calibre {
   @DioResponseType(ResponseType.bytes)
   Stream<List<int>> getBook(@Path("uuid") String uuid, @Query('chunk_size') int chunkSize);
 
+  @GET("/uuid/{uuid}")
+  Future<Book> getBookDetails(@Path("uuid") String uuid);
+
   @GET("/books")
   Future<List<Book>> getBooks(@Query("last_modified") int lastModified, @Query('offset') int offset, @Query('limit') int limit);
   

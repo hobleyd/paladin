@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:paladin/providers/book_details.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:http_status_code/http_status_code.dart';
 
@@ -38,6 +39,11 @@ class CalibreWS extends _$CalibreWS {
     }
 
     return CalibreSyncData(calibreServer: calibreUrl);
+  }
+
+  Future<void> getBookByUuid(String uuid) async {
+    Book book = await ref.read(calibreDioProvider(state.calibreServer)).getBookDetails(uuid);
+    await ref.read(bookDetailsProvider(book.uuid).notifier).updateBook(book);
   }
 
   Future<void> getBooks(List<Book> books) async {

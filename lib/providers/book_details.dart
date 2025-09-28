@@ -53,6 +53,14 @@ class BookDetails extends _$BookDetails {
     state = state!.copyBookWith(rating: newRating);
   }
 
+  Future<void> updateBook(Book updatedBook) async {
+    var libraryDb = ref.read(libraryDBProvider.notifier);
+    libraryDb.insertBook(updatedBook);
+    state = updatedBook;
+
+    return;
+  }
+
   Future updateLastReadDate() async {
     int lastRead = (DateTime.now().millisecondsSinceEpoch / 1000).round();
 
