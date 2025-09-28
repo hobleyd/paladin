@@ -16,7 +16,7 @@ class BookCover extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ColorFilter brightnessFilter = ColorFilterExt.brightness(Platform.isAndroid ? 0.7 : 0.3);
+    final brightnessFilter = ColorFilterExt.brightness(Platform.isAndroid ? 0.7 : 0.3);
     Book? book = ref.watch(bookDetailsProvider(bookUuid));
 
     if (book == null) {
@@ -33,7 +33,7 @@ class BookCover extends ConsumerWidget {
         },
         data: (Image cover) {
           return ColorFiltered(
-            colorFilter: brightnessFilter,
+            colorFilter: brightnessFilter.colorFilter,
             child: book.lastRead != null && book.lastRead! > 0
               ? cover
               : Stack(
