@@ -2,7 +2,7 @@ name: paladin
 description: eLibrary management for Tablets and eInk devices.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.0.5
+version: 0.0.6
 
 environment:
   sdk: '>=3.8.0'
@@ -15,7 +15,7 @@ dependencies:
   app_settings: ^6.1.1
   auto_size_text: ^3.0.0
   bonsoir: ^6.0.1
-  color_filter_extension: ^0.0.2
+  color_filter_extension: ^1.0.1
   cupertino_icons: ^1.0.2
   dartlin: ^0.6.3
   dio: ^5.9.0
@@ -25,7 +25,7 @@ dependencies:
   flutter_widget_from_html_core: ^0.17.0
   freezed: 3.2.3
   freezed_annotation: ^3.1.0
-  google_fonts: ^6.3.1
+  google_fonts: ^6.3.2
   http_status_code: ^0.0.2
   image: ^4.5.4
   intersperse: ^2.0.0
