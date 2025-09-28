@@ -10,6 +10,7 @@ import '../models/book.dart';
 import '../models/calibre_book_count.dart';
 import '../models/calibre_server.dart';
 import '../models/calibre_sync_data.dart';
+import '../models/uuid.dart';
 import '../repositories/books_repository.dart';
 import '../repositories/calibre_server_repository.dart';
 import '../services/calibre.dart';
@@ -73,7 +74,7 @@ class CalibreWS extends _$CalibreWS {
     }
 
     await _getUpdatedBooks();
-    // TODO: await _deleteBooksRemovedFromCalibre();
+    await _deleteBooksRemovedFromCalibre();
 
     _status.addStatus('Completed Synchronisation; please review errors (if any)');
     updateState(syncState: CalibreSyncState.REVIEW,);
@@ -87,6 +88,38 @@ class CalibreWS extends _$CalibreWS {
       progress: progress,
       syncState: syncState,
     );
+  }
+
+  Future<void> _deleteBooksRemovedFromCalibre() async {
+    List<Uuid> booksInCalibreLibrary = await _calibre.getLibrary();
+    LibraryDB library = ref.read(libraryDBProvider.notifier);
+    library.uploadTemporaryUuids(booksInCalibreLibrary);
+    
+    // Look for books in the local library which are not in the calibre library and delete them
+    _status.addStatus('Looking for books removed from Calibre...');
+    List<Uuid> localBooksInDb = await library.findLocalBooksNotInCalibre();
+    if (localBooksInDb.isNotEmpty) {
+      _status.addStatus('removing ${localBooksInDb.length} books from the local database');
+      for (Uuid uuid in localBooksInDb) {
+        library.removeBook(uuid);
+      }
+    } else {
+      _status.addStatus('No books removed from Calibre. Phew.');
+    }
+
+    // Then look for books in the calibre library which are not in the local library and download them
+    _status.addStatus('Looking for missing books...');
+    List<Uuid> remoteBooksNotInDb = await library.findRemoteBooksNotInDb();
+    if (remoteBooksNotInDb.isNotEmpty) {
+      _status.addStatus('Downloading ${remoteBooksNotInDb.length} books we missed previously!');
+      int index = 0;
+      for (Uuid uuid in remoteBooksNotInDb) {
+        await _getBook(await _calibre.getBookDetails(uuid.uuid));
+        updateState(progress: index++ / remoteBooksNotInDb.length);
+      }
+    } else {
+      _status.addStatus('No missing books. (as expected!)');
+    }
   }
 
   Future<void> _downloadBook(Book book) async {
@@ -113,6 +146,8 @@ class CalibreWS extends _$CalibreWS {
       if (book.lastModified > await ref.read(libraryDBProvider.notifier).getLastModified(book)) {
         await _downloadBook(book);
         await _library.insertBook(book);
+      } else {
+        _status.addStatus("${book.title} hasn't changed; not downloading!");
       }
     } catch (e) {
       ref.read(calibreBookProvider(BooksType.error).notifier).add(book);

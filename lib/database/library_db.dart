@@ -12,6 +12,7 @@ import '../models/book.dart';
 import '../models/collection.dart';
 import '../models/series.dart';
 import '../models/tag.dart';
+import '../models/uuid.dart';
 import '../repositories/books_repository.dart';
 import '../repositories/authors_repository.dart';
 import '../repositories/series_repository.dart';
@@ -118,8 +119,18 @@ class LibraryDB extends _$LibraryDB {
     return database;
   }
 
-  Future _insertInitialShelves(Database db, String name, int type, int size) async {
+  Future<int> _insertInitialShelves(Database db, String name, int type, int size) async {
     return db.rawInsert('insert into shelves(name, type, size) values(?, ?, ?)', [name, type, size]);
+  }
+
+  Future<List<Uuid>> findLocalBooksNotInCalibre() async {
+    List<Map<String, dynamic>> books = await _paladin.rawQuery('select uuid from books where uuid not in (select uuid from temp.calibreUuids);');
+    return books.map((uuid) => Uuid.fromMap(uuid)).toList();
+  }
+
+  Future<List<Uuid>> findRemoteBooksNotInDb() async {
+    List<Map<String, dynamic>> books = await _paladin.rawQuery('select uuid from temp.calibreUuids where uuid not in (select uuid from books);');
+    return books.map((uuid) => Uuid.fromMap(uuid)).toList();
   }
 
   Future<int> getCount(String table, { String? where, List<dynamic>? whereArgs }) async {
@@ -187,6 +198,24 @@ class LibraryDB extends _$LibraryDB {
         _paladin.insert('book_tags', { 'tagId': tag.id, 'bookId': book.uuid});
       }
     }
+  }
+
+  Future<void> removeBook(Uuid uuid) async {
+    // Remove the books; check for Tags that may no longer be used and clean up if required.
+    _paladin.rawDelete('delete from book_tags where bookId in (select id from books where uuid = ?)', [uuid.uuid]);
+    // TODO: delete any dangling tags.
+    _paladin.delete('books', where: 'uuid = ?', whereArgs: [uuid.uuid]);
+  }
+
+  Future<void> uploadTemporaryUuids(List<Uuid> booksInCalibreLibrary) async {
+    _paladin.execute('DROP TABLE IF EXISTS temp.calibreUuids;');
+    _paladin.execute('CREATE TEMPORARY TABLE calibreUuids(uuid text not null);');
+
+    final Batch batch = _paladin.batch();
+    for (Uuid uuid in booksInCalibreLibrary) {
+      batch.insert('temp.calibreUuids', uuid.toMap());
+    }
+    await batch.commit();
   }
 
   Future<int> insert({ required String table, required Map<String, dynamic> rows, ConflictAlgorithm? conflictAlgorithm }) async {

@@ -6,6 +6,7 @@ import '../models/calibre_book_count.dart';
 import '../models/calibre_health.dart';
 import '../models/calibre_update_response.dart';
 import '../models/tag.dart';
+import '../models/uuid.dart';
 
 part 'calibre.g.dart';
 
@@ -17,7 +18,7 @@ abstract class Calibre {
   @DioResponseType(ResponseType.bytes)
   Stream<List<int>> getBook(@Path("uuid") String uuid, @Query('chunk_size') int chunkSize);
 
-  @GET("/uuid/{uuid}")
+  @GET("/details/{uuid}")
   Future<Book> getBookDetails(@Path("uuid") String uuid);
 
   @GET("/books")
@@ -28,6 +29,9 @@ abstract class Calibre {
 
   @GET("/health")
   Future<CalibreHealth> getHealth();
+
+  @GET("/library")
+  Future<List<Uuid>> getLibrary();
 
   @GET("/tags/{uuid}")
   Future<List<Tag>> getTags(@Path("uuid") String uuid);

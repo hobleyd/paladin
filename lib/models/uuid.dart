@@ -28,13 +28,6 @@ class Uuid extends Collection {
   factory Uuid.fromJson(Map<String, dynamic> json) => _$UuidFromJson(json);
   Map<String, dynamic> toJson() => _$UuidToJson(this);
 
-  static Future<List<Uuid>> getTags(LibraryDB db, String title) async {
-    final List<Map<String, dynamic>> maps = await db.rawQuery(sql: uuidQuery, args: [title]);
-    return List.generate(maps.length, (i) {
-      return fromMap(maps[i]);
-    });
-  }
-
   static Uuid fromMap(Map<String, dynamic> book) {
     return Uuid(
       uuid: book['uuid'],
