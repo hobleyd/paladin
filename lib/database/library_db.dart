@@ -23,6 +23,9 @@ part 'library_db.g.dart';
 @Riverpod(keepAlive: true)
 class LibraryDB extends _$LibraryDB {
   late Database _paladin;
+  late String _databasePath;
+
+  String get path => _databasePath;
 
   @override
   Future<Database> build() async {
@@ -110,13 +113,13 @@ class LibraryDB extends _$LibraryDB {
   }
 
   Future<String> _getDatabasePath() async {
-    String database = await getApplicationPath();
-    database += '/db/';
+    _databasePath = await getApplicationPath();
+    _databasePath += '/db/';
 
-    await Directory(database).create(recursive: true);
+    await Directory(_databasePath).create(recursive: true);
 
-    database = path.join(database, 'paladin.db');
-    return database;
+    _databasePath = path.join(_databasePath, 'paladin.db');
+    return _databasePath;
   }
 
   Future<int> _insertInitialShelves(Database db, String name, int type, int size) async {

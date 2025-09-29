@@ -74,7 +74,7 @@ class CalibreWS extends _$CalibreWS {
     }
 
     await _getUpdatedBooks();
-    await _deleteBooksRemovedFromCalibre();
+    //await _deleteBooksRemovedFromCalibre();
 
     _status.addStatus('Completed Synchronisation; please review errors (if any)');
     updateState(syncState: CalibreSyncState.REVIEW,);

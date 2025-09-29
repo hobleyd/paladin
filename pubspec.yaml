@@ -2,7 +2,7 @@ name: paladin
 description: eLibrary management for Tablets and eInk devices.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.0.9
+version: 0.1.0
 
 environment:
   sdk: '>=3.8.0'
@@ -40,6 +40,7 @@ dependencies:
   permission_handler: ^12.0.1
   retrofit: ^4.7.2
   riverpod_annotation: ^3.0.0
+  share_plus: ^12.0.0
   sqflite_common_ffi: ^2.3.6
   sqlite3_flutter_libs: ^0.5.39
   url_launcher: ^6.3.2
