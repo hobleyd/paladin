@@ -1,5 +1,6 @@
 import 'package:bonsoir/bonsoir.dart';
 import 'package:flutter/foundation.dart';
+import 'package:paladin/providers/status_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'calibre_network_service.g.dart';
@@ -32,6 +33,7 @@ class CalibreNetworkService extends _$CalibreNetworkService {
           updateState(event.service);
           break;
         case BonsoirDiscoveryServiceLostEvent():
+          ref.read(statusProvider.notifier).addStatus('Lost connection to calibre network server...');
           state = "";
           break;
         default:
@@ -51,7 +53,11 @@ class CalibreNetworkService extends _$CalibreNetworkService {
         if (host.endsWith('.')) {
           host = host.substring(0, host.length - 1);
         }
-        state = 'https://$host:$port';
+        String networkService = 'https://$host:$port';
+        if (state != networkService) {
+          ref.read(statusProvider.notifier).addStatus('Setting Calibre host to $networkService');
+          state = networkService;
+        }
       }
     }
   }

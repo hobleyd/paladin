@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:paladin/providers/book_details.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:http_status_code/http_status_code.dart';
 
@@ -11,6 +10,7 @@ import '../models/calibre_book_count.dart';
 import '../models/calibre_server.dart';
 import '../models/calibre_sync_data.dart';
 import '../models/uuid.dart';
+import '../providers/book_details.dart';
 import '../repositories/books_repository.dart';
 import '../repositories/calibre_server_repository.dart';
 import '../services/calibre.dart';
