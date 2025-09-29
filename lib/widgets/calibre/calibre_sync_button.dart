@@ -8,7 +8,11 @@ import 'package:paladin/repositories/shelves_repository.dart';
 import '../../models/book.dart';
 import '../../models/calibre_server.dart';
 import '../../models/calibre_sync_data.dart';
+import '../../repositories/authors_repository.dart';
+import '../../repositories/books_repository.dart';
 import '../../repositories/calibre_server_repository.dart';
+import '../../repositories/series_repository.dart';
+import '../../repositories/tags_repository.dart';
 
 class CalibreSyncButton extends ConsumerWidget {
   const CalibreSyncButton({super.key,});
@@ -81,8 +85,14 @@ class CalibreSyncButton extends ConsumerWidget {
     ref.read(navigatorStackProvider.notifier).popUntil(context, NavigatorStack.homeScreen);
   }
 
+  // TODO: This feels a little painful = having to manually update the various providers. I am sure there is
+  //  a better way, but this works for now.
   Future<void> _synchronise(WidgetRef ref) async {
     await ref.read(calibreWSProvider.notifier).synchroniseWithCalibre();
     ref.read(shelvesRepositoryProvider.notifier).updateShelves();
+    ref.read(authorsRepositoryProvider.notifier).updateAuthorsCount();
+    ref.read(booksRepositoryProvider.notifier).updateBooksCount();
+    ref.read(seriesRepositoryProvider.notifier).updateSeriesCount();
+    ref.read(tagsRepositoryProvider.notifier).updateTagsCount();
   }
 }
