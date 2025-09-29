@@ -66,7 +66,6 @@ class CalibreWS extends _$CalibreWS {
     _library = ref.read(libraryDBProvider.notifier);
     _calibre = ref.read(calibreDioProvider(state.calibreServer));
 
-    await _library.rawQuery(sql: 'alter table books drop column path');
     updateState(syncState: CalibreSyncState.PROCESSING);
     _status.addStatus('Initialising Sync...');
 
@@ -75,7 +74,7 @@ class CalibreWS extends _$CalibreWS {
     }
 
     await _getUpdatedBooks();
-    //await _deleteBooksRemovedFromCalibre();
+    await _deleteBooksRemovedFromCalibre();
 
     _status.addStatus('Completed Synchronisation; please review errors (if any)');
     updateState(syncState: CalibreSyncState.REVIEW,);
