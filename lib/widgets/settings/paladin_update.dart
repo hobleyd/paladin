@@ -40,6 +40,9 @@ class _PaladinUpdate extends ConsumerState<PaladinUpdate> {
                 if (versions.hasUpdate)
                   Padding(padding: const EdgeInsets.only(top: 10),
                       child: IconButton(icon: const Icon(Icons.download), onPressed: () => _download(ref, versions.downloadUrl, versions.downloadPackage))),
+                if (!versions.hasUpdate)
+                  Padding(padding: const EdgeInsets.only(top: 10), child: IconButton(icon: const Icon(Icons.refresh), onPressed: () => ref.read(updateProvider.notifier).checkVersion())),
+
               ]
             );
   }
