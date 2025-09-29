@@ -42,7 +42,7 @@ class PaladinMenu extends ConsumerWidget {
         case 'backup':
           final params = ShareParams(
             text: 'Paladin Database',
-            files: [XFile(ref.read(libraryDBProvider.notifier).path)],
+            files: [XFile(ref.read(libraryDBProvider.notifier).dbPath)],
           );
 
           SharePlus.instance.share(params);

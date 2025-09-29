@@ -25,7 +25,7 @@ class LibraryDB extends _$LibraryDB {
   late Database _paladin;
   late String _databasePath;
 
-  String get path => _databasePath;
+  String get dbPath => _databasePath;
 
   @override
   Future<Database> build() async {
