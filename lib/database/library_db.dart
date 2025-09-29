@@ -161,7 +161,7 @@ class LibraryDB extends _$LibraryDB {
     book = book.copyBookWith(added: added, series: series);
 
     // Now insert the Book.
-    _paladin.insert('books', book.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    await _paladin.insert('books', book.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
 
     // Insert all the Authors, updating the id for the next foreign key
     List<Author> authors = [];
@@ -178,7 +178,7 @@ class LibraryDB extends _$LibraryDB {
     for (var author in authors) {
       List<Map> result = await _paladin.query('book_authors', columns: ['authorId'], where: 'authorId = ? and bookId = ?', whereArgs: [author.id, book.uuid]);
       if (result.isEmpty) {
-        _paladin.insert('book_authors', { 'authorId': author.id, 'bookId': book.uuid});
+        await _paladin.insert('book_authors', { 'authorId': author.id, 'bookId': book.uuid});
       }
     }
 
@@ -195,7 +195,7 @@ class LibraryDB extends _$LibraryDB {
       // Delete all tags before we start to ensure we are up to date with Calibre.
       await _paladin.delete('book_tags', where: 'bookId = ?', whereArgs: [book.uuid]);
       for (var tag in tags) {
-        _paladin.insert('book_tags', { 'tagId': tag.id, 'bookId': book.uuid});
+        await _paladin.insert('book_tags', { 'tagId': tag.id, 'bookId': book.uuid});
       }
     }
   }
