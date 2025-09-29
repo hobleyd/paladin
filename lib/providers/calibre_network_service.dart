@@ -33,7 +33,8 @@ class CalibreNetworkService extends _$CalibreNetworkService {
           updateState(event.service);
           break;
         case BonsoirDiscoveryServiceLostEvent():
-          ref.read(statusProvider.notifier).addStatus('Lost connection to calibre network server...');
+          // TODO: Should I pay attention to this, or not?
+          //ref.read(statusProvider.notifier).addStatus('Lost connection to calibre network server...');
           //state = "";
           break;
         default:
