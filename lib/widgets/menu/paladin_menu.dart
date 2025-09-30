@@ -28,9 +28,11 @@ class PaladinMenu extends ConsumerWidget {
         PopupMenuItem<String>(value: 'future',   child: Text(Tag.futureReads, style: Theme.of(context).textTheme.bodyMedium),),
         PopupMenuItem<String>(value: 'history',  child: Text('Reading History', style: Theme.of(context).textTheme.bodyMedium),),
         PopupMenuItem<String>(value: 'sync',     child: Text('Synchronise Library', style: Theme.of(context).textTheme.bodyMedium),),
-        if (Platform.isAndroid) PopupMenuItem<String>(value: 'settings', child: Text('System Settings', style: Theme.of(context).textTheme.bodyMedium),),
-        PopupMenuDivider(),
-        if (Platform.isAndroid) PopupMenuItem<String>(value: 'exit', child: Text('Exit', style: Theme.of(context).textTheme.bodyMedium),),
+        if (Platform.isAndroid) ...[
+          PopupMenuItem<String>(value: 'settings', child: Text('System Settings', style: Theme.of(context).textTheme.bodyMedium),),
+          PopupMenuDivider(),
+          PopupMenuItem<String>(value: 'exit', child: Text('Exit', style: Theme.of(context).textTheme.bodyMedium),),
+        ],
       ],
       onSelected: (String? item) => _selectMenuItem(context, ref, item),
     );
