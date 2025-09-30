@@ -115,6 +115,7 @@ class CalibreWS extends _$CalibreWS {
       for (Uuid uuid in localBooksInDb) {
         library.removeBook(uuid);
       }
+      library.cleanDanglingTags();
     } else {
       _status.addStatus('No books removed from Calibre. Phew.');
     }

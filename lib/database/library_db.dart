@@ -62,8 +62,7 @@ class LibraryDB extends _$LibraryDB {
         create table if not exists book_tags(
           bookId text not null, 
           tagId integer not null, 
-          foreign key(bookId) REFERENCES books(uuid),
-          foreign key(tagId) REFERENCES tags(id));
+          foreign key(bookId) REFERENCES books(uuid));
           ''';
 
   static const String _tags = '''
@@ -124,6 +123,10 @@ class LibraryDB extends _$LibraryDB {
 
   Future<int> _insertInitialShelves(Database db, String name, int type, int size) async {
     return db.rawInsert('insert into shelves(name, type, size) values(?, ?, ?)', [name, type, size]);
+  }
+
+  Future<void> deleteDanglingTags() async {
+    _paladin.rawDelete('delete from tags where id in (select tagId from book_tags where bookId not in (select uuid from books));');
   }
 
   Future<List<Uuid>> findLocalBooksNotInCalibre() async {
@@ -206,8 +209,6 @@ class LibraryDB extends _$LibraryDB {
   Future<void> removeBook(Uuid uuid) async {
     // Remove the books; check for Tags that may no longer be used and clean up if required.
     _paladin.rawDelete('delete from book_tags where bookId in (select id from books where uuid = ?)', [uuid.uuid]);
-    _paladin.rawDelete('delete from book_tags where bookId in (select id from books where uuid = ?)', [uuid.uuid]);
-    // TODO: delete any dangling tags.
     _paladin.delete('books', where: 'uuid = ?', whereArgs: [uuid.uuid]);
   }
 
