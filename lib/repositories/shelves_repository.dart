@@ -1,16 +1,16 @@
-
-import 'package:paladin/repositories/shelf_repository.dart';
-import 'package:paladin/utils/iterable.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../database/library_db.dart';
-import '../models/collection.dart';
+import '../interfaces/database_notifier.dart';
 import '../models/shelf.dart';
+import '../providers/calibre_ws.dart';
+import '../repositories/shelf_repository.dart';
+import '../utils/iterable.dart';import '../models/collection.dart';
 
 part 'shelves_repository.g.dart';
 
 @riverpod
-class ShelvesRepository extends _$ShelvesRepository {
+class ShelvesRepository extends _$ShelvesRepository implements DatabaseNotifier {
   static const String shelvesTable = 'shelves';
 
   static const String shelves = '''
@@ -22,6 +22,7 @@ class ShelvesRepository extends _$ShelvesRepository {
 
   @override
   Future<List<int>> build() async {
+    ref.read(calibreWSProvider.notifier).addUpdateNotifier(this);
     return await _getShelves();
   }
 
@@ -55,7 +56,8 @@ class ShelvesRepository extends _$ShelvesRepository {
     state = AsyncValue.data(current);
   }
 
-  Future<void> updateShelves() async {
+  @override
+  Future<void> updateStateFromDb() async {
     List<int> current = state.value!;
 
     for (int shelf in current) {

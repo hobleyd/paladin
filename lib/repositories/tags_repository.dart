@@ -2,11 +2,13 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../database/library_db.dart';
+import '../interfaces/database_notifier.dart';
+import '../providers/calibre_ws.dart';
 
 part 'tags_repository.g.dart';
 
 @riverpod
-class TagsRepository extends _$TagsRepository {
+class TagsRepository extends _$TagsRepository implements DatabaseNotifier {
   static const String tagsTable = 'tags';
 
   static const String tags = '''
@@ -19,10 +21,12 @@ class TagsRepository extends _$TagsRepository {
 
   @override
   Future<int> build() async {
+    ref.read(calibreWSProvider.notifier).addUpdateNotifier(this);
     return _getTagsCount();
   }
 
-  Future<void> updateTagsCount() async {
+  @override
+  Future<void> updateStateFromDb() async {
     state = AsyncValue.data(await _getTagsCount());
   }
 

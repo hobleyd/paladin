@@ -2,11 +2,13 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../database/library_db.dart';
+import '../interfaces/database_notifier.dart';
+import '../providers/calibre_ws.dart';
 
 part 'authors_repository.g.dart';
 
 @riverpod
-class AuthorsRepository extends _$AuthorsRepository {
+class AuthorsRepository extends _$AuthorsRepository implements DatabaseNotifier{
   static const String authorsTable = 'authors';
 
   static const String authors = '''
@@ -20,10 +22,12 @@ class AuthorsRepository extends _$AuthorsRepository {
 
   @override
   Future<int> build() async {
+    ref.read(calibreWSProvider.notifier).addUpdateNotifier(this);
     return _getAuthorsCount();
   }
 
-  Future<void> updateAuthorsCount() async {
+  @override
+  Future<void> updateStateFromDb() async {
     state = AsyncValue.data(await _getAuthorsCount());
   }
 

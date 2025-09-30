@@ -1,12 +1,14 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../database/library_db.dart';
+import '../interfaces/database_notifier.dart';
 import '../models/book.dart';
+import '../providers/calibre_ws.dart';
 
 part 'books_repository.g.dart';
 
 @riverpod
-class BooksRepository extends _$BooksRepository {
+class BooksRepository extends _$BooksRepository implements DatabaseNotifier {
   static const String booksTable = 'books';
 
   static const String books = '''
@@ -22,14 +24,14 @@ class BooksRepository extends _$BooksRepository {
           series integer, 
           seriesIndex real,
           title text not null,
-          unique(uuid) on conflict replace,
-          foreign key(series) references series(id));
+          unique(uuid) on conflict replace);
           ''';
 
   static const String indexBooks = 'create index books_uuid_idx on books(uuid);';
 
   @override
   Future<int> build() async {
+    ref.read(calibreWSProvider.notifier).addUpdateNotifier(this);
     return _getBooksCount();
   }
 
@@ -45,7 +47,8 @@ class BooksRepository extends _$BooksRepository {
     return Future.wait(results.map((book) => Book.fromMap(libraryDb, book)).toList());
   }
 
-  Future<void> updateBooksCount() async {
+  @override
+  Future<void> updateStateFromDb() async {
     state = AsyncValue.data(await _getBooksCount());
   }
 

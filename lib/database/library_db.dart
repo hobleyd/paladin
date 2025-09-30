@@ -206,6 +206,7 @@ class LibraryDB extends _$LibraryDB {
   Future<void> removeBook(Uuid uuid) async {
     // Remove the books; check for Tags that may no longer be used and clean up if required.
     _paladin.rawDelete('delete from book_tags where bookId in (select id from books where uuid = ?)', [uuid.uuid]);
+    _paladin.rawDelete('delete from book_tags where bookId in (select id from books where uuid = ?)', [uuid.uuid]);
     // TODO: delete any dangling tags.
     _paladin.delete('books', where: 'uuid = ?', whereArgs: [uuid.uuid]);
   }

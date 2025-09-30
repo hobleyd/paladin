@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:http_status_code/http_status_code.dart';
 
 import '../database/library_db.dart';
+import '../interfaces/database_notifier.dart';
 import '../models/book.dart';
 import '../models/calibre_book_count.dart';
 import '../models/calibre_server.dart';
@@ -24,6 +25,8 @@ part 'calibre_ws.g.dart';
 
 @Riverpod(keepAlive: true)
 class CalibreWS extends _$CalibreWS {
+  List<DatabaseNotifier> _notifiers = [];
+
   late LibraryDB _library;
   late Calibre _calibre;
   late Status _status;
@@ -40,6 +43,10 @@ class CalibreWS extends _$CalibreWS {
     }
 
     return CalibreSyncData(calibreServer: calibreUrl);
+  }
+
+  void addUpdateNotifier(DatabaseNotifier notifier) {
+    _notifiers.add(notifier);
   }
 
   Future<void> getBookByUuid(String uuid) async {
@@ -75,6 +82,11 @@ class CalibreWS extends _$CalibreWS {
 
     await _getUpdatedBooks();
     await _deleteBooksRemovedFromCalibre();
+
+    // Let everything know we have finished.
+    for (DatabaseNotifier notifier in _notifiers) {
+      notifier.updateStateFromDb();
+    }
 
     _status.addStatus('Completed Synchronisation; please review errors (if any)');
     updateState(syncState: CalibreSyncState.REVIEW,);

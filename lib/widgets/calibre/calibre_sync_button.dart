@@ -85,14 +85,7 @@ class CalibreSyncButton extends ConsumerWidget {
     ref.read(navigatorStackProvider.notifier).popUntil(context, NavigatorStack.homeScreen);
   }
 
-  // TODO: This feels a little painful = having to manually update the various providers. I am sure there is
-  //  a better way, but this works for now.
   Future<void> _synchronise(WidgetRef ref) async {
     await ref.read(calibreWSProvider.notifier).synchroniseWithCalibre();
-    ref.read(shelvesRepositoryProvider.notifier).updateShelves();
-    ref.read(authorsRepositoryProvider.notifier).updateAuthorsCount();
-    ref.read(booksRepositoryProvider.notifier).updateBooksCount();
-    ref.read(seriesRepositoryProvider.notifier).updateSeriesCount();
-    ref.read(tagsRepositoryProvider.notifier).updateTagsCount();
   }
 }
