@@ -125,7 +125,7 @@ class LibraryDB extends _$LibraryDB {
     return db.rawInsert('insert into shelves(name, type, size) values(?, ?, ?)', [name, type, size]);
   }
 
-  Future<void> deleteDanglingTags() async {
+  Future<void> cleanDanglingTags() async {
     _paladin.rawDelete('delete from tags where id in (select tagId from book_tags where bookId not in (select uuid from books));');
   }
 
