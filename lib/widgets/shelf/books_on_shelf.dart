@@ -104,11 +104,7 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
   }
 
   void _openBook(String bookUuid) {
-    if (shelf.collection.type == CollectionType.CURRENT) {
-      ref.read(bookDetailsProvider(bookUuid).notifier).readBook();
-    } else {
-      ref.read(navigatorStackProvider.notifier).push(context, "back_cover", MaterialPageRoute(builder: (context) => BackCover(bookUuid: bookUuid), settings: RouteSettings(name: "/home")));
-    }
+    ref.read(navigatorStackProvider.notifier).push(context, "back_cover", MaterialPageRoute(builder: (context) => BackCover(bookUuid: bookUuid), settings: RouteSettings(name: "/home")));
   }
 
   void _updateVisibility(int index, bool isVisible) {
