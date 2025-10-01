@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../models/book.dart';
-import '../../models/collection.dart';
 import '../../models/shelf.dart';
 import '../../providers/book_details.dart';
 import '../../providers/navigator_stack.dart';

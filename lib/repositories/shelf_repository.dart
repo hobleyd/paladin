@@ -1,11 +1,10 @@
-import 'package:flutter/foundation.dart';
-import 'package:paladin/models/collection.dart';
-import 'package:paladin/providers/shelf_collection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../database/library_db.dart';
+import '../models/collection.dart';
 import '../models/shelf.dart';
+import '../providers/shelf_collection.dart';
 import '../utils/math_constants.dart';
 
 part 'shelf_repository.g.dart';

@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/providers/calibre_book_provider.dart';
-import 'package:paladin/providers/calibre_ws.dart';
-import 'package:paladin/providers/navigator_stack.dart';
-import 'package:paladin/repositories/shelves_repository.dart';
 
 import '../../models/book.dart';
 import '../../models/calibre_server.dart';
 import '../../models/calibre_sync_data.dart';
-import '../../repositories/authors_repository.dart';
-import '../../repositories/books_repository.dart';
+import '../../providers/calibre_book_provider.dart';
+import '../../providers/calibre_ws.dart';
+import '../../providers/navigator_stack.dart';
 import '../../repositories/calibre_server_repository.dart';
-import '../../repositories/series_repository.dart';
-import '../../repositories/tags_repository.dart';
 
 class CalibreSyncButton extends ConsumerWidget {
   const CalibreSyncButton({super.key,});

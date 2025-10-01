@@ -23,12 +23,14 @@ class PaladinMenu extends ConsumerWidget {
       icon: const Icon(Icons.menu),
       itemBuilder: (BuildContext context) =>
       <PopupMenuEntry<String>>[
-        if (Platform.isAndroid) PopupMenuItem<String>(value: 'backup',   child: Text('Backup DB', style: Theme.of(context).textTheme.bodyMedium),),
-        if (Platform.isAndroid) PopupMenuDivider(),
+        if (Platform.isAndroid || Platform.isIOS) ...[
+          PopupMenuItem<String>(value: 'backup',   child: Text('Backup DB', style: Theme.of(context).textTheme.bodyMedium),),
+          PopupMenuDivider(),
+        ],
         PopupMenuItem<String>(value: 'future',   child: Text(Tag.futureReads, style: Theme.of(context).textTheme.bodyMedium),),
         PopupMenuItem<String>(value: 'history',  child: Text('Reading History', style: Theme.of(context).textTheme.bodyMedium),),
         PopupMenuItem<String>(value: 'sync',     child: Text('Synchronise Library', style: Theme.of(context).textTheme.bodyMedium),),
-        if (Platform.isAndroid) ...[
+        if (Platform.isAndroid || Platform.isIOS) ...[
           PopupMenuItem<String>(value: 'settings', child: Text('System Settings', style: Theme.of(context).textTheme.bodyMedium),),
           PopupMenuDivider(),
           PopupMenuItem<String>(value: 'exit', child: Text('Exit', style: Theme.of(context).textTheme.bodyMedium),),
@@ -87,7 +89,6 @@ class PaladinMenu extends ConsumerWidget {
           break;
         case 'exit':
           exit(0);
-          break;
       }
     }
   }

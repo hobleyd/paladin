@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/repositories/collection_list_repository.dart';
-import 'package:paladin/widgets/home/fatal_error.dart';
 
-import '../../models/book.dart';
+
 import '../../models/collection.dart';
 import '../../models/uuid.dart';
-import 'book_tile.dart';
+import '../../repositories/collection_list_repository.dart';
+import '../../widgets/home/fatal_error.dart';import 'book_tile.dart';
 
 class BookTileList extends ConsumerWidget {
   final Collection collection;

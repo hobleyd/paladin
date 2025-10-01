@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/book.dart';
-import '../models/calibre_sync_data.dart';
 import '../providers/book_details.dart';
 import '../providers/calibre_ws.dart';
 import '../providers/navigator_stack.dart';
@@ -21,7 +20,6 @@ class BackCover extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Book? book = ref.watch(bookDetailsProvider(bookUuid));
-    CalibreSyncData calibre = ref.watch(calibreWSProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text('')),

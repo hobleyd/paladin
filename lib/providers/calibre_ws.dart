@@ -25,7 +25,7 @@ part 'calibre_ws.g.dart';
 
 @Riverpod(keepAlive: true)
 class CalibreWS extends _$CalibreWS {
-  List<DatabaseNotifier> _notifiers = [];
+  final List<DatabaseNotifier> _notifiers = [];
 
   late LibraryDB _library;
   late Calibre _calibre;

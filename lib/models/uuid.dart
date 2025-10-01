@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import '../database/library_db.dart';
 import 'collection.dart';
 
 part 'uuid.g.dart';

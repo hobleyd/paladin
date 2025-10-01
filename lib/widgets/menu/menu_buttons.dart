@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/models/version_check.dart';
-import 'package:paladin/repositories/authors_repository.dart';
-import 'package:paladin/repositories/shelves_repository.dart';
 
 import '../../models/author.dart';
-import '../../models/book.dart';
 import '../../models/collection.dart';
 import '../../models/series.dart';
 import '../../models/tag.dart';
 import '../../models/uuid.dart';
+import '../../models/version_check.dart';
 import '../../providers/update.dart';
+import '../../repositories/authors_repository.dart';
 import '../../repositories/books_repository.dart';
 import '../../repositories/series_repository.dart';
+import '../../repositories/shelves_repository.dart';
 import '../../repositories/tags_repository.dart';
 import 'menu_button.dart';
 

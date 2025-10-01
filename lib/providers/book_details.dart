@@ -1,13 +1,12 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:paladin/providers/currently_reading_book.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../database/library_db.dart';
 import '../models/book.dart';
+import '../providers/currently_reading_book.dart';
 import '../repositories/books_repository.dart';
 import '../repositories/shelf_repository.dart';
 
