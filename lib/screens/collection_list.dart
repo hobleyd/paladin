@@ -44,9 +44,11 @@ class _CollectionList extends ConsumerState<CollectionList> {
                 IconButton(icon: const Icon(Icons.search), onPressed: () => _search()),
                 IconButton(icon: const Icon(Icons.menu), onPressed: null),
               ]),
-          body: Padding(
+          body: SafeArea(
+            child: Padding(
               padding: const EdgeInsets.only(left: 10, top: 6, right: 10, bottom: 6),
               child: CollectionTileList(collection: collection),
+            ),
           ),
       );
     }

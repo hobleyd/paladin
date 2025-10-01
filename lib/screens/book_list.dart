@@ -41,9 +41,11 @@ class _BookList extends ConsumerState<BookList> {
         IconButton(icon: const Icon(Icons.search), onPressed: () => _search()),
         IconButton(icon: const Icon(Icons.menu), onPressed: null),
       ]),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 6, bottom: 6, left: 10, right: 10),
-        child: BookTileList(collection: collection),
+      body: SafeArea(
+        child: Padding(
+            padding: const EdgeInsets.only(top: 6, bottom: 6, left: 10, right: 10),
+            child: BookTileList(collection: collection),
+        ),
       ),
     );
   }

@@ -25,25 +25,27 @@ class CalibreSync extends ConsumerWidget {
     CalibreSyncData calibre = ref.watch(calibreWSProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Synchronise Library')),
-      body: Column(
-        children: [
-          calibre.syncState == CalibreSyncState.PROCESSING || calibre.syncState == CalibreSyncState.REVIEW
-              ? Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: calibre.syncState == CalibreSyncState.PROCESSING
-                            ? CalibreBookList(bookType: BooksType.processed)
-                            : CalibreBookList(bookType: BooksType.error),
-                      ),
-                      Expanded(child: SyncNotifications()),
-                    ],
-                  ),
-                )
-              : Expanded(child: Padding(padding: const EdgeInsets.only(top: 50, bottom: 50), child: CalibreInformation())),
-          CalibreProgressBar(),
-          CalibreSyncButton(),
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            calibre.syncState == CalibreSyncState.PROCESSING || calibre.syncState == CalibreSyncState.REVIEW
+                ? Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: calibre.syncState == CalibreSyncState.PROCESSING
+                              ? CalibreBookList(bookType: BooksType.processed)
+                              : CalibreBookList(bookType: BooksType.error),
+                        ),
+                        Expanded(child: SyncNotifications()),
+                      ],
+                    ),
+                  )
+                : Expanded(child: Padding(padding: const EdgeInsets.only(top: 50, bottom: 50), child: CalibreInformation())),
+            CalibreProgressBar(),
+            CalibreSyncButton(),
+          ],
+        ),
       ),
     );
   }

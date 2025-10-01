@@ -39,9 +39,11 @@ class Settings extends ConsumerWidget {
 
       return Scaffold(
         appBar: AppBar(title: const Text('Settings')),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 6, bottom: 6, left: 10, right: 10),
-          child: Column(children: [CalibreSyncServer(), ...settings, ...add, PaladinUpdate()]),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 6, bottom: 6, left: 10, right: 10),
+            child: Column(children: [CalibreSyncServer(), ...settings, ...add, PaladinUpdate()]),
+          ),
         ),
       );
     });

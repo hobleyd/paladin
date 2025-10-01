@@ -23,37 +23,39 @@ class BackCover extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text('')),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 6, bottom: 6, left: 10, right: 10),
-        child: Column(
-          children: [
-            IntrinsicHeight(
-              child: Row(
-                children: [
-                  BookCover(bookUuid: bookUuid),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        BookTitle(bookUuid: bookUuid),
-                        if (book?.series != null) BookSeries(bookUuid: bookUuid),
-                        Authors(bookUuid: bookUuid),
-                        BookTags(bookUuid: bookUuid),
-                        BookRating(bookUuid: bookUuid),
-                      ],
-                    ),
+      body: SafeArea(
+        child: Padding(
+            padding: const EdgeInsets.only(top: 6, bottom: 6, left: 10, right: 10),
+            child: Column(
+              children: [
+                IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      BookCover(bookUuid: bookUuid),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            BookTitle(bookUuid: bookUuid),
+                            if (book?.series != null) BookSeries(bookUuid: bookUuid),
+                            Authors(bookUuid: bookUuid),
+                            BookTags(bookUuid: bookUuid),
+                            BookRating(bookUuid: bookUuid),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                const Divider(color: Colors.black, thickness: 1),
+                Blurb(bookUuid: bookUuid),
+                Align(alignment: AlignmentGeometry.bottomRight, child: ElevatedButton(onPressed: () => _refresh(ref), child: Icon(Icons.refresh))),
+                const Divider(color: Colors.black, thickness: 1),
+                ElevatedButton(onPressed: () => _readBook(context, ref), child: const Text('Read Book')),
+              ],
             ),
-            const Divider(color: Colors.black, thickness: 1),
-            Blurb(bookUuid: bookUuid),
-            Align(alignment: AlignmentGeometry.bottomRight, child: ElevatedButton(onPressed: () => _refresh(ref), child: Icon(Icons.refresh))),
-            const Divider(color: Colors.black, thickness: 1),
-            ElevatedButton(onPressed: () => _readBook(context, ref), child: const Text('Read Book')),
-          ],
+          ),
         ),
-      ),
     );
   }
 
