@@ -59,9 +59,7 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
                   Book? book = ref.watch(bookDetailsProvider(bookShelf[index]));
                   if (book == null) {
                     // We are using the bookProvider here to get the Book and the first time through, it will always be null.
-                    // Returning an 'X' here as it could also be null if the provider is disposed of. Shouldn't be a problem
-                    // from my understanding, but this will be a visual indication if it is. TODO: Remove after testing.
-                    return const Text('X');
+                    return const Text('');
                   }
                   String title = book.title.split(':').first;
 
