@@ -33,12 +33,10 @@ class _CollectionList extends ConsumerState<CollectionList> {
                     decoration: const InputDecoration(
                       isDense: true,
                       hintText: 'search...',
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                        fontStyle: FontStyle.italic,
-                      ),
+                      hintStyle: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic,),
                     ),
                     onSubmitted: (_) => _search(),
+                    onTap: () => searchController.selection = TextSelection(baseOffset: 0, extentOffset: searchController.value.text.length),
                   ),
                 ),
                 IconButton(icon: const Icon(Icons.search), onPressed: () => _search()),

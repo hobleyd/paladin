@@ -30,12 +30,10 @@ class _BookList extends ConsumerState<BookList> {
             decoration: const InputDecoration(
               isDense: true,
               hintText: 'search...',
-              hintStyle: TextStyle(
-                color: Colors.grey,
-                fontStyle: FontStyle.italic,
-              ),
+              hintStyle: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, ),
             ),
             onSubmitted: (_) => _search(),
+            onTap: () => searchController.selection = TextSelection(baseOffset: 0, extentOffset: searchController.value.text.length),
           ),
         ),
         IconButton(icon: const Icon(Icons.search), onPressed: () => _search()),
