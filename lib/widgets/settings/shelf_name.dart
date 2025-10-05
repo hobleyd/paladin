@@ -40,6 +40,7 @@ class ShelfName extends ConsumerWidget {
                 decoration: InputDecoration(border: OutlineInputBorder()),
                 enabled: !(shelf.type == CollectionType.CURRENT || shelf.type == CollectionType.RANDOM),
                 focusNode: focusNode,
+                onTap: () => controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.value.text.length),
               );
             },
             itemBuilder: (context, String shelfName) {
