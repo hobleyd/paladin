@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
   android_package_installer: ^0.0.3
   archive: ^4.0.7
-  app_settings: ^6.1.1
+  app_settings: ^7.0.0
   auto_size_text: ^3.0.0
   bonsoir: ^6.0.1
   color_filter_extension: ^1.0.1
