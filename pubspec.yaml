@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
   android_package_installer: ^0.0.3
   archive: ^4.0.7
-  app_settings: ^6.1.1
+  app_settings: ^7.0.0
   auto_size_text: ^3.0.0
   bonsoir: ^6.0.1
   color_filter_extension: ^1.0.1
@@ -20,7 +20,7 @@ dependencies:
   dartlin: ^0.6.3
   dio: ^5.9.0
   flutter_rating_bar: ^4.0.1
-  flutter_riverpod: ^3.0.1
+  flutter_riverpod: ^3.1.0
   flutter_typeahead: ^5.2.0
   flutter_widget_from_html_core: ^0.17.0
   freezed: 3.2.3
@@ -39,10 +39,10 @@ dependencies:
   path_provider: ^2.0.11
   permission_handler: ^12.0.1
   retrofit: ^4.7.3
-  riverpod_annotation: ^3.0.1
+  riverpod_annotation: ^4.0.0
   share_plus: ^12.0.0
-  sqflite_common_ffi: ^2.3.6
-  sqlite3_flutter_libs: ^0.5.39
+  sqflite_common_ffi: ^2.4.0+2
+  sqlite3_flutter_libs: ^0.5.41
   url_launcher: ^6.3.2
   version: ^3.0.2
   visibility_detector: ^0.4.0+2
@@ -57,8 +57,8 @@ dev_dependencies:
   json_serializable: ^6.11.1
   retrofit_generator: ^10.0.0
   innosetup: ^0.1.3
-  riverpod_lint: ^3.0.1
-  riverpod_generator: ^3.0.1
+  riverpod_lint: ^3.1.0
+  riverpod_generator: ^4.0.0
 
 # The following section is specific to Flutter packages.
 flutter:
