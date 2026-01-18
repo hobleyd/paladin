@@ -25,7 +25,7 @@ dependencies:
   flutter_widget_from_html_core: ^0.17.0
   freezed: 3.2.3
   freezed_annotation: ^3.1.0
-  google_fonts: ^6.3.2
+  google_fonts: ^7.0.2
   http_status_code: ^0.0.2
   image: ^4.5.4
   intersperse: ^2.0.0
