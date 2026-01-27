@@ -24,6 +24,7 @@ class BooksOnShelf extends ConsumerStatefulWidget {
 }
 
 class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
+  AutoSizeGroup shelfTitleGroup = AutoSizeGroup();
   Shelf get shelf => widget.shelf;
   Set<int> visibleBooks = {};
   GlobalKey? firstUnreadBook;
@@ -32,7 +33,6 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
   Widget build(BuildContext context) {
     var shelfCollection = ref.watch(shelfCollectionProvider(shelf.shelfId));
     var bookListAsync = ref.watch(shelfBooksRepositoryProvider(shelfCollection!));
-    AutoSizeGroup shelfTitleGroup = AutoSizeGroup();
 
     return bookListAsync.when(
       error: (error, stackTrace) {
