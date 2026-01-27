@@ -25,9 +25,10 @@ class BooksOnShelf extends ConsumerStatefulWidget {
 
 class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
   AutoSizeGroup shelfTitleGroup = AutoSizeGroup();
-  Shelf get shelf => widget.shelf;
-  Set<int> visibleBooks = {};
   GlobalKey? firstUnreadBook;
+  Set<int> visibleBooks = {};
+
+  Shelf get shelf => widget.shelf;
 
   @override
   Widget build(BuildContext context) {
