@@ -20,21 +20,24 @@ class BookTable extends ConsumerWidget {
           children: [
             Text('There are $count $label', style: Theme.of(context).textTheme.labelMedium),
             const Divider(color: Colors.black, thickness: 1),
-            Table(
-              children: [
-                // TODO: I'd prefer this to be scrollable, but I can't figure that out! So manage it manually.
-                for (int i = 0; i < (count > 20 ? 20 : count); i++)
-                  TableRow(
-                    decoration: BoxDecoration(color: i % 2 == 0 ? Colors.grey.shade300 : Colors.grey.shade200,),
-                    children: [
-                      TableCell(child: Text(bookCount.data!.books[i].title, style: Theme.of(context).textTheme.bodySmall)),
-                      TableCell(child: Text(bookCount.data!.books[i].author, style: Theme.of(context).textTheme.bodySmall)),
-                      TableCell(child: Text(getFormattedDateTime(bookCount.data!.books[i].lastModified), style: Theme.of(context).textTheme.bodySmall)),
-                    ],
-                  ),
-              ],
+            SizedBox(
+              height: MediaQuery.of(context).size.height - 339, // Adjust this height to your needs
+              child: SingleChildScrollView(
+                child: Table(
+                  children: [
+                    for (int i = 0; i < count; i++)
+                      TableRow(
+                        decoration: BoxDecoration(color: i % 2 == 0 ? Colors.grey.shade300 : Colors.grey.shade200,),
+                        children: [
+                          TableCell(child: Text(bookCount.data!.books[i].title, style: Theme.of(context).textTheme.bodySmall,),),
+                          TableCell(child: Text(bookCount.data!.books[i].author, style: Theme.of(context).textTheme.bodySmall,),),
+                          TableCell(child: Text(getFormattedDateTime(bookCount.data!.books[i].lastModified), style: Theme.of(context).textTheme.bodySmall,),),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
             ),
-            if (count > 25) Text('...'),
           ],
         );
       },
