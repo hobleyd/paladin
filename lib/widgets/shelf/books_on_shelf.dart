@@ -68,6 +68,7 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
                   GlobalKey key = GlobalKey(debugLabel: '${shelf.collection.getNameNormalised()}-$index');
                   if (!book.readStatus) {
                     firstUnreadBook ??= key;
+                    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToFirstUnreadBook());
                   }
                   return VisibilityDetector(
                     key: key,
@@ -91,7 +92,6 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToFirstUnreadBook());
   }
 
   void _openBook(String bookUuid) {
@@ -101,7 +101,7 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
   void _scrollToFirstUnreadBook() {
     final context = firstUnreadBook?.currentContext;
     if (context != null) {
-      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 500), curve: Curves.easeInOut,);
+      Scrollable.ensureVisible(context, duration: Duration(milliseconds: 0), curve: Curves.easeInOut,);
     }
   }
 
