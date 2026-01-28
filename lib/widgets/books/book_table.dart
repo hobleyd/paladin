@@ -16,6 +16,8 @@ class BookTable extends ConsumerWidget {
       future: future,
       builder: (BuildContext ctx, AsyncSnapshot<CalibreBookCount> bookCount) {
         int count = bookCount.data == null ? 0 : bookCount.data!.count;
+        int displayCount = bookCount.data == null ? 0 : bookCount.data!.books.length;
+
         return Column(
           children: [
             Text('There are $count $label', style: Theme.of(context).textTheme.labelMedium),
@@ -25,7 +27,7 @@ class BookTable extends ConsumerWidget {
               child: SingleChildScrollView(
                 child: Table(
                   children: [
-                    for (int i = 0; i < count; i++)
+                    for (int i = 0; i < displayCount; i++)
                       TableRow(
                         decoration: BoxDecoration(color: i % 2 == 0 ? Colors.grey.shade300 : Colors.grey.shade200,),
                         children: [

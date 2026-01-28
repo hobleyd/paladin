@@ -156,7 +156,8 @@ class CalibreWS extends _$CalibreWS {
     ref.read(calibreBookProvider(BooksType.processed).notifier).add(book);
     try {
       // Only download the Book if something has changed since last time!
-      if (book.lastModified > await ref.read(libraryDBProvider.notifier).getLastModified(book)) {
+      if (book.lastModified > await ref.read(libraryDBProvider.notifier).getLastModified(book) ||
+          (book.lastRead ?? 0) > await ref.read(libraryDBProvider.notifier).getLastRead(book)) {
         await _downloadBook(book);
         await _library.insertBook(book);
       } else {

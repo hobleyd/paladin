@@ -149,6 +149,11 @@ class LibraryDB extends _$LibraryDB {
     return maps.isNotEmpty ? maps.first['lastModified'] as int : 0;
   }
 
+  Future<int> getLastRead(Book book) async {
+    final List<Map<String, dynamic>> maps = await _paladin.query('books', columns: [ 'lastRead'], where: 'uuid = ?', whereArgs: [book.uuid]);
+    return maps.isNotEmpty ? maps.first['lastRead'] as int : 0;
+  }
+
   Future<void> insertBook(Book book) async {
     // Ensure we update the Added date if we don't already have it.
     int added = book.added ?? (DateTime.now().millisecondsSinceEpoch / 1000).round();
