@@ -34,7 +34,7 @@ class BookCover extends ConsumerWidget {
         data: (Image cover) {
           return ColorFiltered(
             colorFilter: brightnessFilter.colorFilter,
-            child: book.lastRead != null && book.lastRead! > 0
+            child: book.readStatus == true
               ? cover
               : Stack(
                   alignment: AlignmentGeometry.topRight,
