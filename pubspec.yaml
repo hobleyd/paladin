@@ -2,7 +2,7 @@ name: paladin
 description: eLibrary management for Tablets and eInk devices.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.1.3
+version: 0.1.4
 
 environment:
   sdk: '>=3.8.0'
