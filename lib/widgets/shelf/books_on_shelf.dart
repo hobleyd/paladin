@@ -66,8 +66,8 @@ class _BooksOnShelf extends ConsumerState<BooksOnShelf> {
 
                   String title = book.title.split(':').first;
                   GlobalKey key = GlobalKey(debugLabel: '${shelf.collection.getNameNormalised()}-$index');
-                  if (!book.readStatus) {
-                    firstUnreadBook ??= key;
+                  if (!book.readStatus && firstUnreadBook == null) {
+                    firstUnreadBook = key;
                     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToFirstUnreadBook());
                   }
                   return VisibilityDetector(
