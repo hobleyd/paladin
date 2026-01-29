@@ -64,7 +64,7 @@ class BookDetails extends _$BookDetails {
     int lastRead = (DateTime.now().millisecondsSinceEpoch / 1000).round();
 
     var libraryDb = ref.read(libraryDBProvider.notifier);
-    await libraryDb.updateTable(table: 'books', values: {'lastRead': lastRead, 'readStatus': 1}, where: 'uuid = ?', whereArgs: [state!.uuid]);
+    await libraryDb.updateTable(table: 'books', values: {'lastRead': lastRead, 'lastModified': lastRead, 'readStatus': 1}, where: 'uuid = ?', whereArgs: [state!.uuid]);
 
     // Ensure Currently Reading Shelf is updated.
     ref.read(shelfRepositoryProvider(1).notifier).updateShelf();
