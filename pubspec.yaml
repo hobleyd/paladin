@@ -81,4 +81,4 @@ flutter_launcher_icons:
   web:
     generate: false
   windows:
-    generate: false
+    generate: true
