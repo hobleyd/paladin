@@ -6,9 +6,16 @@ part 'version_check.freezed.dart';
 @immutable
 @freezed
 class VersionCheck with _$VersionCheck {
+  @override
   final Version currentVersion;
+
+  @override
   final Version newVersion;
+
+  @override
   final String downloadUrl;
+
+  @override
   final String downloadPackage;
 
   bool get hasUpdate => newVersion > currentVersion;
