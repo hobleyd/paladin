@@ -18,7 +18,7 @@ dependencies:
   color_filter_extension: ^1.0.1
   cupertino_icons: ^1.0.2
   dartlin: ^0.6.3
-  dio: ^5.9.0
+  dio: ^5.9.1
   flutter_rating_bar: ^4.0.1
   flutter_riverpod: ^3.1.0
   flutter_typeahead: ^5.2.0
