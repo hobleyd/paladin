@@ -12,7 +12,7 @@ class CurrentlyReadingBook extends _$CurrentlyReadingBook {
     return _getCurrentlyReading();
   }
 
-  Future<void> updateCurrentReading() async {
+  Future<void> updateCurrentlyReading() async {
     state = AsyncValue.data(await _getCurrentlyReading());
   }
 

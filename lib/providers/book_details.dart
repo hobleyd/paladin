@@ -68,7 +68,7 @@ class BookDetails extends _$BookDetails {
 
     // Ensure Currently Reading Shelf is updated.
     ref.read(shelfRepositoryProvider(1).notifier).updateShelf();
-    ref.read(currentlyReadingBookProvider.notifier).updateCurrentReading();
+    ref.read(currentlyReadingBookProvider.notifier).updateCurrentlyReading();
     state = state!.copyBookWith(lastRead: lastRead);
   }
 }
