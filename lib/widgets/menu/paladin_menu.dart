@@ -3,15 +3,18 @@ import 'dart:io';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:paladin/database/library_db.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../database/library_db.dart';
 import '../../models/collection.dart';
 import '../../models/shelf.dart';
 import '../../models/tag.dart';
+import '../../models/version_check.dart';
 import '../../providers/navigator_stack.dart';
+import '../../providers/update.dart';
 import '../../screens/book_list.dart';
 import '../../screens/calibresync.dart';
+import '../../screens/settings.dart';
 import '../../utils/math_constants.dart';
 
 class PaladinMenu extends ConsumerWidget {
@@ -19,24 +22,37 @@ class PaladinMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return PopupMenuButton<String>(
-      icon: const Icon(Icons.menu),
-      itemBuilder: (BuildContext context) =>
-      <PopupMenuEntry<String>>[
-        if (Platform.isAndroid || Platform.isIOS) ...[
-          PopupMenuItem<String>(value: 'backup',   child: Text('Backup DB', style: Theme.of(context).textTheme.bodyMedium),),
-          PopupMenuDivider(),
+    VersionCheck? versions = ref.watch(updateProvider).value;
+
+    String settingsLabel = 'Settings';
+    String moreDetails = 'More\n(...)';
+    if (versions != null) {
+      if (versions.hasUpdate) {
+        settingsLabel = '$settingsLabel (!)';
+        moreDetails = 'More\n(Update Available!)';
+      }
+    }
+    return Expanded(
+      child: PopupMenuButton<String>(
+        color: Colors.white,
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+          if (Platform.isAndroid || Platform.isIOS) ...[
+            PopupMenuItem<String>(value: 'backup', child: Text('Backup DB', style: Theme.of(context).textTheme.bodyMedium),),
+            PopupMenuDivider(),
+          ],
+          PopupMenuItem<String>(value: 'future', child: Text(Tag.futureReads, style: Theme.of(context).textTheme.bodyMedium),),
+          PopupMenuItem<String>(value: 'history', child: Text('Reading History', style: Theme.of(context).textTheme.bodyMedium),),
+          PopupMenuItem<String>(value: 'appsettings', child: Text(settingsLabel, style: Theme.of(context).textTheme.bodyMedium),),
+          PopupMenuItem<String>(value: 'sync', child: Text('Synchronise Library', style: Theme.of(context).textTheme.bodyMedium),),
+          if (Platform.isAndroid || Platform.isIOS) ...[
+            PopupMenuItem<String>(value: 'settings', child: Text('System Settings', style: Theme.of(context).textTheme.bodyMedium),),
+            PopupMenuDivider(),
+            PopupMenuItem<String>(value: 'exit', child: Text('Exit', style: Theme.of(context).textTheme.bodyMedium),),
+          ],
         ],
-        PopupMenuItem<String>(value: 'future',   child: Text(Tag.futureReads, style: Theme.of(context).textTheme.bodyMedium),),
-        PopupMenuItem<String>(value: 'history',  child: Text('Reading History', style: Theme.of(context).textTheme.bodyMedium),),
-        PopupMenuItem<String>(value: 'sync',     child: Text('Synchronise Library', style: Theme.of(context).textTheme.bodyMedium),),
-        if (Platform.isAndroid || Platform.isIOS) ...[
-          PopupMenuItem<String>(value: 'settings', child: Text('System Settings', style: Theme.of(context).textTheme.bodyMedium),),
-          PopupMenuDivider(),
-          PopupMenuItem<String>(value: 'exit', child: Text('Exit', style: Theme.of(context).textTheme.bodyMedium),),
-        ],
-      ],
-      onSelected: (String? item) => _selectMenuItem(context, ref, item),
+        onSelected: (String? item) => _selectMenuItem(context, ref, item),
+        child: Text(moreDetails, textAlign: TextAlign.center, style: Theme.of(context).textTheme.labelSmall),
+      ),
     );
   }
 
@@ -81,7 +97,10 @@ class PaladinMenu extends ConsumerWidget {
             ),
           );
           break;
-        case 'settings':
+        case 'appsettings':
+          ref.read(navigatorStackProvider.notifier).push(context, "settings_button", MaterialPageRoute(builder: (context) => const Settings()));
+          break;
+          case 'settings':
           AppSettings.openAppSettings(type: AppSettingsType.generalSettings);
           break;
         case 'sync':

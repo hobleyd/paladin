@@ -14,6 +14,7 @@ import '../../repositories/series_repository.dart';
 import '../../repositories/shelves_repository.dart';
 import '../../repositories/tags_repository.dart';
 import 'menu_button.dart';
+import 'paladin_menu.dart';
 
 class MenuButtons extends ConsumerWidget {
   const MenuButtons({super.key});
@@ -24,17 +25,9 @@ class MenuButtons extends ConsumerWidget {
     final int booksCount = ref.watch(booksRepositoryProvider).value ?? 0;
     final int seriesCount = ref.watch(seriesRepositoryProvider).value ?? 0;
     final int tagsCount = ref.watch(tagsRepositoryProvider).value ?? 0;
-    int settingsCount = 1 + (ref.watch(shelvesRepositoryProvider).value?.length ?? 0);
 
-    VersionCheck? versions = ref.watch(updateProvider).value;
-    String settingsLabel = 'Settings';
-    if (versions != null) {
-      if (versions.hasUpdate) {
-        settingsLabel = '$settingsLabel (!)';
-        settingsCount++;
-      }
-    }
     return Ink(
+      color: Colors.white,
         child: IntrinsicHeight(
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -47,7 +40,7 @@ class MenuButtons extends ConsumerWidget {
                   const VerticalDivider(color: Colors.black, thickness: 1),
                   MenuButton(label: 'Tags', count: tagsCount, collection: Collection(type: CollectionType.TAG, query: Tag.tagsQuery, queryArgs: ['%'])),
                   const VerticalDivider(color: Colors.black, thickness: 1),
-                  MenuButton(label: settingsLabel, count: settingsCount, collection: Collection(type: CollectionType.SETTINGS, query: "",)),
+                  PaladinMenu(),
                 ],
             ),
         ),

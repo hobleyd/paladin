@@ -6,7 +6,6 @@ import 'package:paladin/widgets/books/book_cover.dart';
 
 import '../../models/book.dart';
 import '../../screens/backcover.dart';
-import '../menu/paladin_menu.dart';
 import 'authors.dart';
 import 'blurb.dart';
 import 'book_series.dart';
@@ -59,7 +58,6 @@ class BookTile extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      if (showMenu) PaladinMenu(),
                       if (!showMenu && book.series != null) BookSeries(bookUuid: bookUuid),
                       if (!showMenu) LastRead(bookUuid: bookUuid),
                     ],
