@@ -36,11 +36,11 @@ class BookDetails extends _$BookDetails {
   Future<void> readBook() async {
     updateLastReadDate();
 
-    if (Platform.isAndroid || Platform.isIOS) {
+    //if (Platform.isAndroid || Platform.isIOS) {
       OpenFilex.open(await state!.path, type: state!.mimeType);
-    } else {
-      launchUrl(Uri.file(await state!.path));
-    }
+    //} else {
+     // launchUrl(Uri.file(await state!.path));
+    //
   }
 
   Future setRating(int newRating) async {
