@@ -21,7 +21,7 @@ class BookSeries extends ConsumerWidget {
       return const Text('');
     }
 
-    return book.series != null
+    return book.series != null && book.series!.isNotEmpty
         ? RichText(
             text: TextSpan(
               style: Theme.of(context).textTheme.bodySmall,
@@ -45,6 +45,6 @@ class BookSeries extends ConsumerWidget {
               ],
             ),
           )
-        : const SizedBox(height: 0);
+        : const Text('');
   }
 }

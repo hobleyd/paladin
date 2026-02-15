@@ -13,6 +13,8 @@ part 'series.g.dart';
 class Series extends Collection {
   static const String seriesQuery = 'select series.id, series.series, count(books.uuid) as count from series left join books on books.series = series.id where series.series like ? group by series.id order by series.series;';
 
+  bool get isNotEmpty => series.isNotEmpty;
+
   @JsonKey(includeToJson: false)
   final int? id;
 
