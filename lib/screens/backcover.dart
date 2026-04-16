@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:paladin/widgets/books/last_read.dart';
 
 import '../models/book.dart';
 import '../providers/book_details.dart';
@@ -40,6 +41,7 @@ class BackCover extends ConsumerWidget {
                             if (book?.series != null) BookSeries(bookUuid: bookUuid),
                             Authors(bookUuid: bookUuid),
                             BookTags(bookUuid: bookUuid),
+                            LastRead(bookUuid: bookUuid),
                             BookRating(bookUuid: bookUuid),
                           ],
                         ),
