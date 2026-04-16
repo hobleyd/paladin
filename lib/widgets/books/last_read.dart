@@ -21,6 +21,8 @@ class LastRead extends ConsumerWidget {
       final DateTime lastRead = DateTime.fromMillisecondsSinceEpoch(book.lastRead! * 1000);
       final String formattedDate = DateFormat('MMMM d, y').format(lastRead);
       return Text('Last read: $formattedDate', style: Theme.of(context).textTheme.bodySmall);
+    } else if (book.readStatus) {
+      return Text('Previously read...', style: Theme.of(context).textTheme.bodySmall);
     } else {
       return Text('Not (yet) read!', style: Theme.of(context).textTheme.bodySmall);
     }
