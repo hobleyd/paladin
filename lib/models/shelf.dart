@@ -14,7 +14,7 @@ class Shelf {
     CollectionType.SERIES  : 'select * from books where series = (select id from series where series = ?) order by seriesIndex ASC;',
     CollectionType.TAG     : 'select * from books where uuid in (select bookId from book_tags, tags where tags.id = book_tags.tagId and tags.tag = ?) and lastRead = 0 order by random() limit ?',
     CollectionType.CURRENT : 'select * from books where lastRead > 0 order by lastRead DESC limit ?',
-    CollectionType.RANDOM  : 'select * from books where lastRead = 0 order by random() limit ?',
+    CollectionType.RANDOM  : 'select * from books where lastRead = 0 and readStatus = 0 order by random() limit ?',
   };
 
   static const shelfTable = {
