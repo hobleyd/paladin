@@ -36,7 +36,7 @@ abstract class Calibre {
   @GET("/tags/{uuid}")
   Future<List<Tag>> getTags(@Path("uuid") String uuid);
 
-  @PUT("/update")
+  @PUT("/books")
   @Headers(<String, dynamic>{
     "Content-Type" : "application/json",
   })

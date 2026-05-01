@@ -19,8 +19,8 @@ Paladin is licensed under the GPL-V3 license.
 calibre
 -------
 
-Paladin uses it's own Web Services to connect to your Calibre database. You'll need to install those as well
-to get access to your library from anywhere in the world.
+Paladin uses [Calibre Agent](https://github.com/hobleyd/calibre_agent) to connect to your Calibre database. You'll need to install that as well
+to get access to your library from your local network. Just make sure both Paladin and Calibre Agent are running on the same network.
 
 Contributing
 ------------

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
+import 'package:paladin/widgets/calibre/calibre_status.dart';
 
 import '../models/calibre_sync_data.dart';
 import '../providers/calibre_ws.dart';

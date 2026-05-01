@@ -17,48 +17,59 @@ class CalibreNetworkService extends _$CalibreNetworkService {
   }
 
   Future<void> _discoverService() async {
-    // Once defined, we can start the discovery :
-    _discovery = BonsoirDiscovery(type: _calibreService, printLogs: kReleaseMode);
-    await _discovery.initialize();
+    try {
+      _discovery = BonsoirDiscovery(type: _calibreService, printLogs: kDebugMode);
+      await _discovery.initialize();
 
-    _discovery.eventStream!.listen((event) {
-      switch (event) {
-        case BonsoirDiscoveryServiceFoundEvent():
-          event.service.resolve(_discovery.serviceResolver);
-          break;
-        case BonsoirDiscoveryServiceResolvedEvent():
-          updateState(event.service);
-          break;
-        case BonsoirDiscoveryServiceUpdatedEvent():
-          updateState(event.service);
-          break;
-        case BonsoirDiscoveryServiceLostEvent():
-          // TODO: Should I pay attention to this, or not?
-          //ref.read(statusProvider.notifier).addStatus('Lost connection to calibre network server...');
-          //state = "";
-          break;
-        default:
-          break;
-      }
-    });
+      _discovery.eventStream!.listen(
+        (event) {
+          switch (event) {
+            case BonsoirDiscoveryStartedEvent():
+              ref.read(statusProvider.notifier).addStatus('mDNS: discovery started for $_calibreService');
+              break;
+            case BonsoirDiscoveryServiceFoundEvent():
+              ref.read(statusProvider.notifier).addStatus('mDNS: found "${event.service.name}" (${event.service.type}), resolving...');
+              event.service.resolve(_discovery.serviceResolver);
+              break;
+            case BonsoirDiscoveryServiceResolvedEvent():
+              ref.read(statusProvider.notifier).addStatus('mDNS: resolved "${event.service.name}" at ${event.service.host}:${event.service.port}');
+              updateState(event.service);
+              break;
+            case BonsoirDiscoveryServiceResolveFailedEvent():
+              ref.read(statusProvider.notifier).addStatus('mDNS: resolve failed');
+              break;
+            case BonsoirDiscoveryServiceUpdatedEvent():
+              updateState(event.service);
+              break;
+            case BonsoirDiscoveryServiceLostEvent():
+              ref.read(statusProvider.notifier).addStatus('mDNS: lost "${event.service.name}"');
+              break;
+            default:
+              break;
+          }
+        },
+        onError: (e) => ref.read(statusProvider.notifier).addStatus('mDNS stream error: $e'),
+      );
 
-    // Start the discovery **after** listening to discovery events :
-    await _discovery.start();
+      await _discovery.start();
+      ref.read(statusProvider.notifier).addStatus('mDNS: scanning for $_calibreService services...');
+    } catch (e) {
+      ref.read(statusProvider.notifier).addStatus('mDNS discovery error: $e');
+    }
   }
 
   void updateState(BonsoirService service) {
-    if (service.name == "calibre-service") {
-      String? host = service.attributes['server'];
-      String? port = service.attributes['port'];
-      if (host != null && port != null) {
-        if (host.endsWith('.')) {
-          host = host.substring(0, host.length - 1);
-        }
-        String networkService = 'https://$host:$port';
-        if (state != networkService) {
-          ref.read(statusProvider.notifier).addStatus('Setting Calibre host to $networkService');
-          state = networkService;
-        }
+    if (service.name != 'calibre-agent') return;
+    String? host = service.host;
+    int port = service.port;
+    if (host != null) {
+      if (host.endsWith('.')) {
+        host = host.substring(0, host.length - 1);
+      }
+      String networkService = 'https://$host:$port';
+      if (state != networkService) {
+        ref.read(statusProvider.notifier).addStatus('Setting Calibre host to $networkService');
+        state = networkService;
       }
     }
   }
