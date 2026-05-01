@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:open_filex/open_filex.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../database/library_db.dart';
 import '../models/book.dart';
@@ -36,11 +35,11 @@ class BookDetails extends _$BookDetails {
   Future<void> readBook() async {
     updateLastReadDate();
 
-    //if (Platform.isAndroid || Platform.isIOS) {
+    if (Platform.isMacOS) {
+      Process.run('open', ['-a', 'Inkworm', await state!.path]);
+    } else {
       OpenFilex.open(await state!.path, type: state!.mimeType);
-    //} else {
-     // launchUrl(Uri.file(await state!.path));
-    //
+    }
   }
 
   Future setRating(int newRating) async {

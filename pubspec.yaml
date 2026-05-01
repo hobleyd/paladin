@@ -67,12 +67,14 @@ flutter:
     - assets/generic_book_cover.png
     - assets/new.png
     - assets/paladin.png
+    - assets/paladin-eink.png
     - assets/sharpblue.png
     - assets/google_fonts/
     - pubspec.yaml
 
 flutter_launcher_icons:
   image_path: 'assets/paladin.png'
+  image_path_android: 'assets/paladin-eink.png'
   android: true
   ios: true
   remove_alpha_ios: true
