@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../repositories/shelves_repository.dart';
 import '../widgets/home/fatal_error.dart';
+import '../widgets/settings/auto_update_shelf_setting.dart';
 import '../widgets/settings/calibre_sync_server.dart';
 import '../widgets/settings/paladin_update.dart';
 import '../widgets/settings/shelf_setting.dart';
@@ -42,7 +43,7 @@ class Settings extends ConsumerWidget {
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(top: 6, bottom: 6, left: 10, right: 10),
-            child: Column(children: [CalibreSyncServer(), ...settings, ...add, PaladinUpdate()]),
+            child: Column(children: [CalibreSyncServer(), ...settings, ...add, const AutoUpdateShelfSetting(), PaladinUpdate()]),
           ),
         ),
       );

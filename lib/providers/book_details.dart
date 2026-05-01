@@ -7,7 +7,9 @@ import '../database/library_db.dart';
 import '../models/book.dart';
 import '../providers/currently_reading_book.dart';
 import '../repositories/books_repository.dart';
+import '../repositories/app_settings_repository.dart';
 import '../repositories/shelf_repository.dart';
+import '../repositories/shelves_repository.dart';
 
 part 'book_details.g.dart';
 
@@ -34,6 +36,11 @@ class BookDetails extends _$BookDetails {
 
   Future<void> readBook() async {
     updateLastReadDate();
+
+    final appSettings = ref.read(appSettingsRepositoryProvider).value;
+    if (appSettings?.autoUpdateShelf == true && state?.series != null) {
+      ref.read(shelvesRepositoryProvider.notifier).updateShelfForSeries(state!.series!.series);
+    }
 
     if (Platform.isMacOS) {
       Process.run('open', ['-a', 'Inkworm', await state!.path]);

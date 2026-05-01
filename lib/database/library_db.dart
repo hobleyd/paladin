@@ -16,6 +16,7 @@ import '../models/uuid.dart';
 import '../repositories/books_repository.dart';
 import '../repositories/authors_repository.dart';
 import '../repositories/series_repository.dart';
+import '../repositories/app_settings_repository.dart';
 import '../repositories/shelves_repository.dart';
 
 part 'library_db.g.dart';
@@ -33,7 +34,7 @@ class LibraryDB extends _$LibraryDB {
 
     _paladin = await databaseFactoryFfi.openDatabase(await _getDatabasePath(),
         options: OpenDatabaseOptions(
-            version: 1,
+            version: 2,
             onConfigure: (db) {
               _paladin = db;
               _enableForeignKeys(db);
@@ -102,6 +103,10 @@ class LibraryDB extends _$LibraryDB {
 
       _insertInitialShelves(db, 'Currently Reading', CollectionType.CURRENT.index, 15);
       _insertInitialShelves(db, 'Random Shelf',  CollectionType.RANDOM.index, 30);
+    }
+
+    if (oldVersion < 2) {
+      db.execute(AppSettingsRepository.appSettings);
     }
 
     return;

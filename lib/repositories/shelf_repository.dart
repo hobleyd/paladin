@@ -84,6 +84,20 @@ class ShelfRepository extends _$ShelfRepository {
     updateState(current);
   }
 
+  Future<void> updateShelfToSeries(String seriesName) async {
+    Shelf current = state.value!;
+    current = current.copyWith(
+      name: seriesName,
+      collection: current.collection.copyWith(
+        type: CollectionType.SERIES,
+        query: Shelf.shelfQuery[CollectionType.SERIES]!,
+        queryArgs: [seriesName],
+      ),
+      size: maxInt,
+    );
+    updateState(current);
+  }
+
   Future<void> updateState(Shelf current) async {
     ref.read(shelfCollectionProvider(current.shelfId).notifier).updateCollection(current.collection);
     state = AsyncValue.data(current);

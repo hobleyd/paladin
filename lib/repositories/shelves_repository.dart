@@ -65,6 +65,39 @@ class ShelvesRepository extends _$ShelvesRepository implements DatabaseNotifier 
     }
   }
 
+  Future<void> updateShelfForSeries(String seriesName) async {
+    final List<int> shelfIds = state.value ?? [];
+    final libraryDb = ref.read(libraryDBProvider.notifier);
+
+    int? fullyReadShelfId;
+    int? firstCandidateId;
+
+    for (final shelfId in shelfIds) {
+      final shelf = ref.read(shelfRepositoryProvider(shelfId)).value;
+      if (shelf == null) continue;
+      if (shelf.collection.type == CollectionType.CURRENT || shelf.collection.type == CollectionType.RANDOM) continue;
+
+      firstCandidateId ??= shelfId;
+
+      if (shelf.collection.type == CollectionType.SERIES) {
+        final results = await libraryDb.rawQuery(
+          sql: 'SELECT COUNT(*) as count FROM books WHERE series = (SELECT id FROM series WHERE series = ?) AND readStatus = 0',
+          args: [shelf.name],
+        );
+        final unread = results.isEmpty ? 1 : (results.first['count'] as int);
+        if (unread == 0) {
+          fullyReadShelfId = shelfId;
+          break;
+        }
+      }
+    }
+
+    final targetId = fullyReadShelfId ?? firstCandidateId;
+    if (targetId == null) return;
+
+    await ref.read(shelfRepositoryProvider(targetId).notifier).updateShelfToSeries(seriesName);
+  }
+
   Future<List<int>> _getShelves() async {
     var libraryDb = ref.read(libraryDBProvider.notifier);
     final List<Map<String, dynamic>> maps = await libraryDb.query(table: 'shelves', columns: ['rowid', 'name', 'type', 'size'], orderBy: 'rowid asc');
