@@ -66,9 +66,10 @@ class CalibreInformation extends ConsumerWidget {
 
     List<Map<String, dynamic>> results = await libraryDb.rawQuery(
         sql: '''
-            SELECT title, authors.name as author, lastRead, COUNT(*) OVER() AS count
+            SELECT title, GROUP_CONCAT(authors.name, ', ') as author, lastRead, COUNT(*) OVER() AS count
               FROM books, authors, book_authors
              WHERE books.uuid = book_authors.bookId and authors.id = book_authors.authorId and lastRead > ?
+          GROUP BY books.uuid
           ORDER BY lastRead DESC
         ''',
         args: [syncFromEpoch ? 0 : lastConnected]);
