@@ -24,7 +24,7 @@ class Update extends _$Update {
   Future<VersionCheck?> _checkGithub() async {
     if (!Platform.isAndroid) return null;
 
-    final response = await Dio().get('https://api.github.com/repos/hobleyd/inkworm/releases/latest');
+    final response = await Dio().get('https://api.github.com/repos/hobleyd/paladin/releases/latest');
     if (response.statusCode != 200) return null;
 
     final List<dynamic> assets = response.data['assets'] as List<dynamic>;

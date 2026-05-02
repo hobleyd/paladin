@@ -8,6 +8,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
 import '../../models/version_check.dart';
+import '../../providers/status_provider.dart';
 import '../../providers/update.dart';
 
 class PaladinUpdate extends ConsumerStatefulWidget {
@@ -147,18 +148,18 @@ class _PaladinUpdate extends ConsumerState<PaladinUpdate> {
 
       final int? statusCode = await AndroidPackageInstaller.installApk(apkFilePath: apkPath,);
       if (statusCode == null) {
-        //ref.read(epubProvider.notifier).setError('Android did not return an installation result.', StackTrace.current);
+        ref.read(statusProvider.notifier).addStatus('Android did not return an installation result.');
         return;
       }
 
       final installationStatus = PackageInstallerStatus.byCode(statusCode);
       if (installationStatus != PackageInstallerStatus.success) {
-        //ref.read(epubProvider.notifier).setError('Update install failed: ${installationStatus.name}.', StackTrace.current);
+        ref.read(statusProvider.notifier).addStatus('Update install failed: ${installationStatus.name}.');
       }
     } on DioException catch (error) {
-      //ref.read(epubProvider.notifier).setError('Update download failed: ${error.message ?? 'network error'}.', StackTrace.current);
+      ref.read(statusProvider.notifier).addStatus('Update download failed: ${error.message ?? 'network error'}.');
     } catch (error) {
-      //ref.read(epubProvider.notifier).setError('Update failed: $error', StackTrace.current);
+      ref.read(statusProvider.notifier).addStatus('Update failed: $error');
     } finally {
       if (mounted) {
         setState(() {
