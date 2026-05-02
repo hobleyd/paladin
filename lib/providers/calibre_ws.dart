@@ -76,12 +76,16 @@ class CalibreWS extends _$CalibreWS {
     updateState(syncState: CalibreSyncState.PROCESSING);
     _status.addStatus('Initialising Sync...');
 
+    final int syncStarted = (DateTime.now().millisecondsSinceEpoch / 1000).round();
+
     if (state.syncReadStatuses) {
       await _updateReadStatuses();
     }
 
     await _getUpdatedBooks();
     await _deleteBooksRemovedFromCalibre();
+
+    await ref.read(calibreServerRepositoryProvider.notifier).updateServerDetails(lastConnected: syncStarted);
 
     // Let everything know we have finished.
     for (DatabaseNotifier notifier in _notifiers) {
