@@ -18,6 +18,12 @@
 @import bonsoir_darwin;
 #endif
 
+#if __has_include(<cryptography_flutter_plus/CryptographyFlutterPlugin.h>)
+#import <cryptography_flutter_plus/CryptographyFlutterPlugin.h>
+#else
+@import cryptography_flutter_plus;
+#endif
+
 #if __has_include(<flutter_keyboard_visibility/FlutterKeyboardVisibilityPlugin.h>)
 #import <flutter_keyboard_visibility/FlutterKeyboardVisibilityPlugin.h>
 #else
@@ -65,6 +71,7 @@
 + (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry {
   [AppSettingsPlugin registerWithRegistrar:[registry registrarForPlugin:@"AppSettingsPlugin"]];
   [SwiftBonsoirPlugin registerWithRegistrar:[registry registrarForPlugin:@"SwiftBonsoirPlugin"]];
+  [CryptographyFlutterPlugin registerWithRegistrar:[registry registrarForPlugin:@"CryptographyFlutterPlugin"]];
   [FlutterKeyboardVisibilityPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterKeyboardVisibilityPlugin"]];
   [KeepScreenOnPlugin registerWithRegistrar:[registry registrarForPlugin:@"KeepScreenOnPlugin"]];
   [OpenFilePlugin registerWithRegistrar:[registry registrarForPlugin:@"OpenFilePlugin"]];

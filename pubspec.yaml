@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   android_package_installer: ^0.0.3
+  desktop_updater: ^1.4.0
   archive: ^4.0.9
   app_settings: ^7.0.0
   auto_size_text: ^3.0.0

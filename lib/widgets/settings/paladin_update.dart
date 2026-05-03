@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:android_package_installer/android_package_installer.dart';
+import 'package:desktop_updater/desktop_updater.dart';
+import 'package:desktop_updater/updater_controller.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,9 +23,49 @@ class PaladinUpdate extends ConsumerStatefulWidget {
 class _PaladinUpdate extends ConsumerState<PaladinUpdate> {
   bool downloading = false;
   double? downloadProgress;
+  DesktopUpdaterController? _desktopController;
+
+  static const String _appArchiveUrl = 'https://hobleyd.github.io/paladin/app-archive.json';
+
+  @override
+  void initState() {
+    super.initState();
+    if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+      _desktopController = DesktopUpdaterController(
+        appArchiveUrl: Uri.parse(_appArchiveUrl),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+      return ListenableBuilder(
+        listenable: _desktopController!,
+        builder: (context, _) {
+          if (_desktopController!.needUpdate) {
+            return DesktopUpdateDirectCard(
+              controller: _desktopController!,
+              child: const SizedBox.shrink(),
+            );
+          }
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 30),
+                child: Text('There are no updates for Paladin at this time.', style: Theme.of(context).textTheme.labelMedium),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: IconButton(icon: const Icon(Icons.refresh), onPressed: _desktopController!.checkVersion),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     final updateState = ref.watch(updateProvider);
 
     if (downloading) {
@@ -76,14 +118,10 @@ class _PaladinUpdate extends ConsumerState<PaladinUpdate> {
     final VersionCheck? versions = updateState.value;
 
     if (versions == null) {
-      final String noUpdateLabel = Platform.isAndroid
-          ? 'There are no updates for Inkworm at this time.'
-          : 'Only Android is supported for in-application updates at this time.';
-
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(padding: const EdgeInsets.only(top: 30), child: Text(noUpdateLabel, style: Theme.of(context).textTheme.labelMedium)),
+          Padding(padding: const EdgeInsets.only(top: 30), child: Text('There are no updates for Paladin at this time.', style: Theme.of(context).textTheme.labelMedium)),
           Padding(
             padding: const EdgeInsets.only(top: 10),
             child: _buildCheckVersionAction(),
