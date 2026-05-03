@@ -31,14 +31,17 @@ class BookDetails extends _$BookDetails {
         whereArgs: [uuid],
         orderBy: "lastRead ASC");
 
-    state = await Book.fromMap(libraryDb, results.first);
+    if (!ref.mounted) return;
+    final book = await Book.fromMap(libraryDb, results.first);
+    if (!ref.mounted) return;
+    state = book;
   }
 
   Future<void> readBook() async {
     updateLastReadDate();
 
     final appSettings = ref.read(appSettingsRepositoryProvider).value;
-    if (appSettings?.autoUpdateShelf == true && state?.series != null) {
+    if (appSettings?.autoUpdateShelf == true && state?.series != null && state!.series!.series.isNotEmpty) {
       ref.read(shelvesRepositoryProvider.notifier).updateShelfForSeries(state!.series!.series);
     }
 
