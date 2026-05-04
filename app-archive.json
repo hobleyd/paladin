@@ -2561,6 +2561,649 @@
       "mandatory": false,
       "url": "https://hobleyd.github.io/paladin/releases/0.7.0+13-macos",
       "platform": "macos"
+    },
+    {
+      "version": "0.7.0",
+      "shortVersion": 13,
+      "changes": [
+        {
+          "message": "desktop updating should work now"
+        },
+        {
+          "message": "check in windows support files"
+        },
+        {
+          "message": "fix AI breakage"
+        },
+        {
+          "message": "check in the MacOS config"
+        },
+        {
+          "message": "support desktop as well as android"
+        },
+        {
+          "message": "Bump flutter_typeahead from 5.2.0 to 6.0.0"
+        },
+        {
+          "message": "support updating on platforms other than Android"
+        },
+        {
+          "message": "shelf update series code wasn't working with blank series"
+        },
+        {
+          "message": "ensure sync times are dealt with correctly"
+        },
+        {
+          "message": "fix the db query for books to upload when syncing"
+        },
+        {
+          "message": "switch reference from inkworm to paladin"
+        },
+        {
+          "message": "add support for changing shelves automatically when opening a new book which is part of a series"
+        },
+        {
+          "message": "new app icon"
+        },
+        {
+          "message": "minor name tweak to support file paths correctly"
+        },
+        {
+          "message": "new version to support Calibre Agent"
+        },
+        {
+          "message": "version bump after minor changes; but pretty close to complete"
+        },
+        {
+          "message": "ensure the random shelf doesn't show books read without a date"
+        },
+        {
+          "message": "better support books that have been read, but have no read date"
+        },
+        {
+          "message": "show the last read data on the back cover page"
+        },
+        {
+          "message": "don't show series # if there is no series"
+        },
+        {
+          "message": "trying different android startup modes"
+        },
+        {
+          "message": "new logo which should look better on eink displays"
+        },
+        {
+          "message": "change android launch mode"
+        },
+        {
+          "message": "add launcher icons for windows"
+        },
+        {
+          "message": "version bump for dio"
+        },
+        {
+          "message": "move the waffle menu into the menu_buttons; bump the version accordingly"
+        },
+        {
+          "message": "fix dart analysis issues"
+        },
+        {
+          "message": "rename a function to read properly"
+        },
+        {
+          "message": "remove a blank line"
+        },
+        {
+          "message": "update last_modified as well as last_read when opening a book"
+        },
+        {
+          "message": "don't show a new icon on the cover if we have marked as read, but don't have a last_read date"
+        },
+        {
+          "message": "minor performance tweak - don't add the postFrameCallback more than once"
+        },
+        {
+          "message": "ensure the next book to read on the Shelf is visible"
+        },
+        {
+          "message": "ensure last_read is considered alongside last_modified when downloading books"
+        },
+        {
+          "message": "version bump for new release"
+        },
+        {
+          "message": "make the booklist scrollabel via a bodgy arsed hack"
+        },
+        {
+          "message": "minor refactoring"
+        },
+        {
+          "message": "move the autosizegroup initialisation out of the build function"
+        },
+        {
+          "message": "Bump google_fonts from 6.3.3 to 8.0.0"
+        },
+        {
+          "message": "tweak to allow dependabot to work"
+        },
+        {
+          "message": "change the app logo to black and white for better viewing on eink devices"
+        },
+        {
+          "message": "ensure the first unread book in a shelf is visible"
+        },
+        {
+          "message": "version bumps"
+        },
+        {
+          "message": "select all text in the search box on selection"
+        },
+        {
+          "message": "select all text when clicking on a TextField in Settings."
+        },
+        {
+          "message": "remove the \"X\" after testing"
+        },
+        {
+          "message": "ensure all screens use the SafeArea to line up with the front page"
+        },
+        {
+          "message": "fix dart analysis issues"
+        },
+        {
+          "message": "always open the back cover when clicking on a shelf element"
+        },
+        {
+          "message": "minor refactoring for Android menu items"
+        },
+        {
+          "message": "fix naming of function"
+        },
+        {
+          "message": "fix dangling tags"
+        },
+        {
+          "message": "refactor to deal with DB updates correctly"
+        },
+        {
+          "message": "ensure front page buttons are updated once sync completes"
+        },
+        {
+          "message": "reverse bodgy tweak; appears to be working now"
+        },
+        {
+          "message": "dodgy tweak to alter the db on my test android device. ignore"
+        },
+        {
+          "message": "oops; variable conflict with import"
+        },
+        {
+          "message": "allow for a backup of the DB (hopefully)"
+        },
+        {
+          "message": "version bump for new changes"
+        },
+        {
+          "message": "add await to async db calls; see if this fixes the sync issue we are seeing"
+        },
+        {
+          "message": "remove code which reacts to server loss as it isn't working as expected"
+        },
+        {
+          "message": "support another edge case for version updates"
+        },
+        {
+          "message": "don't reset calibre server if we 'lose' the connection"
+        },
+        {
+          "message": "add a hard exit menu option for testing"
+        },
+        {
+          "message": "debug tweaks to see what is going wrong when syncing"
+        },
+        {
+          "message": "moved the refresh button to be visible when required"
+        },
+        {
+          "message": "breaking change to colour_filter_extension"
+        },
+        {
+          "message": "version bump to roll up release with improved synchronisation with calibre"
+        },
+        {
+          "message": "remove debug statement"
+        },
+        {
+          "message": "ensure nothing gets missed in the calibre sync"
+        },
+        {
+          "message": "provide a button to refresh a book from Calibre on the BackCover screen"
+        },
+        {
+          "message": "performance improvements for Books screen - only return a uuid for the builk query"
+        },
+        {
+          "message": "rename bookprovider to bookdetails"
+        },
+        {
+          "message": "minor tweak to avoid a stacktrace in obscure circumstances"
+        },
+        {
+          "message": "minor analysis refactor"
+        },
+        {
+          "message": "remove an undded call to the bookProvider.getBook()"
+        },
+        {
+          "message": "remove an undeeded SQL parameter which was breaking the Tags screen"
+        },
+        {
+          "message": "version bump for updates"
+        },
+        {
+          "message": "try lightening the image further"
+        },
+        {
+          "message": "show circular indicator when downloading"
+        },
+        {
+          "message": "allow manual check for version update in settings"
+        },
+        {
+          "message": "really open device settings this time"
+        },
+        {
+          "message": "fix post major version upgrade"
+        },
+        {
+          "message": "fixes post major version upgrade"
+        },
+        {
+          "message": "open device settings and not app settings"
+        },
+        {
+          "message": "Bump riverpod_lint, mockito, build_runner, retrofit_generator, json_serializable, freezed, riverpod_generator, riverpod_annotation and flutter_riverpod"
+        },
+        {
+          "message": "add back in freezed along with freezed_annotations"
+        },
+        {
+          "message": "ensure books are retrieved if required during provider build"
+        },
+        {
+          "message": "ensure update only trigger on android and remove the old call from main"
+        },
+        {
+          "message": "ignore autogenerated freezed files"
+        },
+        {
+          "message": "initial code to check for new versions and install automatically; test when I have a network"
+        },
+        {
+          "message": "save server on Tab as well as Enter"
+        },
+        {
+          "message": "calculate shelf size for the settings count"
+        },
+        {
+          "message": "remove beta ecosystem"
+        },
+        {
+          "message": "Bump keep_screen_on from 4.0.0 to 5.0.0"
+        },
+        {
+          "message": "reduce the list size for the eInk device (until I work out how to size things properly)"
+        },
+        {
+          "message": "fix the timezone for dependabot"
+        },
+        {
+          "message": "version bump"
+        },
+        {
+          "message": "back out the change for sharing files; not required; the problem is with inkworm"
+        },
+        {
+          "message": "set the logging preferences to release mode"
+        },
+        {
+          "message": "ensure the currently reading tile is updated when we read a new book"
+        },
+        {
+          "message": "testing a fix to open a book with inkworm"
+        },
+        {
+          "message": "fixes for the json_serialization changes made yesterday"
+        },
+        {
+          "message": "fix typo in status message"
+        },
+        {
+          "message": "ensure we pop the navigation stack on back as well as a button action; refactor to specify the home-screen as a const"
+        },
+        {
+          "message": "only display the first 25 books in each category"
+        },
+        {
+          "message": "tweaks after the json_serialization refactor"
+        },
+        {
+          "message": "use json_serializable effectively"
+        },
+        {
+          "message": "show a preview of the changes when syncing"
+        },
+        {
+          "message": "minor formatting tweaks"
+        },
+        {
+          "message": "rename BookList to BookTable as it is more accurate"
+        },
+        {
+          "message": "show the books which need to be uploaded"
+        },
+        {
+          "message": "try to lighten the image for eInk devices"
+        },
+        {
+          "message": "pass the book UUID around rather than the book, so we can watch for changes to the book (last read, last modified, rating etc)"
+        },
+        {
+          "message": "configure logging correctly"
+        },
+        {
+          "message": "version bumps"
+        },
+        {
+          "message": "pop back to the home screen on sync completion"
+        },
+        {
+          "message": "Future Reads are dealt with at the web service layer"
+        },
+        {
+          "message": "tweaks to ensure Tags are serialised to Json better"
+        },
+        {
+          "message": "from last ios deploy"
+        },
+        {
+          "message": "initial code for automatic updates; not finished, but won't break anything"
+        },
+        {
+          "message": "initial code for automatic updates; not finished, but won't break anything"
+        },
+        {
+          "message": "fix dart analysis issues"
+        },
+        {
+          "message": "I think Flutter probably supports this directly, but I have more control this way, so implemented as a provider"
+        },
+        {
+          "message": "refactor to deal with the currently reading book as a provider"
+        },
+        {
+          "message": "ensure error messages are displayed back to the user"
+        },
+        {
+          "message": "ensure we correctly select the last read books on update"
+        },
+        {
+          "message": "when we sync with calibre, we don't want to send description because of the increase in packet size"
+        },
+        {
+          "message": "ensure the status updates are scrollable"
+        },
+        {
+          "message": "ensure the Currently Reading shelf gets updated when a book is read"
+        },
+        {
+          "message": "ensure a new shelf is stored in the DB when it is created; otherwise you can't create a Random Shelf in last position"
+        },
+        {
+          "message": "remove unused import"
+        },
+        {
+          "message": "reset shelf name when we chage type"
+        },
+        {
+          "message": "update the shelves after sync"
+        },
+        {
+          "message": "use the cachedCoverProvider directly instead of the notifier to ensure we don't create it twice"
+        },
+        {
+          "message": "ensure we do not exhaust our open file descriptor pool"
+        },
+        {
+          "message": "minor refactor to use relative paths"
+        },
+        {
+          "message": "ensure the ios app works as expected"
+        },
+        {
+          "message": "close the epub after parsing"
+        },
+        {
+          "message": "more null checks to avoid a crash"
+        },
+        {
+          "message": "switch the if statement around to actually do the right thing"
+        },
+        {
+          "message": "expand the size of the shelf type"
+        },
+        {
+          "message": "create ios icons"
+        },
+        {
+          "message": "support IOS now I know how to install locally"
+        },
+        {
+          "message": "ensure the Tags shelf doesn't show already read books"
+        },
+        {
+          "message": "ensure series are ordered by their order on the shelf"
+        },
+        {
+          "message": "add the unread indicator into the assets folder"
+        },
+        {
+          "message": "ensure we use the BackCover widget to display the read status correctly"
+        },
+        {
+          "message": "resize down to the max height used to speed up the UI"
+        },
+        {
+          "message": "overlay an unread icon on unread books; need to do better with dynamic sizing I think; sadly this is not Flutter's strongest point"
+        },
+        {
+          "message": "ensure the Random shelf only returns unread books"
+        },
+        {
+          "message": "better error message on connection error; minor code refactoring to avoid duplicated code"
+        },
+        {
+          "message": "ignore the key.properties file to ensure we don't leak credentials which are stored in a Github secret for thr server build"
+        },
+        {
+          "message": "try again with the base64 command"
+        },
+        {
+          "message": "got the secret name wrong. Oops"
+        },
+        {
+          "message": "tweak the extract of the keystore"
+        },
+        {
+          "message": "not sure why this wasn't checked in"
+        },
+        {
+          "message": "sign the apk for installation; not via Google Play however as Google killed my developer account without warning me"
+        },
+        {
+          "message": "check in the version with the libs android requires"
+        },
+        {
+          "message": "tweak the release process to work as expected"
+        },
+        {
+          "message": "move timeout to 30s as 15 isn't fast enough; move this into settings?"
+        },
+        {
+          "message": "db upgrades aren't working; but not an issue given this hasn't been released as yet; so move back to a single version and worry about this later"
+        },
+        {
+          "message": "update to latest gradle"
+        },
+        {
+          "message": "use the BackCover widget to deal with the Async cover correctly."
+        },
+        {
+          "message": "moved to an AsyncProvider, but forgot to use it!"
+        },
+        {
+          "message": "resize the generic book cover if required"
+        },
+        {
+          "message": "ensure app apk is named correctly; line up the release action to use it"
+        },
+        {
+          "message": "remove tags prior to insertion to ensure we are up to date with Calibre!"
+        },
+        {
+          "message": "refactoring around using the web service to be more elegant"
+        },
+        {
+          "message": "make checking for a spine more fault tolerant"
+        },
+        {
+          "message": "add a new method for finding an image in a xhtml. better debug statements."
+        },
+        {
+          "message": "added a toString() method to the objects for better debugging."
+        },
+        {
+          "message": "tweaks to better find epub covers"
+        },
+        {
+          "message": "fix the collection so you can click on a series and see all the books contained within it"
+        },
+        {
+          "message": "fix the collection so you can click on an author and see their books"
+        },
+        {
+          "message": "ensure we add the author count in when selecting from the database"
+        },
+        {
+          "message": "move the provider initialisation to avoid a rebuild during sync"
+        },
+        {
+          "message": "update the contract to match the server"
+        },
+        {
+          "message": "tweaks to ensure the selection between a dynamic or static server works as expected"
+        },
+        {
+          "message": "version bumps; remove the epubx library"
+        },
+        {
+          "message": "more rules to find the cover image"
+        },
+        {
+          "message": "use the bonjour service discovery"
+        },
+        {
+          "message": "remove debug line"
+        },
+        {
+          "message": "open the book in the constructor"
+        },
+        {
+          "message": "more work to find cover images; more work to do, but this gets 90% of the epubs I have. Older ones are more hit and miss"
+        },
+        {
+          "message": "deal with an async provider correctly to stop the odd crash"
+        },
+        {
+          "message": "do not default the Calibre Server to mine as it is asking for trouble."
+        },
+        {
+          "message": "initial version which will parse covers internally; needs to be tested"
+        },
+        {
+          "message": "forgot to relabel the Retry button"
+        },
+        {
+          "message": "redo the cover caching as the Flutter epubx library doesn't work reliably; not functional yet"
+        },
+        {
+          "message": "build the widget correctly given the data is Async"
+        },
+        {
+          "message": "tweak the retry approach to just retry books in error"
+        },
+        {
+          "message": "update flutter metadata"
+        },
+        {
+          "message": "add build folders"
+        },
+        {
+          "message": "ensure errors are shown once processing has finished"
+        },
+        {
+          "message": "update kotlin & gradle versions"
+        },
+        {
+          "message": "checkin new android icons"
+        },
+        {
+          "message": "fix dart analysis issues"
+        },
+        {
+          "message": "put titles on the progress lists; ensure clicking the finish button clears everything for next time"
+        },
+        {
+          "message": "ensure status messages display as LIFO"
+        },
+        {
+          "message": "tweak status messaging to not duplicate the processed books list; clear the processed list every <offset> books"
+        },
+        {
+          "message": "tweak web service definition to match server"
+        },
+        {
+          "message": "reorder sync messages and add the books to upload (if selected)"
+        },
+        {
+          "message": "pay attention to Sync From Epoch when downloading books"
+        },
+        {
+          "message": "pay attention to the Sync from Epoch checkbox when displaying changes to download"
+        },
+        {
+          "message": "centre the sync button"
+        },
+        {
+          "message": "decide whether to sync read statuses, or not in the Synchronisation screen"
+        },
+        {
+          "message": "fix styling issue when there is no blurb"
+        },
+        {
+          "message": "fix merge issue"
+        },
+        {
+          "message": "Add service discovery on the local network"
+        },
+        {
+          "message": "Add service discovery on the local network; improve error/connection statuses for the Web services"
+        }
+      ],
+      "date": "2026-05-04",
+      "mandatory": false,
+      "url": "https://hobleyd.github.io/paladin/releases/0.7.0+13-windows",
+      "platform": "windows"
     }
   ]
 }
