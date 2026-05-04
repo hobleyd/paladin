@@ -99,7 +99,7 @@ jobs:
              --arg url "$URL" \
              --argjson changes "$CHANGES" \
              '.items = (
-               [.items[] | select(not (.platform == "windows" and .shortVersion == $short_version))]
+               [.items[] | select((.platform == "windows" and .shortVersion == $short_version) | not)]
                + [{
                  "version": $version,
                  "shortVersion": $short_version,
