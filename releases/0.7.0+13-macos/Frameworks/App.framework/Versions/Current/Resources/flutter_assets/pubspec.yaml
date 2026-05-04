@@ -1,0 +1,87 @@
+name: paladin
+description: eLibrary management for Tablets and eInk devices.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 0.7.0+1
+
+environment:
+  sdk: '>=3.8.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  android_package_installer: ^0.0.3
+  desktop_updater: ^1.4.0
+  archive: ^4.0.9
+  app_settings: ^7.0.0
+  auto_size_text: ^3.0.0
+  bonsoir: ^6.0.2
+  color_filter_extension: ^1.0.1
+  cupertino_icons: ^1.0.2
+  dartlin: ^0.6.3
+  dio: ^5.9.1
+  flutter_rating_bar: ^4.0.1
+  flutter_riverpod: ^3.1.0
+  flutter_typeahead: ^6.0.0
+  flutter_widget_from_html_core: ^0.17.0
+  freezed: 3.2.3
+  freezed_annotation: ^3.1.0
+  google_fonts: ^8.0.0
+  http_status_code: ^0.0.2
+  image: ^4.5.4
+  intersperse: ^2.0.0
+  intl: ^0.20.2
+  json_annotation: ^4.9.0
+  keep_screen_on: ^5.0.0
+  logger: ^2.6.1
+  mockito: ^5.5.0
+  open_filex: ^4.3.2
+  path: ^1.8.3
+  path_provider: ^2.0.11
+  permission_handler: ^12.0.1
+  retrofit: ^4.7.3
+  riverpod_annotation: ^4.0.0
+  share_plus: ^13.0.0
+  sqflite_common_ffi: ^2.4.0+2
+  sqlite3_flutter_libs: ^0.6.0+eol
+  url_launcher: ^6.3.2
+  version: ^3.0.2
+  visibility_detector: ^0.4.0+2
+  xml: ^6.6.1
+
+dev_dependencies:
+  build_runner: ^2.7.1
+  flutter_launcher_icons: ^0.14.4
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+  json_serializable: ^6.11.1
+  retrofit_generator: ^10.0.0
+  innosetup: ^0.1.3
+  riverpod_lint: ^3.1.0
+  riverpod_generator: ^4.0.0
+
+# The following section is specific to Flutter packages.
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/generic_book_cover.png
+    - assets/new.png
+    - assets/paladin.png
+    - assets/paladin-eink.png
+    - assets/sharpblue.png
+    - assets/google_fonts/
+    - pubspec.yaml
+
+flutter_launcher_icons:
+  image_path: 'assets/paladin.png'
+  image_path_android: 'assets/paladin-eink.png'
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  macos:
+    generate: true
+  web:
+    generate: false
+  windows:
+    generate: true
