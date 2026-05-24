@@ -14,6 +14,11 @@ class NavigatorStack extends _$NavigatorStack {
   }
 
   void _pop() {
+    if (state.length < 2) {
+      state = [homeScreen];
+      return;
+    }
+
     List<String> routes = List.from(state);
     List<String> poppedRoutes = routes.getRange(1, state.length).toList();
 

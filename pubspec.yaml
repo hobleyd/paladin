@@ -15,7 +15,7 @@ dependencies:
   archive: ^4.0.9
   app_settings: ^7.0.0
   auto_size_text: ^3.0.0
-  bonsoir: ^6.0.2
+  bonsoir: ^7.1.0
   color_filter_extension: ^1.0.1
   cupertino_icons: ^1.0.2
   dartlin: ^0.6.3

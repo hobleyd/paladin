@@ -7,7 +7,7 @@ part 'calibre_network_service.g.dart';
 
 @Riverpod(keepAlive: true)
 class CalibreNetworkService extends _$CalibreNetworkService {
-  final String _calibreService = '_http._tcp';
+  final String _calibreService = '_calibre-agent._tcp';
   late BonsoirDiscovery _discovery;
 
   @override
@@ -23,6 +23,7 @@ class CalibreNetworkService extends _$CalibreNetworkService {
 
       _discovery.eventStream!.listen(
         (event) {
+          ref.read(statusProvider.notifier).addStatus('mDNS: event received: ${event.id}');
           switch (event) {
             case BonsoirDiscoveryStartedEvent():
               ref.read(statusProvider.notifier).addStatus('mDNS: discovery started for $_calibreService');
@@ -32,19 +33,24 @@ class CalibreNetworkService extends _$CalibreNetworkService {
               event.service.resolve(_discovery.serviceResolver);
               break;
             case BonsoirDiscoveryServiceResolvedEvent():
-              ref.read(statusProvider.notifier).addStatus('mDNS: resolved "${event.service.name}" at ${event.service.host}:${event.service.port}');
+              ref.read(statusProvider.notifier).addStatus('mDNS: resolved "${event.service.name}" at ${event.service.hostAddresses} (port ${event.service.port})');
               updateState(event.service);
               break;
             case BonsoirDiscoveryServiceResolveFailedEvent():
-              ref.read(statusProvider.notifier).addStatus('mDNS: resolve failed');
+              ref.read(statusProvider.notifier).addStatus('mDNS: resolve failed for a service');
               break;
             case BonsoirDiscoveryServiceUpdatedEvent():
+              ref.read(statusProvider.notifier).addStatus('mDNS: updated "${event.service.name}"');
               updateState(event.service);
               break;
             case BonsoirDiscoveryServiceLostEvent():
               ref.read(statusProvider.notifier).addStatus('mDNS: lost "${event.service.name}"');
               break;
+            case BonsoirDiscoveryStoppedEvent():
+              ref.read(statusProvider.notifier).addStatus('mDNS: discovery stopped');
+              break;
             default:
+              ref.read(statusProvider.notifier).addStatus('mDNS: unknown event: ${event.id}');
               break;
           }
         },
@@ -59,8 +65,18 @@ class CalibreNetworkService extends _$CalibreNetworkService {
   }
 
   void updateState(BonsoirService service) {
-    if (service.name != 'calibre-agent') return;
-    String? host = service.host;
+    if (!service.name.toLowerCase().startsWith('calibre-agent')) return;
+
+    // Prioritise IPv4 addresses as the server is currently configured for anyIPv4
+    String? host;
+    for (var addr in service.hostAddresses) {
+      if (!addr.contains(':')) {
+        host = addr;
+        break;
+      }
+    }
+    host ??= service.hostAddress;
+
     int port = service.port;
     if (host != null) {
       if (host.endsWith('.')) {
@@ -71,6 +87,8 @@ class CalibreNetworkService extends _$CalibreNetworkService {
         ref.read(statusProvider.notifier).addStatus('Setting Calibre host to $networkService');
         state = networkService;
       }
+    } else {
+      ref.read(statusProvider.notifier).addStatus('mDNS: service resolved but no host address found');
     }
   }
 
