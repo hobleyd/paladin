@@ -69,26 +69,38 @@ class ShelvesRepository extends _$ShelvesRepository implements DatabaseNotifier 
     final List<int> shelfIds = state.value ?? [];
     final libraryDb = ref.read(libraryDBProvider.notifier);
 
+    // Check if the series is already on any of the shelves first.
+    for (final shelfId in shelfIds) {
+      final shelf = ref.read(shelfRepositoryProvider(shelfId)).value;
+      if (shelf?.collection.type == CollectionType.SERIES && shelf?.name == seriesName) {
+        return;
+      }
+    }
+
     int? fullyReadShelfId;
     int? firstCandidateId;
 
     for (final shelfId in shelfIds) {
       final shelf = ref.read(shelfRepositoryProvider(shelfId)).value;
       if (shelf == null) continue;
+
       if (shelf.collection.type == CollectionType.CURRENT || shelf.collection.type == CollectionType.RANDOM) continue;
 
       firstCandidateId ??= shelfId;
 
-      if (shelf.collection.type == CollectionType.SERIES) {
-        final results = await libraryDb.rawQuery(
-          sql: 'SELECT COUNT(*) as count FROM books WHERE series = (SELECT id FROM series WHERE series = ?) AND readStatus = 0',
-          args: [shelf.name],
-        );
-        final unread = results.isEmpty ? 1 : (results.first['count'] as int);
-        if (unread == 0) {
-          fullyReadShelfId = shelfId;
-          break;
-        }
+      String query = shelf.collection.query.endsWith(';') 
+          ? shelf.collection.query.substring(0, shelf.collection.query.length - 1) 
+          : shelf.collection.query;
+      String countSql = 'SELECT COUNT(*) as count FROM ($query) WHERE readStatus = 0';
+      final results = await libraryDb.rawQuery(
+        sql: countSql,
+        args: shelf.collection.queryArgs,
+      );
+      
+      final unread = results.isEmpty ? 1 : (results.first['count'] as int);
+      if (unread == 0) {
+        fullyReadShelfId = shelfId;
+        break;
       }
     }
 

@@ -14,20 +14,23 @@ class Paladin extends ConsumerWidget {
     var asyncDb = ref.watch(libraryDBProvider);
     ref.read(calibreNetworkServiceProvider);
 
-    return asyncDb.when(error: (error, stackTrace) {
-      return const Text("It's time to panic; we can't open the database!");
-    }, loading: () {
-      return const Center(child: CircularProgressIndicator());
-    }, data: (var db) {
-      return Scaffold(
-        appBar: null,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 6, bottom: 6),
-            child: HomeScreen(),
+    return PopScope(
+      canPop: false,
+      child: asyncDb.when(error: (error, stackTrace) {
+        return const Text("It's time to panic; we can't open the database!");
+      }, loading: () {
+        return const Center(child: CircularProgressIndicator());
+      }, data: (var db) {
+        return Scaffold(
+          appBar: null,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 6, bottom: 6),
+              child: HomeScreen(),
+            ),
           ),
-        ),
-      );
-    });
+        );
+      }),
+    );
   }
 }
