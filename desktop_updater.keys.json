@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "profileId": "1b7132edf793d99fa52d6e0fce0baf8b",
+  "feedUrl": "https://hobleyd.github.io/paladin/app-archive.json",
+  "activeKeyId": "release-54f7db6574111f2c02094c45",
+  "publicKeys": {
+    "release-54f7db6574111f2c02094c45": "KYANKcseiPJggudxxwiSP6P13ohMeKkvY484/WIGhZI="
+  }
+}

@@ -1,14 +1,15 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:android_package_installer/android_package_installer.dart';
 import 'package:desktop_updater/desktop_updater.dart';
-import 'package:desktop_updater/updater_controller.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
+import '../../models/update_recovery_store.dart';
 import '../../models/version_check.dart';
 import '../../providers/status_provider.dart';
 import '../../providers/update.dart';
@@ -27,23 +28,50 @@ class _PaladinUpdate extends ConsumerState<PaladinUpdate> {
 
   static const String _appArchiveUrl = 'https://hobleyd.github.io/paladin/app-archive.json';
 
+  // Must match the --package-id used by `dart run desktop_updater:package` in the release workflow,
+  // and the packageId bound into each signed release descriptor.
+  static const String _expectedPackageId = 'au.com.sharpblue.paladin';
+
+  // Pinned Ed25519 public key(s) from desktop_updater.keys.json (release keygen). Only release
+  // descriptors and app-archive.json entries signed by the matching private key are trusted.
+  static const Map<String, String> _trustedReleasePublicKeys = {
+    'release-54f7db6574111f2c02094c45': 'KYANKcseiPJggudxxwiSP6P13ohMeKkvY484/WIGhZI=',
+  };
+
   @override
   void initState() {
     super.initState();
     if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+      unawaited(_initDesktopController());
+    }
+  }
+
+  Future<void> _initDesktopController() async {
+    final Directory supportDir = await getApplicationSupportDirectory();
+    final File recoveryFile = File(path.join(supportDir.path, 'desktop_updater_pending_install.json'));
+
+    if (!mounted) return;
+    setState(() {
       _desktopController = DesktopUpdaterController(
         appArchiveUrl: Uri.parse(_appArchiveUrl),
+        expectedPackageId: _expectedPackageId,
+        trustedReleasePublicKeys: _trustedReleasePublicKeys,
+        recoveryStore: PaladinUpdateRecoveryStore(recoveryFile),
       );
-    }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+      if (_desktopController == null) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
       return ListenableBuilder(
         listenable: _desktopController!,
         builder: (context, _) {
-          if (_desktopController!.needUpdate) {
+          if (_desktopController!.state is UpdateAvailable || _desktopController!.state is UpdateReadyToInstall) {
             return DesktopUpdateDirectCard(
               controller: _desktopController!,
               child: const SizedBox.shrink(),

@@ -83,22 +83,45 @@ jobs:
       - run: dart run flutter_launcher_icons
       - run: flutter build macos --release --build-number ${{ needs.prepare.outputs.build_number }}
 
-      - name: Create dist structure for desktop_updater
+      - name: Package release for desktop_updater
         run: |
           VERSION="${{ needs.prepare.outputs.version }}"
           BUILD_NUMBER="${{ needs.prepare.outputs.build_number }}"
-          mkdir -p "dist/${BUILD_NUMBER}/paladin-${VERSION}+${BUILD_NUMBER}-macos"
-          cp -r "build/macos/Build/Products/Release/paladin.app" \
-            "dist/${BUILD_NUMBER}/paladin-${VERSION}+${BUILD_NUMBER}-macos/paladin.app"
+          APP_NAME="Paladin"
+          dart run desktop_updater:package \
+            --input "build/macos/Build/Products/Release/paladin.app" \
+            --output "dist/${VERSION}+${BUILD_NUMBER}-macos" \
+            --package-id au.com.sharpblue.paladin \
+            --app-name "$APP_NAME" \
+            --version "$VERSION" \
+            --build-number "$BUILD_NUMBER" \
+            --platform macos \
+            --channel stable \
+            --artifact-url "https://hobleyd.github.io/paladin/releases/${VERSION}+${BUILD_NUMBER}-macos/${APP_NAME}-${VERSION}-macos.zip" \
+            --install-strategy wholeBundleReplace
 
-      - name: Generate file hashes
-        run: dart run desktop_updater:archive macos
+      - name: Import release signing key
+        env:
+          DESKTOP_UPDATER_KEY_PASSPHRASE: ${{ secrets.DESKTOP_UPDATER_KEY_PASSPHRASE }}
+        run: |
+          echo "${{ secrets.DESKTOP_UPDATER_KEY_BUNDLE_B64 }}" | base64 --decode > "$RUNNER_TEMP/release-key.dukey"
+          dart run desktop_updater:release keys import \
+            --input "$RUNNER_TEMP/release-key.dukey" \
+            --passphrase-env DESKTOP_UPDATER_KEY_PASSPHRASE
+
+      - name: Sign release descriptor
+        run: |
+          VERSION="${{ needs.prepare.outputs.version }}"
+          BUILD_NUMBER="${{ needs.prepare.outputs.build_number }}"
+          dart run desktop_updater:release sign \
+            --release "dist/${VERSION}+${BUILD_NUMBER}-macos/release.json" \
+            --key-profile desktop_updater.keys.json
 
       - name: Upload distribution artifact
         uses: actions/upload-artifact@v4
         with:
           name: macos-dist
-          path: dist/${{ needs.prepare.outputs.build_number }}/paladin-${{ needs.prepare.outputs.version }}+${{ needs.prepare.outputs.build_number }}-macos/
+          path: dist/${{ needs.prepare.outputs.version }}+${{ needs.prepare.outputs.build_number }}-macos/
 
   build-windows:
     needs: prepare
@@ -116,23 +139,48 @@ jobs:
       - run: dart run flutter_launcher_icons
       - run: flutter build windows --release --build-number ${{ needs.prepare.outputs.build_number }}
 
-      - name: Create dist structure for desktop_updater
+      - name: Package release for desktop_updater
         shell: bash
         run: |
           VERSION="${{ needs.prepare.outputs.version }}"
           BUILD_NUMBER="${{ needs.prepare.outputs.build_number }}"
-          mkdir -p "dist/${BUILD_NUMBER}/paladin-${VERSION}+${BUILD_NUMBER}-windows"
-          cp -r build/windows/x64/runner/Release/. \
-            "dist/${BUILD_NUMBER}/paladin-${VERSION}+${BUILD_NUMBER}-windows/"
+          APP_NAME="Paladin"
+          dart run desktop_updater:package \
+            --input "build/windows/x64/runner/Release" \
+            --output "dist/${VERSION}+${BUILD_NUMBER}-windows" \
+            --package-id au.com.sharpblue.paladin \
+            --app-name "$APP_NAME" \
+            --version "$VERSION" \
+            --build-number "$BUILD_NUMBER" \
+            --platform windows \
+            --channel stable \
+            --artifact-url "https://hobleyd.github.io/paladin/releases/${VERSION}+${BUILD_NUMBER}-windows/${APP_NAME}-${VERSION}-windows.zip" \
+            --install-strategy wholeDirectoryReplace
 
-      - name: Generate file hashes
-        run: dart run desktop_updater:archive windows
+      - name: Import release signing key
+        shell: bash
+        env:
+          DESKTOP_UPDATER_KEY_PASSPHRASE: ${{ secrets.DESKTOP_UPDATER_KEY_PASSPHRASE }}
+        run: |
+          echo "${{ secrets.DESKTOP_UPDATER_KEY_BUNDLE_B64 }}" | base64 --decode > "$RUNNER_TEMP/release-key.dukey"
+          dart run desktop_updater:release keys import \
+            --input "$RUNNER_TEMP/release-key.dukey" \
+            --passphrase-env DESKTOP_UPDATER_KEY_PASSPHRASE
+
+      - name: Sign release descriptor
+        shell: bash
+        run: |
+          VERSION="${{ needs.prepare.outputs.version }}"
+          BUILD_NUMBER="${{ needs.prepare.outputs.build_number }}"
+          dart run desktop_updater:release sign \
+            --release "dist/${VERSION}+${BUILD_NUMBER}-windows/release.json" \
+            --key-profile desktop_updater.keys.json
 
       - name: Upload distribution artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-dist
-          path: dist/${{ needs.prepare.outputs.build_number }}/paladin-${{ needs.prepare.outputs.version }}+${{ needs.prepare.outputs.build_number }}-windows/
+          path: dist/${{ needs.prepare.outputs.version }}+${{ needs.prepare.outputs.build_number }}-windows/
 
   deploy:
     needs: [prepare, build-macos, build-windows]
@@ -144,6 +192,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: false
+
+      - run: flutter pub get
 
       - name: Download macOS distribution
         uses: actions/download-artifact@v4
@@ -161,47 +216,42 @@ jobs:
         run: |
           VERSION="${{ needs.prepare.outputs.version }}"
           BUILD_NUMBER="${{ needs.prepare.outputs.build_number }}"
-          DATE=$(date +%Y-%m-%d)
-
-          PREV_TAG=$(git tag --sort=-version:refname | grep -v "^${VERSION}$" | head -1)
-          if [ -n "$PREV_TAG" ]; then
-            RAW_COMMITS=$(git log "${PREV_TAG}..HEAD" --pretty=format:"%s" --no-merges)
-          else
-            RAW_COMMITS=$(git log --pretty=format:"%s" --no-merges | head -30)
-          fi
-          if [ -n "$RAW_COMMITS" ]; then
-            CHANGES=$(echo "$RAW_COMMITS" | jq -R '{"message": .}' | jq -s '.')
-          else
-            CHANGES='[{"message": "Release '"$VERSION"'"}]'
-          fi
+          APP_NAME="Paladin"
 
           git fetch origin gh-pages 2>/dev/null || true
-          git show origin/gh-pages:app-archive.json > current-archive.json 2>/dev/null \
-            || echo '{"appName":"Paladin","description":"eLibrary management for Tablets and eInk devices.","items":[]}' > current-archive.json
+          if git show origin/gh-pages:app-archive.json > deploy/app-archive.json 2>/dev/null \
+              && jq -e '.schemaVersion == 3' deploy/app-archive.json > /dev/null 2>&1; then
+            echo "Using existing schema v3 app-archive.json from gh-pages"
+          else
+            rm -f deploy/app-archive.json
+            echo "No compatible existing app-archive.json found; starting a new schema v3 index"
+          fi
 
           for PLATFORM in macos windows; do
-            URL="https://hobleyd.github.io/paladin/releases/${VERSION}+${BUILD_NUMBER}-${PLATFORM}"
-            jq --arg version "$VERSION" \
-               --argjson short_version "$BUILD_NUMBER" \
-               --arg date "$DATE" \
-               --arg url "$URL" \
-               --argjson changes "$CHANGES" \
-               --arg platform "$PLATFORM" \
-               '.items = (
-                 [.items[] | select((.platform == $platform and .shortVersion == $short_version) | not)]
-                 + [{
-                   "version": $version,
-                   "shortVersion": $short_version,
-                   "changes": $changes,
-                   "date": $date,
-                   "mandatory": false,
-                   "url": $url,
-                   "platform": $platform
-                 }]
-               )' current-archive.json > updated-archive.json
-            mv updated-archive.json current-archive.json
+            dart run desktop_updater:app_archive upsert \
+              --archive deploy/app-archive.json \
+              --app-name "$APP_NAME" \
+              --version "$VERSION" \
+              --build-number "$BUILD_NUMBER" \
+              --platform "$PLATFORM" \
+              --channel stable \
+              --release-url "https://hobleyd.github.io/paladin/releases/${VERSION}+${BUILD_NUMBER}-${PLATFORM}/release.json"
           done
-          mv current-archive.json deploy/app-archive.json
+
+      - name: Import release signing key
+        env:
+          DESKTOP_UPDATER_KEY_PASSPHRASE: ${{ secrets.DESKTOP_UPDATER_KEY_PASSPHRASE }}
+        run: |
+          echo "${{ secrets.DESKTOP_UPDATER_KEY_BUNDLE_B64 }}" | base64 --decode > "$RUNNER_TEMP/release-key.dukey"
+          dart run desktop_updater:release keys import \
+            --input "$RUNNER_TEMP/release-key.dukey" \
+            --passphrase-env DESKTOP_UPDATER_KEY_PASSPHRASE
+
+      - name: Sign app-archive.json
+        run: |
+          dart run desktop_updater:release sign \
+            --app-archive deploy/app-archive.json \
+            --key-profile desktop_updater.keys.json
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
