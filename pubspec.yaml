@@ -13,7 +13,7 @@ dependencies:
   android_package_installer: ^0.0.3
   desktop_updater: ^3.1.1
   archive: ^4.0.9
-  app_settings: ^8.0.3
+  app_settings: ^9.0.0
   auto_size_text: ^3.0.0
   bonsoir: ^7.1.0
   color_filter_extension: ^1.0.1
