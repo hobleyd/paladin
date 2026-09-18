@@ -176,6 +176,41 @@ jobs:
           fi
           xcrun stapler staple "$APP_PATH"
 
+      # create-dmg is called directly (as in inkworm/shackleton/nightmail's
+      # release.yml) so the version can go in the DMG file name without also
+      # having to claim the bundled app is called `paladin-<version>.app` --
+      # the `--icon` and `--volname` are independent of the output file name.
+      # The bundle name is resolved from disk rather than written down, since
+      # PRODUCT_NAME.app must match exactly for the AppleScript window layout
+      # step to find and position it.
+      - name: Create DMG
+        run: |
+          VERSION="${{ needs.prepare.outputs.version }}"
+          APP_DIR="build/macos/Build/Products/Release"
+          APP_BUNDLE_NAME=$(basename "$(ls -d "$APP_DIR"/*.app | head -1)")
+          if [ -z "$APP_BUNDLE_NAME" ]; then
+            echo "::error::no .app in $APP_DIR to build a DMG from" >&2
+            exit 1
+          fi
+          echo "Packaging $APP_BUNDLE_NAME as paladin-$VERSION.dmg"
+          brew install create-dmg
+          create-dmg \
+            --volname "Paladin $VERSION" \
+            --window-pos 200 120 \
+            --window-size 800 450 \
+            --icon-size 100 \
+            --icon "$APP_BUNDLE_NAME" 200 185 \
+            --app-drop-link 600 185 \
+            "paladin-$VERSION.dmg" \
+            "$APP_DIR/$APP_BUNDLE_NAME"
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v0.1.15
+        with:
+          name: 'paladin-${{ needs.prepare.outputs.version }}'
+          tag_name: ${{ needs.prepare.outputs.version }}
+          files: 'paladin-${{ needs.prepare.outputs.version }}.dmg'
+
       - name: Package release for desktop_updater
         run: |
           VERSION="${{ needs.prepare.outputs.version }}"
