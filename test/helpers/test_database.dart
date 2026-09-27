@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:paladin/database/library_db.dart';
+import 'package:riverpod/misc.dart' show Override;
 
 import 'fake_path_provider.dart';
 
@@ -20,11 +21,11 @@ class TestDatabase {
   final ProviderContainer container;
   final Directory _tempDir;
 
-  static Future<TestDatabase> open() async {
+  static Future<TestDatabase> open({List<Override> overrides = const []}) async {
     final tempDir = Directory.systemTemp.createTempSync('paladin_db_test_');
     PathProviderPlatform.instance = FakePathProviderPlatform(tempDir.path);
 
-    final container = ProviderContainer();
+    final container = ProviderContainer(overrides: overrides);
     await container.read(libraryDBProvider.future);
 
     return TestDatabase._(container, tempDir);
