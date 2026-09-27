@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Paladin
+Comment=An eLibrary app for managing ebook collections
+Exec=paladin %U
+Icon=paladin
+Type=Application
+Categories=Office;Literature;
+StartupNotify=true
+StartupWMClass=au.com.sharpblue.paladin

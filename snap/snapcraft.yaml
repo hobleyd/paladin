@@ -1,0 +1,44 @@
+name: paladin
+base: core24
+version: 'dev'
+title: Paladin
+summary: An eLibrary app for managing ebook collections
+description: |
+  Paladin syncs metadata and epub files from a self-hosted Calibre web
+  service and stores them locally, with a shelf-based UI optimised for
+  eInk screens and tablets.
+contact: https://github.com/hobleyd/paladin/issues
+website: https://github.com/hobleyd/paladin
+grade: stable
+confinement: classic
+
+apps:
+  paladin:
+    command: paladin
+    # A path under the prime directory, supplied by the desktop-entry part
+    # below. Only a file a part actually primes resolves consistently across
+    # snapcraft versions -- see the comment on the desktop-entry part.
+    desktop: usr/share/applications/paladin.desktop
+
+parts:
+  paladin:
+    plugin: dump
+    source: build/linux/x64/release/bundle
+    build-packages:
+      - patchelf
+    override-prime: |
+      craftctl default
+      patchelf --set-rpath '$ORIGIN/lib' "$CRAFT_PRIME/paladin"
+      find "$CRAFT_PRIME/lib" -name "*.so*" -type f | while read lib; do
+        patchelf --set-rpath '$ORIGIN' "$lib" 2>/dev/null || true
+      done
+  # Primes the desktop entry where `apps.paladin.desktop` points. Only the
+  # .desktop is staged: snap/gui/paladin.png would otherwise collide with the
+  # paladin.png the release workflow writes into the Flutter bundle.
+  desktop-entry:
+    plugin: dump
+    source: snap/gui
+    organize:
+      paladin.desktop: usr/share/applications/paladin.desktop
+    stage:
+      - usr/share/applications/paladin.desktop
