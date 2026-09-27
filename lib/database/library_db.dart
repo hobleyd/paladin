@@ -217,9 +217,11 @@ class LibraryDB extends _$LibraryDB {
   }
 
   Future<void> removeBook(Uuid uuid) async {
-    // Remove the books; check for Tags that may no longer be used and clean up if required.
-    _paladin.rawDelete('delete from book_tags where bookId in (select id from books where uuid = ?)', [uuid.uuid]);
-    _paladin.delete('books', where: 'uuid = ?', whereArgs: [uuid.uuid]);
+    // Remove the many-many relationships first; both reference books(uuid)
+    // with foreign keys enforced, so the book delete would otherwise fail.
+    await _paladin.delete('book_authors', where: 'bookId = ?', whereArgs: [uuid.uuid]);
+    await _paladin.delete('book_tags', where: 'bookId = ?', whereArgs: [uuid.uuid]);
+    await _paladin.delete('books', where: 'uuid = ?', whereArgs: [uuid.uuid]);
   }
 
   Future<void> uploadTemporaryUuids(List<Uuid> booksInCalibreLibrary) async {
