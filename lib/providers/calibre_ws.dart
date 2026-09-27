@@ -109,17 +109,17 @@ class CalibreWS extends _$CalibreWS {
   Future<void> _deleteBooksRemovedFromCalibre() async {
     List<Uuid> booksInCalibreLibrary = await _calibre.getLibrary();
     LibraryDB library = ref.read(libraryDBProvider.notifier);
-    library.uploadTemporaryUuids(booksInCalibreLibrary);
-    
+    await library.uploadTemporaryUuids(booksInCalibreLibrary);
+
     // Look for books in the local library which are not in the calibre library and delete them
     _status.addStatus('Looking for books removed from Calibre...');
     List<Uuid> localBooksInDb = await library.findLocalBooksNotInCalibre();
     if (localBooksInDb.isNotEmpty) {
       _status.addStatus('removing ${localBooksInDb.length} books from the local database');
       for (Uuid uuid in localBooksInDb) {
-        library.removeBook(uuid);
+        await library.removeBook(uuid);
       }
-      library.cleanDanglingTags();
+      await library.cleanDanglingTags();
     } else {
       _status.addStatus('No books removed from Calibre. Phew.');
     }

@@ -37,6 +37,14 @@ class CachedCover extends _$CachedCover {
         File cover = await _getCoverPath();
         cover.createSync(recursive: true);
         cover.writeAsBytesSync(images.encodeJpg(resizedCover));
+
+        // build() doesn't await this call, so the first render always sees
+        // a cache miss; push the freshly cached cover once it's ready so
+        // watchers actually pick it up instead of being stuck with the
+        // generic fallback until something unrelated forces a rebuild.
+        if (ref.mounted) {
+          state = AsyncValue.data(Image.file(cover, fit: BoxFit.cover));
+        }
       }
     }
   }

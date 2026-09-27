@@ -107,15 +107,22 @@ void main() {
     expect(image.image, isA<AssetImage>());
   });
 
-  test('build returns the cached file once caching has completed', () async {
+  test('build automatically upgrades to the cached file once caching completes, with no invalidation needed', () async {
     await writeBookFile(book, withCover: true);
     keepAlive(container, cachedCoverProvider(book));
 
-    // Let the fire-and-forget cacheCover() from the initial build complete.
-    await container.read(cachedCoverProvider(book).notifier).cacheCover();
-    container.invalidate(cachedCoverProvider(book));
+    final firstImage = await container.read(cachedCoverProvider(book).future);
+    expect(firstImage.image, isA<AssetImage>()); // first render: cache miss.
 
-    final image = await container.read(cachedCoverProvider(book).future);
-    expect(image.image, isA<FileImage>());
+    // The fire-and-forget cacheCover() triggered by that first build should
+    // finish shortly after and push the real cover in on its own.
+    Image? upgraded;
+    for (int i = 0; i < 20 && upgraded == null; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      final value = container.read(cachedCoverProvider(book)).value;
+      if (value != null && value.image is FileImage) upgraded = value;
+    }
+
+    expect(upgraded, isNotNull);
   });
 }

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:paladin/models/author.dart';
 import 'package:paladin/models/book.dart';
+import 'package:paladin/models/tag.dart';
 import 'package:paladin/models/uuid.dart';
 
 import '../helpers/test_database.dart';
@@ -60,6 +61,47 @@ void main() {
 
     await testDb.db.removeBook(const Uuid(uuid: 'uuid-1'));
     expect(await testDb.db.getCount('books'), 0);
+  });
+
+  test('removeBook also cleans up book_authors and book_tags rows for the removed book', () async {
+    const taggedBook = Book(
+      uuid: 'uuid-tagged',
+      authors: [Author(name: 'Author')],
+      description: '',
+      lastModified: 0,
+      rating: 0,
+      readStatus: false,
+      tags: [Tag(tag: 'Mystery')],
+      title: 'Title',
+    );
+    await testDb.db.insertBook(taggedBook);
+
+    await testDb.db.removeBook(const Uuid(uuid: 'uuid-tagged'));
+
+    final authorLinks = await testDb.db.query(table: 'book_authors', where: 'bookId = ?', whereArgs: ['uuid-tagged']);
+    final tagLinks = await testDb.db.query(table: 'book_tags', where: 'bookId = ?', whereArgs: ['uuid-tagged']);
+    expect(authorLinks, isEmpty);
+    expect(tagLinks, isEmpty);
+  });
+
+  test('cleanDanglingTags removes tags no longer referenced by any book', () async {
+    const taggedBook = Book(
+      uuid: 'uuid-tagged',
+      authors: [Author(name: 'Author')],
+      description: '',
+      lastModified: 0,
+      rating: 0,
+      readStatus: false,
+      tags: [Tag(tag: 'Mystery')],
+      title: 'Title',
+    );
+    await testDb.db.insertBook(taggedBook);
+    await testDb.db.removeBook(const Uuid(uuid: 'uuid-tagged'));
+
+    await testDb.db.cleanDanglingTags();
+
+    final tags = await testDb.db.query(table: 'tags', where: 'tag = ?', whereArgs: ['Mystery']);
+    expect(tags, isEmpty);
   });
 
   test('findLocalBooksNotInCalibre and findRemoteBooksNotInDb diff against an uploaded uuid set', () async {

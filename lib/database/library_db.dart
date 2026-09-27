@@ -131,7 +131,10 @@ class LibraryDB extends _$LibraryDB {
   }
 
   Future<void> cleanDanglingTags() async {
-    _paladin.rawDelete('delete from tags where id in (select tagId from book_tags where bookId not in (select uuid from books));');
+    // removeBook() now cleans up book_tags for the book it removes, so a tag
+    // becomes dangling by having no book_tags row left at all, not by
+    // having one that points at a since-deleted book.
+    await _paladin.rawDelete('delete from tags where id not in (select tagId from book_tags);');
   }
 
   Future<List<Uuid>> findLocalBooksNotInCalibre() async {
