@@ -33,7 +33,20 @@ jobs:
 
       - run: flutter pub get
       - run: dart run build_runner build --delete-conflicting-outputs
-      - run: flutter test
+
+      # sqflite_common_ffi's databaseFactoryFfi routes every database
+      # operation through one lazily-spawned, process-wide background
+      # isolate, shared by every test file's "own" database regardless of
+      # how many different temp paths they each open. Running test files at
+      # the default (CPU-count) concurrency lets their queries interleave on
+      # that shared isolate and answer each other's: observed on CI as tests
+      # against a supposedly-fresh, empty database returning rows (and even
+      # literal string constants) from a completely different test file.
+      # Forcing single-file-at-a-time execution serialises access to that
+      # shared isolate and reliably fixed it locally across repeated runs;
+      # the whole suite is small enough (a few seconds) that the slower,
+      # correct run is the easy trade.
+      - run: flutter test --concurrency=1
 
   # Only runs for a push to main or a manual dispatch -- not for a pull
   # request, which has nothing to tag or release. Every job below needs this
