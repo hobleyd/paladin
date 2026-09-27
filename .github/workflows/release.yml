@@ -13,8 +13,20 @@ permissions:
   contents: write
 
 jobs:
+  # macOS, not ubuntu-latest, deliberately: the test suite's TestDatabase
+  # helper fakes path_provider (PathProviderPlatform.instance) to give each
+  # test its own temp-directory database. lib/utils/application_path.dart
+  # only consults path_provider on Android/macOS/iOS; Windows and Linux both
+  # bypass it for a fixed, real path (LOCALAPPDATA\Paladin, $HOME/.paladin),
+  # so the fake is invisible there. On ubuntu-latest that meant every test in
+  # the whole run shared one real, persistent $HOME/.paladin/db/paladin.db --
+  # the first test created it, and every later one saw all previous tests'
+  # data (accumulating row counts, and in one case another test file's exact
+  # literal string constant). Concurrency was never the cause -- the same
+  # failures reproduced identically at --concurrency=1 -- so this is the
+  # actual fix, not that one.
   test:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -23,30 +35,9 @@ jobs:
           channel: 'stable'
           cache: false
 
-      # sqflite_common_ffi dlopens libsqlite3 for every test that touches the
-      # database; ubuntu-latest usually already has it, but this is cheap
-      # insurance against a runner image that doesn't.
-      - name: Install sqlite3
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y libsqlite3-dev
-
       - run: flutter pub get
       - run: dart run build_runner build --delete-conflicting-outputs
-
-      # sqflite_common_ffi's databaseFactoryFfi routes every database
-      # operation through one lazily-spawned, process-wide background
-      # isolate, shared by every test file's "own" database regardless of
-      # how many different temp paths they each open. Running test files at
-      # the default (CPU-count) concurrency lets their queries interleave on
-      # that shared isolate and answer each other's: observed on CI as tests
-      # against a supposedly-fresh, empty database returning rows (and even
-      # literal string constants) from a completely different test file.
-      # Forcing single-file-at-a-time execution serialises access to that
-      # shared isolate and reliably fixed it locally across repeated runs;
-      # the whole suite is small enough (a few seconds) that the slower,
-      # correct run is the easy trade.
-      - run: flutter test --concurrency=1
+      - run: flutter test
 
   # Only runs for a push to main or a manual dispatch -- not for a pull
   # request, which has nothing to tag or release. Every job below needs this
