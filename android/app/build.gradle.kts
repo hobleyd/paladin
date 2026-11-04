@@ -22,8 +22,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+        }
     }
 
     defaultConfig {
@@ -35,8 +37,6 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-
-        setProperty("archivesBaseName", "paladin-$versionName")
     }
 
     signingConfigs {
@@ -59,4 +59,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+base {
+    archivesName.set("paladin-${flutter.versionName}")
 }
