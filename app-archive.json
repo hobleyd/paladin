@@ -35,6 +35,14 @@
       "release": "https://hobleyd.github.io/paladin/releases/1.0.0+6-macos/release.json"
     },
     {
+      "version": "1.0.2",
+      "buildNumber": 8,
+      "platform": "macos",
+      "channel": "stable",
+      "mandatory": false,
+      "release": "https://hobleyd.github.io/paladin/releases/1.0.2+8-macos/release.json"
+    },
+    {
       "version": "1.0.0",
       "buildNumber": 2,
       "platform": "windows",
@@ -65,11 +73,19 @@
       "channel": "stable",
       "mandatory": false,
       "release": "https://hobleyd.github.io/paladin/releases/1.0.0+6-windows/release.json"
+    },
+    {
+      "version": "1.0.2",
+      "buildNumber": 8,
+      "platform": "windows",
+      "channel": "stable",
+      "mandatory": false,
+      "release": "https://hobleyd.github.io/paladin/releases/1.0.2+8-windows/release.json"
     }
   ],
   "signature": {
     "algorithm": "ed25519",
     "publicKeyId": "release-54f7db6574111f2c02094c45",
-    "value": "z+d286gsf9j+blwhfiyej3Rykivtil2ToGu2HKz6j6pdwqLyKWdIHqx7h4Lk+sHHF4uE9VtGjHjLJxcLkxBgAw=="
+    "value": "kaSjPhCU+dszAqbeYGxnE0oN+sqFOlBv/zhOLUc0gfx+LCFXHcYNzZ0E1M1BBxKnSz6Er8DhgEzYgpC+LgpZAA=="
   }
 }
