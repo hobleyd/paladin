@@ -42,7 +42,7 @@ class CalibreSync extends ConsumerWidget {
                       ],
                     ),
                   )
-                : Expanded(child: Padding(padding: const EdgeInsets.only(top: 50, bottom: 50), child: CalibreInformation())),
+                : Expanded(child: Padding(padding: const EdgeInsets.only(top: 50, bottom: 8), child: CalibreInformation())),
             CalibreProgressBar(),
             CalibreSyncButton(),
           ],

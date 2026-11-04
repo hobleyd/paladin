@@ -40,15 +40,17 @@ class CalibreInformation extends ConsumerWidget {
           const SizedBox(height: 10),
           Text('Click the Sync button (below) to synchronise your library!', style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: 30),
-          Padding(
-            padding: EdgeInsetsGeometry.only(left: 40, right: 40),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: BookTable(label: 'book(s) to upload...', future: _getBooksToUpload(ref, syncData.syncReadStatuses, syncData.syncFromEpoch, calibre.lastConnected))),
-                SizedBox(width: 10,),
-                Expanded(child: BookTable(label: 'book(s) to download...', future: calibreService.getCount(syncData.syncFromEpoch ? 0 : calibre.lastConnected, 30))),
-              ],
+          Expanded(
+            child: Padding(
+              padding: EdgeInsetsGeometry.only(left: 40, right: 40),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: BookTable(label: 'book(s) to upload...', future: _getBooksToUpload(ref, syncData.syncReadStatuses, syncData.syncFromEpoch, calibre.lastConnected))),
+                  SizedBox(width: 10,),
+                  Expanded(child: BookTable(label: 'book(s) to download...', future: calibreService.getCount(syncData.syncFromEpoch ? 0 : calibre.lastConnected, 30))),
+                ],
+              ),
             ),
           ),
           ],

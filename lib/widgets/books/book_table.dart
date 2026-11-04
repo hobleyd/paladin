@@ -22,8 +22,7 @@ class BookTable extends ConsumerWidget {
           children: [
             Text('There are $count $label', style: Theme.of(context).textTheme.labelMedium),
             const Divider(color: Colors.black, thickness: 1),
-            SizedBox(
-              height: MediaQuery.of(context).size.height - 339, // Adjust this height to your needs
+            Expanded(
               child: SingleChildScrollView(
                 child: Table(
                   children: [
