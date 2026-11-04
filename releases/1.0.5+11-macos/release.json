@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 3,
+  "packageId": "au.com.sharpblue.paladin",
+  "appName": "paladin.app",
+  "version": "1.0.5",
+  "buildNumber": 11,
+  "platform": "macos",
+  "channel": "stable",
+  "artifact": {
+    "kind": "zip",
+    "url": "https://hobleyd.github.io/paladin/releases/1.0.5+11-macos/paladin-1.0.5-macos.zip",
+    "sha256": "5a7f682fac424588e144bb41bbcc33fea6f2de7512525e5f603fd9d4ad805ee3",
+    "length": 31439623
+  },
+  "install": {
+    "strategy": "wholeBundleReplace"
+  },
+  "signature": {
+    "algorithm": "ed25519",
+    "publicKeyId": "release-54f7db6574111f2c02094c45",
+    "value": "3YZRjbS3Y39Lqyr8KZPeByH3eAl67lB+aAyQ8nIFozcdvDoHVFu1hpxdQV2zLIdU1bgFrttnilSXLkSTktnZCw=="
+  },
+  "minimumUpdaterVersion": "2.0.0",
+  "generatedAt": "2026-11-04T23:10:14.148751Z"
+}
