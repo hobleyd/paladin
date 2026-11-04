@@ -17,7 +17,7 @@ dependencies:
   auto_size_text: ^3.0.0
   bonsoir: ^7.1.0
   color_filter_extension: ^1.0.1
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^2.0.0
   dartlin: ^0.6.3
   dio: ^5.9.1
   flutter_rating_bar: ^4.0.1
