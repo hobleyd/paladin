@@ -63,7 +63,7 @@ class ShelfRepository extends _$ShelfRepository {
     List<dynamic> queryArgs = [if (Shelf.shelfNeedsName(collectionType)) name, if (Shelf.shelfNeedsSize(collectionType)) size];
     current = current.copyWith(name: name, collection: current.collection.copyWith(type: collectionType, query: Shelf.shelfQuery[collectionType]!, queryArgs: queryArgs),);
 
-    updateState(current);
+    await updateState(current);
   }
 
   Future<void> updateShelfName(String name) async {
@@ -72,7 +72,7 @@ class ShelfRepository extends _$ShelfRepository {
     List<dynamic> queryArgs = [if (Shelf.shelfNeedsName(current.collection.type)) name, if (Shelf.shelfNeedsSize(current.collection.type)) current.size];
     current = current.copyWith(name: name, collection: current.collection.copyWith(queryArgs: queryArgs));
 
-    updateState(current);
+    await updateState(current);
   }
 
   Future<void> updateShelfSize(int size) async {
@@ -81,7 +81,7 @@ class ShelfRepository extends _$ShelfRepository {
     List<dynamic> queryArgs = [if (Shelf.shelfNeedsName(current.collection.type)) current.name, size];
     current = current.copyWith(collection: current.collection.copyWith(queryArgs: queryArgs), size: size);
 
-    updateState(current);
+    await updateState(current);
   }
 
   Future<void> updateShelfToSeries(String seriesName) async {
@@ -95,7 +95,7 @@ class ShelfRepository extends _$ShelfRepository {
       ),
       size: maxInt,
     );
-    updateState(current);
+    await updateState(current);
   }
 
   Future<void> updateState(Shelf current) async {
