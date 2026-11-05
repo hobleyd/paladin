@@ -19,6 +19,7 @@ import 'cached_cover.dart';
 import 'calibre_book_provider.dart';
 import 'calibre_dio.dart';
 import 'calibre_network_service.dart';
+import 'currently_reading_book.dart';
 import 'status_provider.dart';
 
 part 'calibre_ws.g.dart';
@@ -91,6 +92,7 @@ class CalibreWS extends _$CalibreWS {
     for (DatabaseNotifier notifier in _notifiers) {
       notifier.updateStateFromDb();
     }
+    ref.invalidate(currentlyReadingBookProvider);
 
     _status.addStatus('Completed Synchronisation; please review errors (if any)');
     updateState(syncState: CalibreSyncState.REVIEW,);
