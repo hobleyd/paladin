@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 3,
+  "packageId": "au.com.sharpblue.paladin",
+  "appName": "paladin",
+  "version": "1.0.6",
+  "buildNumber": 12,
+  "platform": "windows",
+  "channel": "stable",
+  "artifact": {
+    "kind": "zip",
+    "url": "https://hobleyd.github.io/paladin/releases/1.0.6+12-windows/paladin-1.0.6-windows.zip",
+    "sha256": "9e86048831de1e27f0c093c88b7ba9b08231ac1d625d99d71e9299521804d71b",
+    "length": 19997242
+  },
+  "install": {
+    "strategy": "wholeDirectoryReplace"
+  },
+  "signature": {
+    "algorithm": "ed25519",
+    "publicKeyId": "release-54f7db6574111f2c02094c45",
+    "value": "v5LffYcdURyj1g5LiMefwnc/2JB2UeGTf+5GewCX8ywTrjXksQ+8c8hozFI0QSAbFKOiF/XWES9FHVmVptG5CA=="
+  },
+  "minimumUpdaterVersion": "2.0.0",
+  "generatedAt": "2026-11-05T01:13:41.925979Z"
+}
