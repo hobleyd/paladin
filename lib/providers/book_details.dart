@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -15,6 +16,8 @@ part 'book_details.g.dart';
 
 @riverpod
 class BookDetails extends _$BookDetails {
+  static const _inkwormChannel = MethodChannel('au.com.sharpblue.paladin/inkworm');
+
   @override
   Book? build(String uuid) {
     getBook();
@@ -47,8 +50,20 @@ class BookDetails extends _$BookDetails {
 
     if (Platform.isMacOS) {
       Process.run('open', ['-a', 'Inkworm', await state!.path]);
+    } else if (Platform.isIOS && await _openInInkworm(await state!.path)) {
+      return;
     } else {
       OpenFilex.open(await state!.path, type: state!.mimeType);
+    }
+  }
+
+  // iOS: hand the book straight to Inkworm over its inkworm:// URL scheme.
+  // False when Inkworm isn't installed, so the caller shows the "Open in…" sheet.
+  Future<bool> _openInInkworm(String path) async {
+    try {
+      return await _inkwormChannel.invokeMethod<bool>('open', path) ?? false;
+    } on PlatformException {
+      return false;
     }
   }
 
