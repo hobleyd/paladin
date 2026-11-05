@@ -14,6 +14,9 @@ It also records your reading history so you can see what you have read previousl
 
 It has been optimised for e-Ink devices as well as running on supported Flutter targets.
 
+On iOS, books open straight in [Inkworm](https://github.com/hobleyd/inkworm) when it is installed, skipping the
+"Open in…" sheet; otherwise Paladin falls back to the standard sheet.
+
 Paladin is licensed under the GPL-V3 license.
 
 calibre
